@@ -62,6 +62,42 @@ class RegisterScreen extends StatelessWidget {
               ),
               SizedBox(height: 25),
               TextFormField(
+                keyboardType: TextInputType.emailAddress,
+                obscureText: true,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.password),
+                  filled: true,
+                  hintText: "Password",
+          
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(100),
+                    borderSide: const BorderSide(
+                      width: 0,
+                      color: Colors.transparent,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(100),
+                    borderSide: BorderSide(width: 1),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(100),
+                    borderSide: BorderSide(
+                      color: Colors.red.withAlpha(200),
+                      width: 1,
+                    ),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(100),
+                    borderSide: BorderSide(
+                      color: Colors.red.withAlpha(200),
+                      width: 1,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 25),
+              TextFormField(
                 keyboardType: TextInputType.name,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
@@ -165,7 +201,23 @@ class RegisterScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-              )
+              ),
+              SizedBox(height: 25),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                    shadowColor: Colors.black.withAlpha(100),
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  onPressed: () {Navigator.pushNamed(context, '/home');},
+                  child: Text("Login", style: TextStyle(color: Colors.white, fontSize: 15),),
+                ),
+              ),
             ],
           ),
         ),
@@ -173,3 +225,4 @@ class RegisterScreen extends StatelessWidget {
     );
   }
 }
+

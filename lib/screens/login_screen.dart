@@ -129,10 +129,12 @@ class _LoginScreenBody extends StatelessWidget {
                     shadowColor: Colors.black.withAlpha(100),
                     padding: EdgeInsets.symmetric(vertical: 16),
                   ),
-                  onPressed: () {},
+                  onPressed: () {Navigator.pushNamed(context, '/home');},
                   child: Text("Login", style: TextStyle(color: Colors.white, fontSize: 15),),
                 ),
-              )
+              ),
+              SizedBox(height: 25),
+              TextButton(onPressed: () => Navigator.pushNamed(context, '/register'), child: Text("Dont have an account? Register here"))
             ],
           ),
         ),
