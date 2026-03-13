@@ -9,6 +9,7 @@
       "dependencies": [
         "cupertino_icons",
         "flutter",
+        "mask_text_input_formatter",
         "provider"
       ],
       "devDependencies": [
@@ -39,6 +40,13 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "mask_text_input_formatter",
+      "version": "2.9.0",
+      "dependencies": [
+        "flutter"
       ]
     },
     {
