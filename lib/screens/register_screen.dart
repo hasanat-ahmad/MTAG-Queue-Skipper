@@ -24,6 +24,8 @@ class RegisterScreen extends StatelessWidget {
               SizedBox(height: 35),
               Text("Register", style: TextStyle(fontSize: 32)),
               SizedBox(height: 50),
+              Text("Please fill in the details below to register"),
+              SizedBox(height: 25),
               TextFormField(
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
@@ -64,7 +66,7 @@ class RegisterScreen extends StatelessWidget {
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
                   filled: true,
-                  hintText: "full name",
+                  hintText: "Full name",
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(100),
                     borderSide: const BorderSide(
@@ -99,7 +101,7 @@ class RegisterScreen extends StatelessWidget {
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.verified_user),
                   filled: true,
-                  hintText: "xxxxx-xxxxxxx-x",
+                  hintText: "CNIC",
           
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(100),
@@ -135,7 +137,7 @@ class RegisterScreen extends StatelessWidget {
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.phone),
                   filled: true,
-                  hintText: "phone number",
+                  hintText: "Phone number",
           
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(100),
