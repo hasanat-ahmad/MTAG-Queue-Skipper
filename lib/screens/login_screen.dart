@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.accentGreen,
+      // backgroundColor: AppColors.accentGreen,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -175,6 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     "Dont have an account? Register here",
                     style: TextStyle(
                       fontFamily: AppFonts.primaryFont,
+                      color: AppColors.backgroundDark,
                       fontSize: 16,
                     ),
                   ),
