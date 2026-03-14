@@ -48,7 +48,6 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.accentGreen,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -62,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen>
                   const Icon(
                     Icons.two_wheeler_rounded,
                     size: 70,
-                    color: AppColors.backgroundLight,
+                    color: AppColors.backgroundDark,
                   ),
                   AnimatedBuilder(
                     animation: _scanAnim,
@@ -73,9 +72,7 @@ class _SplashScreenState extends State<SplashScreen>
                           width: 100,
                           height: 2,
                           decoration: BoxDecoration(
-                            color: AppColors.backgroundLight.withValues(
-                              alpha: 0.8,
-                            ),
+                            color: AppColors.borderLight,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -89,7 +86,7 @@ class _SplashScreenState extends State<SplashScreen>
             const Text(
               "MTag Queue Skipper",
               style: TextStyle(
-                color: AppColors.backgroundLight,
+                color: AppColors.backgroundDark,
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
                 fontFamily: AppFonts.primaryFont,
