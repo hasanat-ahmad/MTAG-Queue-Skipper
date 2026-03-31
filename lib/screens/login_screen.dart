@@ -61,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
-                      borderSide: const BorderSide(width: 1),
+                      borderSide: const BorderSide(width: 0),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
@@ -73,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
                       borderSide: BorderSide(
-                        color: AppColors.primaryRed,
+                        color: AppColors.backgroundDark,
                         width: 1,
                       ),
                     ),
