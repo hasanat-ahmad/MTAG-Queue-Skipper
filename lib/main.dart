@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mtag_queue_skipper/constants/app_theme.dart';
+import 'package:mtag_queue_skipper/providers/user_provider.dart';
 import 'package:mtag_queue_skipper/screens/home_screen.dart';
 import 'package:mtag_queue_skipper/screens/login_screen.dart';
 import 'package:mtag_queue_skipper/screens/register_screen.dart';
 import 'package:mtag_queue_skipper/screens/splash_screen.dart';
+import 'package:provider/provider.dart';
 
 void main(List<String> args) {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(create: (_) => UserProvider(), child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
