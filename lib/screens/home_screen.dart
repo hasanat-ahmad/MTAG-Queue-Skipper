@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mtag_queue_skipper/constants/app_colors.dart';
 import 'package:mtag_queue_skipper/constants/app_fonts.dart';
 import 'package:mtag_queue_skipper/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -17,9 +16,9 @@ class HomeScreen extends StatelessWidget {
       onTap: onTap,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        elevation: 3,
+        elevation: 5,
         child: SizedBox(
-          height: 140, // ✅ Equal height for all cards
+          height: 250, // ✅ Equal height for all cards
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -81,13 +80,13 @@ class HomeScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               "Welcome, ${userProvider.name}",
-              style: const TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 16),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
 
             // ✅ Row 1
             buildRow(
