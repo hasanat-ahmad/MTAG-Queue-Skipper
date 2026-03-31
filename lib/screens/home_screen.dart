@@ -19,7 +19,7 @@ class HomeScreen extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 3,
         child: SizedBox(
-          height: 140, // ✅ Equal height
+          height: 140, // ✅ Equal height for all cards
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -50,6 +50,16 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  Widget buildRow(Widget left, Widget right) {
+    return Row(
+      children: [
+        Expanded(child: left),
+        const SizedBox(width: 10),
+        Expanded(child: right),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
@@ -75,44 +85,32 @@ class HomeScreen extends StatelessWidget {
           children: [
             Text(
               "Welcome, ${userProvider.name}",
-              style: const TextStyle(fontSize: 15),
+              style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(height: 20),
 
-            // ✅ Grid starts here
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 1, // ✅ keeps width & height balanced
-                children: [
-                  buildCard(
-                    "Register your bike",
-                    "Easy and clean process",
-                    Icons.electric_bike_outlined,
-                    () {},
-                  ),
-                  buildCard(
-                    "My Token",
-                    "View your token",
-                    Icons.confirmation_number,
-                    () {},
-                  ),
-                  buildCard(
-                    "Status",
-                    "Track queue",
-                    Icons.access_time,
-                    () {},
-                  ),
-                  buildCard(
-                    "History",
-                    "Past records",
-                    Icons.history,
-                    () {},
-                  ),
-                ],
+            // ✅ Row 1
+            buildRow(
+              buildCard(
+                "Register your bike",
+                "Easy and clean process",
+                Icons.electric_bike_outlined,
+                () {},
               ),
+              buildCard(
+                "My Token",
+                "View your token",
+                Icons.confirmation_number,
+                () {},
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // ✅ Row 2
+            buildRow(
+              buildCard("Status", "Track queue", Icons.access_time, () {}),
+              buildCard("History", "Past records", Icons.history, () {}),
             ),
           ],
         ),
