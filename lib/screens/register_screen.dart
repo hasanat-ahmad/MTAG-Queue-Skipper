@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mtag_queue_skipper/constants/app_colors.dart';
 import 'package:mtag_queue_skipper/constants/app_fonts.dart';
+import 'package:mtag_queue_skipper/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -17,6 +19,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _cnicController = TextEditingController();
   final _phoneController = TextEditingController();
+  bool _isPasswordHidden = true;
+
 
   final cnicMaskFormatter = MaskTextInputFormatter(
     mask: 'xxxxx-xxxxxxx-x',
@@ -251,9 +255,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 25),
                 TextFormField(
                   controller: _passwordController,
-                  obscureText: true,
+                  obscureText: _isPasswordHidden,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.password),
+                    suffixIcon: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isPasswordHidden = !_isPasswordHidden;
+                        });
+                      },
+                      child: Icon(
+                        _isPasswordHidden
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                    ),
                     filled: true,
                     hintText: "Password",
                     errorStyle: const TextStyle(color: Colors.black),
@@ -304,6 +320,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+                        Provider.of<UserProvider>(context, listen: false).setName(_nameController.text);
                         Navigator.pushNamed(context, '/home');
                       }
                     },
@@ -313,6 +330,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
+                
               ],
             ),
           ),
