@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 5,
         child: SizedBox(
-          height: 250, // ✅ Equal height for all cards
+          height: 250, 
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -88,7 +88,6 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 50),
 
-            // ✅ Row 1
             buildRow(
               buildCard(
                 "Register your bike",
@@ -106,10 +105,11 @@ class HomeScreen extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            // ✅ Row 2
             buildRow(
               buildCard("Status", "Track queue", Icons.access_time, () {}),
-              buildCard("History", "Past records", Icons.history, () {}),
+              buildCard("Profile", "Past records", Icons.person, () {
+                Navigator.pushNamed(context, '/profile');
+              }),
             ),
           ],
         ),
