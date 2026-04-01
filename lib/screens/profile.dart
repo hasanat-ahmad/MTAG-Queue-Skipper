@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mtag_queue_skipper/constants/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -45,11 +46,7 @@ class Profile extends StatelessWidget {
                 height: 96,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF6C63FF), Color(0xFF3F3D9E)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: Colors.black
                 ),
                 child: Center(
                   child: Text(
@@ -160,7 +157,7 @@ class _InfoRow extends StatelessWidget {
               color: const Color(0xFF6C63FF).withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: const Color(0xFF6C63FF), size: 20),
+            child: Icon(icon, color: Colors.black, size: 20),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -198,11 +195,9 @@ class _Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Divider(
-      height: 1,
+      height: 10,
       thickness: 1,
-      indent: 76,
-      endIndent: 20,
-      color: Color(0xFFF0F0F5),
+      color: Colors.transparent,
     );
   }
 }
