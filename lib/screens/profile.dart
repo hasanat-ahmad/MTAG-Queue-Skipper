@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mtag_queue_skipper/constants/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -7,39 +8,113 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<AuthProvider>(context).name; // Accessing the name from Auth
-    Provider.of<AuthProvider>(context).CNIC; // Accessing the CNIC from Auth
-    Provider.of<AuthProvider>(
-      context,
-    ).phoneNumber; // Accessing the phone number from Auth
-    Provider.of<AuthProvider>(context).email; // Accessing the email from Auth
-    Provider.of<AuthProvider>(
-      context,
-    ).password; // Accessing the password from Auth
+    final auth = Provider.of<AuthProvider>(context);
+    final name = auth.name;
+    final cnic = auth.CNIC;
+    final phone = auth.phoneNumber;
+    final email = auth.email;
+
+    final initials = name
+        .trim()
+        .split(' ')
+        .where((w) => w.isNotEmpty)
+        .take(2)
+        .map((w) => w[0].toUpperCase())
+        .join();
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Profile")),
+      appBar: AppBar(
+        elevation: 0,
+        title: const Text(
+          'Profile',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 20,
+          ),
+        ),
+      ),
       body: SafeArea(
-        child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(
-                height: 150,
-                width: 150,
-                child: Card(
-                  color: Colors.amber,
-                  elevation: 1,
-                  child: Center(
-                    child: Text(
-                      "${Provider.of<AuthProvider>(context).name}",
+              const SizedBox(height: 16),
+
+              // Avatar
+              Container(
+                width: 96,
+                height: 96,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.black
+                ),
+                child: Center(
+                  child: Text(
+                    initials,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
                     ),
                   ),
                 ),
               ),
-              Card(),
-              Card(),
-              Card(),
-              // Text("Password: ${Provider.of<AuthProvider>(context).password}"),
+
+              const SizedBox(height: 16),
+
+              // Name
+              Text(
+                name,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+
+              const SizedBox(height: 4),
+
+              Text(
+                email,
+                style: const TextStyle(
+                  color: Color(0xFF8A8A9A),
+                  letterSpacing: 0.2,
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              // Info Card
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  children: [
+                    _InfoRow(
+                      icon: Icons.badge_outlined,
+                      label: 'CNIC',
+                      value: cnic,
+                      isFirst: true,
+                    ),
+                    _Divider(),
+                    _InfoRow(
+                      icon: Icons.phone_outlined,
+                      label: 'Phone',
+                      value: phone,
+                    ),
+                    _Divider(),
+                    _InfoRow(
+                      icon: Icons.email_outlined,
+                      label: 'Email',
+                      value: email,
+                      isLast: true,
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 32),
             ],
           ),
         ),
@@ -48,8 +123,82 @@ class Profile extends StatelessWidget {
   }
 }
 
+class _InfoRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final bool isFirst;
+  final bool isLast;
 
-// Text("Name: ${Provider.of<AuthProvider>(context).name}"),
-//               Text("CNIC: ${Provider.of<AuthProvider>(context).CNIC}"),
-//               Text("Phone Number: ${Provider.of<AuthProvider>(context).phoneNumber}"),
-//               Text("Email: ${Provider.of<AuthProvider>(context).email}"),
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.isFirst = false,
+    this.isLast = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.vertical(
+          top: isFirst ? const Radius.circular(20) : Radius.zero,
+          bottom: isLast ? const Radius.circular(20) : Radius.zero,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: const Color(0xFF6C63FF).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: Colors.black, size: 20),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF8A8A9A),
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF1A1A2E),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Divider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const Divider(
+      height: 10,
+      thickness: 1,
+      color: Colors.transparent,
+    );
+  }
+}
+
