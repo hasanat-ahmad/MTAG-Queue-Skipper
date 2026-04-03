@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen>
       end: 60.0,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 5), () {
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -48,6 +48,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundDark,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -72,7 +73,7 @@ class _SplashScreenState extends State<SplashScreen>
                           width: 100,
                           height: 2,
                           decoration: BoxDecoration(
-                            color: AppColors.borderLight,
+                            color: AppColors.border,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),

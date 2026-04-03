@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: AppColors.accentGreen,
+      backgroundColor: AppColors.backgroundDark,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(100),
                       borderSide: const BorderSide(
                         width: 0,
-                        color: AppColors.disabledText,
+                        color: AppColors.disabled,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -66,14 +66,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
                       borderSide: BorderSide(
-                        color: AppColors.primaryRed,
+                        color: AppColors.error,
                         width: 1,
                       ),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
                       borderSide: BorderSide(
-                        color: AppColors.backgroundDark,
+                        color: AppColors.error,
                         width: 1,
                       ),
                     ),
@@ -116,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(100),
                       borderSide: const BorderSide(
                         width: 0,
-                        color: AppColors.disabledText,
+                        color: AppColors.disabled,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -126,14 +126,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
                       borderSide: BorderSide(
-                        color: AppColors.primaryRed,
+                        color: AppColors.error,
                         width: 1,
                       ),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
                       borderSide: BorderSide(
-                        color: AppColors.backgroundDark,
+                        color: AppColors.error,
                         width: 1,
                       ),
                     ),
@@ -150,11 +150,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
+                      backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100),
                       ),
-                      shadowColor: Colors.black.withAlpha(100),
+                      shadowColor: AppColors.primary.withAlpha(100),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     onPressed: () {
@@ -164,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     child: const Text(
                       "Login",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                      style: TextStyle(color: AppColors.surface, fontSize: 18),
                     ),
                   ),
                 ),
@@ -177,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     "Dont have an account? Register here",
                     style: TextStyle(
                       fontFamily: AppFonts.primaryFont,
-                      color: AppColors.backgroundDark,
+                      color: AppColors.surface,
                       fontSize: 16,
                     ),
                   ),

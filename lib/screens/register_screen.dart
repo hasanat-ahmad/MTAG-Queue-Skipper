@@ -45,6 +45,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundDark,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -78,12 +79,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: const Icon(Icons.person),
                     filled: true,
                     hintText: "Full name",
-                    errorStyle: const TextStyle(color: Colors.black),
+                    errorStyle: const TextStyle(color: AppColors.error),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
                       borderSide: const BorderSide(
                         width: 0,
-                        color: AppColors.disabledText,
+                        color: AppColors.disabled,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -92,17 +93,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
-                      borderSide: BorderSide(
-                        color: Colors.red.withAlpha(200),
-                        width: 1,
-                      ),
+                      borderSide: BorderSide(color: AppColors.error, width: 1),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
-                      borderSide: BorderSide(
-                        color: Colors.red.withAlpha(200),
-                        width: 1,
-                      ),
+                      borderSide: BorderSide(color: AppColors.error, width: 1),
                     ),
                   ),
                   validator: (value) {
@@ -121,12 +116,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: const Icon(Icons.verified_user),
                     filled: true,
                     hintText: "CNIC",
-                    errorStyle: const TextStyle(color: Colors.black),
+                    errorStyle: const TextStyle(color: AppColors.error),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
                       borderSide: const BorderSide(
                         width: 0,
-                        color: AppColors.disabledText,
+                        color: AppColors.disabled,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -135,17 +130,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
-                      borderSide: BorderSide(
-                        color: Colors.red.withAlpha(200),
-                        width: 1,
-                      ),
+                      borderSide: BorderSide(color: AppColors.error, width: 1),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
-                      borderSide: BorderSide(
-                        color: Colors.red.withAlpha(200),
-                        width: 1,
-                      ),
+                      borderSide: BorderSide(color: AppColors.error, width: 1),
                     ),
                   ),
                   validator: (value) {
@@ -167,12 +156,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: const Icon(Icons.phone),
                     filled: true,
                     hintText: "Phone number",
-                    errorStyle: const TextStyle(color: Colors.black),
+                    errorStyle: const TextStyle(color: AppColors.error),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
                       borderSide: const BorderSide(
                         width: 0,
-                        color: AppColors.disabledText,
+                        color: AppColors.disabled,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -181,17 +170,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
-                      borderSide: BorderSide(
-                        color: Colors.red.withAlpha(200),
-                        width: 1,
-                      ),
+                      borderSide: BorderSide(color: AppColors.error, width: 1),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
-                      borderSide: BorderSide(
-                        color: Colors.red.withAlpha(200),
-                        width: 1,
-                      ),
+                      borderSide: BorderSide(color: AppColors.error, width: 1),
                     ),
                   ),
                   validator: (value) {
@@ -212,12 +195,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: const Icon(Icons.email),
                     filled: true,
                     hintText: "email@example.com",
-                    errorStyle: const TextStyle(color: Colors.black),
+                    errorStyle: const TextStyle(color: AppColors.error),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
                       borderSide: const BorderSide(
                         width: 0,
-                        color: AppColors.disabledText,
+                        color: AppColors.disabled,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -226,17 +209,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
-                      borderSide: BorderSide(
-                        color: Colors.red.withAlpha(200),
-                        width: 1,
-                      ),
+                      borderSide: BorderSide(color: AppColors.error, width: 1),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
-                      borderSide: BorderSide(
-                        color: Colors.red.withAlpha(200),
-                        width: 1,
-                      ),
+                      borderSide: BorderSide(color: AppColors.error, width: 1),
                     ),
                   ),
                   validator: (value) {
@@ -272,12 +249,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     filled: true,
                     hintText: "Password",
-                    errorStyle: const TextStyle(color: Colors.black),
+                    errorStyle: const TextStyle(color: AppColors.error),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
                       borderSide: const BorderSide(
                         width: 0,
-                        color: AppColors.disabledText,
+                        color: AppColors.disabled,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -286,17 +263,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
-                      borderSide: BorderSide(
-                        color: Colors.red.withAlpha(200),
-                        width: 1,
-                      ),
+                      borderSide: BorderSide(color: AppColors.error, width: 1),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(100),
-                      borderSide: BorderSide(
-                        color: Colors.red.withAlpha(200),
-                        width: 1,
-                      ),
+                      borderSide: BorderSide(color: AppColors.error, width: 1),
                     ),
                   ),
                   validator: (value) {
@@ -311,11 +282,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
+                      backgroundColor: AppColors.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100),
                       ),
-                      shadowColor: Colors.black.withAlpha(100),
+                      shadowColor: AppColors.primary.withAlpha(100),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     onPressed: () {
@@ -331,7 +302,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                     child: const Text(
                       "Register",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                      style: TextStyle(color: AppColors.surface, fontSize: 18),
                     ),
                   ),
                 ),
