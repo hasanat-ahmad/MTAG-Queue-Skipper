@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mtag_queue_skipper/constants/app_colors.dart';
 import 'package:mtag_queue_skipper/constants/app_fonts.dart';
+import 'package:mtag_queue_skipper/models/user.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +21,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _cnicController = TextEditingController();
   final _phoneController = TextEditingController();
   bool _isPasswordHidden = true;
-
 
   final cnicMaskFormatter = MaskTextInputFormatter(
     mask: 'xxxxx-xxxxxxx-x',
@@ -44,6 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -321,11 +322,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
-                        Provider.of<AuthProvider>(context, listen: false).setName(_nameController.text);
-                        Provider.of<AuthProvider>(context, listen: false).setCNIC(_cnicController.text);
-                        Provider.of<AuthProvider>(context, listen: false).setPhoneNumber(_phoneController.text);
-                        Provider.of<AuthProvider>(context, listen: false).setEmail(_emailController.text);
-                        Provider.of<AuthProvider>(context, listen: false).setPassword(_passwordController.text);
+                        User user = User(
+                          name: _nameController.text,
+                          cnic: _cnicController.text,
+                          phoneNumber: _phoneController.text,
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                        );
+                        authProvider.setUser(user);
                         Navigator.pushNamed(context, '/home');
                       }
                     },
@@ -335,7 +339,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                
               ],
             ),
           ),
