@@ -2,19 +2,30 @@
 import 'dart:convert';
 
 class User {
-  final String email;
-  final String password;
-
+  String name = "";
+  String cnic = "";
+  String phoneNumber = "";
+  String email = "";
+  String password = "";
   User({
+    required this.name,
+    required this.cnic,
+    required this.phoneNumber,
     required this.email,
     required this.password,
   });
 
   User copyWith({
+    String? name,
+    String? cnic,
+    String? phoneNumber,
     String? email,
     String? password,
   }) {
     return User(
+      name: name ?? this.name,
+      cnic: cnic ?? this.cnic,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
       email: email ?? this.email,
       password: password ?? this.password,
     );
@@ -22,6 +33,9 @@ class User {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'name': name,
+      'cnic': cnic,
+      'phoneNumber': phoneNumber,
       'email': email,
       'password': password,
     };
@@ -29,6 +43,9 @@ class User {
 
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
+      name: map['name'] as String,
+      cnic: map['cnic'] as String,
+      phoneNumber: map['phoneNumber'] as String,
       email: map['email'] as String,
       password: map['password'] as String,
     );
@@ -39,17 +56,28 @@ class User {
   factory User.fromJson(String source) => User.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() => 'User(email: $email, password: $password)';
+  String toString() {
+    return 'User(name: $name, cnic: $cnic, phoneNumber: $phoneNumber, email: $email, password: $password)';
+  }
 
   @override
   bool operator ==(covariant User other) {
     if (identical(this, other)) return true;
   
     return 
+      other.name == name &&
+      other.cnic == cnic &&
+      other.phoneNumber == phoneNumber &&
       other.email == email &&
       other.password == password;
   }
 
   @override
-  int get hashCode => email.hashCode ^ password.hashCode;
+  int get hashCode {
+    return name.hashCode ^
+      cnic.hashCode ^
+      phoneNumber.hashCode ^
+      email.hashCode ^
+      password.hashCode;
+  }
 }

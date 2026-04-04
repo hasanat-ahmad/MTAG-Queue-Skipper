@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mtag_queue_skipper/constants/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -9,12 +8,9 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
-    final name = auth.name;
-    final cnic = auth.CNIC;
-    final phone = auth.phoneNumber;
-    final email = auth.email;
+    
 
-    final initials = name
+    final initials = auth.user?.name
         .trim()
         .split(' ')
         .where((w) => w.isNotEmpty)
@@ -50,7 +46,7 @@ class Profile extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    initials,
+                    initials ?? 'Empty Text',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 32,
@@ -65,7 +61,7 @@ class Profile extends StatelessWidget {
 
               // Name
               Text(
-                name,
+                auth.user!.name,
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
@@ -75,7 +71,7 @@ class Profile extends StatelessWidget {
               const SizedBox(height: 4),
 
               Text(
-                email,
+                auth.user!.email,
                 style: const TextStyle(
                   color: Color(0xFF8A8A9A),
                   letterSpacing: 0.2,
@@ -94,20 +90,20 @@ class Profile extends StatelessWidget {
                     _InfoRow(
                       icon: Icons.badge_outlined,
                       label: 'CNIC',
-                      value: cnic,
+                      value: auth.user!.cnic,
                       isFirst: true,
                     ),
                     _Divider(),
                     _InfoRow(
                       icon: Icons.phone_outlined,
                       label: 'Phone',
-                      value: phone,
+                      value: auth.user!.phoneNumber,
                     ),
                     _Divider(),
                     _InfoRow(
                       icon: Icons.email_outlined,
                       label: 'Email',
-                      value: email,
+                      value: auth.user!.email,
                       isLast: true,
                     ),
                   ],

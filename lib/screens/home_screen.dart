@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/constants/app_fonts.dart';
-import 'package:mtag_queue_skipper/providers/user_provider.dart';
+import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 5,
         child: SizedBox(
-          height: 250, 
+          height: 250,
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -61,7 +61,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
+    final authProvider = context.read<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -83,7 +83,7 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "Welcome, ${userProvider.name}",
+              "Welcome, ${authProvider.user?.name ?? 'User'}",
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 50),
