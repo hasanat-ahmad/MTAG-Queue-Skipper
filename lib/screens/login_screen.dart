@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundDark,
+      // backgroundColor: AppColors.backgroundDark,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -150,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: AppColors.backgroundDark,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100),
                       ),
@@ -177,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     "Dont have an account? Register here",
                     style: TextStyle(
                       fontFamily: AppFonts.primaryFont,
-                      color: AppColors.surface,
+                      color: AppColors.backgroundDark,
                       fontSize: 16,
                     ),
                   ),
