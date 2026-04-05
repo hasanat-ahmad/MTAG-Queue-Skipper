@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mtag_queue_skipper/models/bike_details.dart';
+import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
+import 'package:mtag_queue_skipper/screens/bike_details_screen.dart';
+import 'package:provider/provider.dart';
 
 class BikeRegisterScreen extends StatefulWidget {
   const BikeRegisterScreen({super.key});
@@ -166,20 +170,6 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
     if (y != null && mounted) setState(() => _yearCtrl.text = y.toString());
   }
 
-  void _submit() {
-    if (!_formKey.currentState!.validate()) return;
-    if (!_accepted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please confirm details first')),
-      );
-      return;
-    }
-    FocusScope.of(context).unfocus();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Registration submitted ✓')));
-  }
-
   void _clear() {
     _formKey.currentState?.reset();
     for (final c in [
@@ -199,161 +189,188 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: const Color(0xFFF5F5F5),
-    appBar: AppBar(
+  Widget build(BuildContext context) {
+    final bikeDetailsProvider = Provider.of<BikeDetailsProvider>(context);
+    return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      elevation: 0,
-      surfaceTintColor: Colors.transparent,
-      title: const Text(
-        'Bike Register',
-        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-      ),
-      actions: [
-        TextButton(
-          onPressed: _clear,
-          child: const Text('Clear', style: TextStyle(color: Colors.grey)),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF5F5F5),
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        title: const Text(
+          'Bike Register',
+          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
         ),
-      ],
-    ),
-    body: Form(
-      key: _formKey,
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(14, 4, 14, 32),
-        children: [
-          _card('Owner Details', [
-            TextFormField(
-              controller: _ownerCtrl,
-              decoration: _dec('Full name'),
-              textInputAction: TextInputAction.next,
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Required' : null,
-            ),
-            const SizedBox(height: 10),
-            _row(
-              TextFormField(
-                controller: _phoneCtrl,
-                decoration: _dec('Phone', hint: '03xx-xxxxxxx'),
-                keyboardType: TextInputType.phone,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (v) =>
-                    (v == null || v.trim().length < 10) ? 'Invalid' : null,
-              ),
-              TextFormField(
-                controller: _cnicCtrl,
-                decoration: _dec('CNIC'),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Required' : null,
-              ),
-            ),
-          ]),
-
-          _card('Bike Details', [
-            _row(
-              _drop(
-                'Brand',
-                _brands,
-                _brand,
-                (v) => setState(() => _brand = v),
-              ),
-              _drop(
-                'Model',
-                _models,
-                _model,
-                (v) => setState(() => _model = v),
-              ),
-            ),
-            const SizedBox(height: 10),
-            _row(
-              _drop(
-                'Color',
-                _colors,
-                _color,
-                (v) => setState(() => _color = v),
-              ),
-              TextFormField(
-                controller: _yearCtrl,
-                readOnly: true,
-                onTap: _pickYear,
-                decoration: _dec(
-                  'Year',
-                  suffix: const Icon(
-                    Icons.calendar_today_outlined,
-                    size: 16,
-                    color: Colors.grey,
-                  ),
-                ),
-                validator: (v) =>
-                    int.tryParse(v ?? '') == null ? 'Required' : null,
-              ),
-            ),
-          ]),
-
-          _card('Registration Info', [
-            TextFormField(
-              controller: _plateCtrl,
-              decoration: _dec('Plate number'),
-              textCapitalization: TextCapitalization.characters,
-              textInputAction: TextInputAction.next,
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Required' : null,
-            ),
-            const SizedBox(height: 10),
-            _row(
-              TextFormField(
-                controller: _engineCtrl,
-                decoration: _dec('Engine no.'),
-                textCapitalization: TextCapitalization.characters,
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Required' : null,
-              ),
-              TextFormField(
-                controller: _chassisCtrl,
-                decoration: _dec('Chassis no.'),
-                textCapitalization: TextCapitalization.characters,
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Required' : null,
-              ),
-            ),
-          ]),
-
-          Row(
-            children: [
-              Switch.adaptive(
-                value: _accepted,
-                onChanged: (v) => setState(() => _accepted = v),
-                activeColor: Colors.black,
-              ),
-              const SizedBox(width: 6),
-              const Expanded(
-                child: Text(
-                  'I confirm these details are accurate',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-
-          SizedBox(
-            height: 50,
-            child: FilledButton(
-              onPressed: _submit,
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.black,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                textStyle: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              child: const Text('Submit Registration'),
-            ),
+        actions: [
+          TextButton(
+            onPressed: _clear,
+            child: const Text('Clear', style: TextStyle(color: Colors.grey)),
           ),
         ],
       ),
-    ),
-  );
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(14, 4, 14, 32),
+          children: [
+            _card('Owner Details', [
+              TextFormField(
+                controller: _ownerCtrl,
+                decoration: _dec('Full name'),
+                textInputAction: TextInputAction.next,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null,
+              ),
+              const SizedBox(height: 10),
+              _row(
+                TextFormField(
+                  controller: _phoneCtrl,
+                  decoration: _dec('Phone', hint: '03xx-xxxxxxx'),
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: (v) =>
+                      (v == null || v.trim().length < 10) ? 'Invalid' : null,
+                ),
+                TextFormField(
+                  controller: _cnicCtrl,
+                  decoration: _dec('CNIC'),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+              ),
+            ]),
+
+            _card('Bike Details', [
+              _row(
+                _drop(
+                  'Brand',
+                  _brands,
+                  _brand,
+                  (v) => setState(() => _brand = v),
+                ),
+                _drop(
+                  'Model',
+                  _models,
+                  _model,
+                  (v) => setState(() => _model = v),
+                ),
+              ),
+              const SizedBox(height: 10),
+              _row(
+                _drop(
+                  'Color',
+                  _colors,
+                  _color,
+                  (v) => setState(() => _color = v),
+                ),
+                TextFormField(
+                  controller: _yearCtrl,
+                  readOnly: true,
+                  onTap: _pickYear,
+                  decoration: _dec(
+                    'Year',
+                    suffix: const Icon(
+                      Icons.calendar_today_outlined,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  validator: (v) =>
+                      int.tryParse(v ?? '') == null ? 'Required' : null,
+                ),
+              ),
+            ]),
+
+            _card('Registration Info', [
+              TextFormField(
+                controller: _plateCtrl,
+                decoration: _dec('Plate number'),
+                textCapitalization: TextCapitalization.characters,
+                textInputAction: TextInputAction.next,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Required' : null,
+              ),
+              const SizedBox(height: 10),
+              _row(
+                TextFormField(
+                  controller: _engineCtrl,
+                  decoration: _dec('Engine no.'),
+                  textCapitalization: TextCapitalization.characters,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+                TextFormField(
+                  controller: _chassisCtrl,
+                  decoration: _dec('Chassis no.'),
+                  textCapitalization: TextCapitalization.characters,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                ),
+              ),
+            ]),
+
+            Row(
+              children: [
+                Switch.adaptive(
+                  value: _accepted,
+                  onChanged: (v) => setState(() => _accepted = v),
+                  activeColor: Colors.black,
+                ),
+                const SizedBox(width: 6),
+                const Expanded(
+                  child: Text(
+                    'I confirm these details are accurate',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+
+            SizedBox(
+              height: 50,
+              child: FilledButton(
+                onPressed: () {
+                  if (!_formKey.currentState!.validate()) return;
+                  if (!_accepted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please confirm details first'),
+                      ),
+                    );
+                    return;
+                  }
+                  FocusScope.of(context).unfocus();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Registration submitted ✓')),
+                  );
+                  _formKey.currentState!.validate();
+                  BikeDetails bikeDetails = BikeDetails(
+                    plateNumber: _plateCtrl.text,
+                    engineNo: _engineCtrl.text,
+                    chasisNumber: _chassisCtrl.text,
+                    fullName: _ownerCtrl.text,
+                    cnic: _cnicCtrl.text,
+                    phoneNo: _phoneCtrl.text,
+                  );
+                  bikeDetailsProvider.setBikeDetails(bikeDetails);
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                child: const Text('Submit Registration'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
