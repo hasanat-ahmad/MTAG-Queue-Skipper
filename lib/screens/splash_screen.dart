@@ -62,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen>
                   const Icon(
                     Icons.two_wheeler_rounded,
                     size: 70,
-                    color: AppColors.backgroundDark,
+                    color: AppColors.primary,
                   ),
                   AnimatedBuilder(
                     animation: _scanAnim,
@@ -87,7 +87,7 @@ class _SplashScreenState extends State<SplashScreen>
             const Text(
               "MTag Queue Skipper",
               style: TextStyle(
-                color: AppColors.backgroundDark,
+                color: AppColors.primary,
                 fontSize: 22,
                 fontWeight: FontWeight.w700,
                 fontFamily: AppFonts.primaryFont,
