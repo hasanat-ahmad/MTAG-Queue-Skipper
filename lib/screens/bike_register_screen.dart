@@ -117,21 +117,6 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
     );
   }
 
-  Widget _hintLine(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, top: 6),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontFamily: AppFonts.primaryFont,
-          fontSize: 11,
-          height: 1.35,
-          color: _muted.withValues(alpha: 0.9),
-        ),
-      ),
-    );
-  }
-
   Widget _sectionCard({
     required IconData icon,
     required String title,
