@@ -6,116 +6,129 @@ import 'package:provider/provider.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  Widget buildCard(
-    String title,
-    String subtitle,
-    IconData icon,
-    VoidCallback onTap,
-  ) {
-    return InkWell(
-      onTap: onTap,
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        elevation: 5,
-        child: SizedBox(
-          height: 250,
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.black,
-                  child: Icon(icon, color: Colors.white),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  subtitle,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildRow(Widget left, Widget right) {
-    return Row(
-      children: [
-        Expanded(child: left),
-        const SizedBox(width: 10),
-        Expanded(child: right),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final authProvider = context.read<AuthProvider>();
+    final userName = authProvider.user?.name ?? 'User';
+
+    final items = [
+      _NavItem(
+        title: "Register Bike",
+        subtitle: "Easy and clean process",
+        icon: Icons.electric_bike_outlined,
+        onTap: () => Navigator.pushNamed(context, '/bike-register'),
+      ),
+      _NavItem(
+        title: "My Token",
+        subtitle: "View your queue token",
+        icon: Icons.confirmation_number_outlined,
+        onTap: () {},
+      ),
+      _NavItem(
+        title: "Bike Details",
+        subtitle: "Your bike info",
+        icon: Icons.two_wheeler_outlined,
+        onTap: () => Navigator.pushNamed(context, '/bike-details'),
+      ),
+      _NavItem(
+        title: "Profile",
+        subtitle: "Manage your account",
+        icon: Icons.person_outline_rounded,
+        onTap: () => Navigator.pushNamed(context, '/profile'),
+      ),
+    ];
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text(
-            "MTAG Portal",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              fontFamily: AppFonts.primaryFont,
-            ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: Text(
+          "MTAG",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            fontFamily: AppFonts.primaryFont,
+            color: Colors.black,
+            letterSpacing: 1.5,
           ),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Welcome, ${authProvider.user?.name ?? 'User'}",
-              style: const TextStyle(fontSize: 16),
+              "Hello, $userName 👋",
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
             ),
-            const SizedBox(height: 50),
-
-            buildRow(
-              buildCard(
-                "Register your bike",
-                "Easy and clean process",
-                Icons.electric_bike_outlined,
-                () {
-                  Navigator.pushNamed(context, '/bike-register');
+            const SizedBox(height: 32),
+            Expanded(
+              child: ListView.separated(
+                itemCount: items.length,
+                separatorBuilder: (_, __) =>
+                    const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                itemBuilder: (context, index) {
+                  final item = items[index];
+                  return ListTile(
+                    onTap: item.onTap,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                    leading: Container(
+                      width: 46,
+                      height: 46,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF2F2F2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(item.icon, color: Colors.black, size: 22),
+                    ),
+                    title: Text(
+                      item.title,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
+                    ),
+                    subtitle: Text(
+                      item.subtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.black45,
+                      ),
+                    ),
+                    trailing: const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 14,
+                      color: Colors.black38,
+                    ),
+                  );
                 },
               ),
-              buildCard(
-                "My Token",
-                "View your token",
-                Icons.confirmation_number,
-                () {},
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            buildRow(
-              buildCard("Bike Details", "Your bike details", Icons.access_time, () {Navigator.pushNamed(context, '/bike-details');}),
-              buildCard("Profile", "Profile Details", Icons.person, () {
-                Navigator.pushNamed(context, '/profile');
-              }),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+class _NavItem {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _NavItem({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.onTap,
+  });
 }
