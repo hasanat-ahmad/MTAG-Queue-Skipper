@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mtag_queue_skipper/models/bike_details.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
-import 'package:mtag_queue_skipper/screens/bike_details_screen.dart';
 import 'package:provider/provider.dart';
 
 class BikeRegisterScreen extends StatefulWidget {
