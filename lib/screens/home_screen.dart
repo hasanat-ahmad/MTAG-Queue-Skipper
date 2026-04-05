@@ -108,7 +108,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 10),
 
             buildRow(
-              buildCard("Status", "Track queue", Icons.access_time, () {}),
+              buildCard("Bike Details", "Your bike details", Icons.access_time, () {Navigator.pushNamed(context, '/bike-details');}),
               buildCard("Profile", "Past records", Icons.person, () {
                 Navigator.pushNamed(context, '/profile');
               }),

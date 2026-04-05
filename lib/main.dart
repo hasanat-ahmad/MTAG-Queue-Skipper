@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
+import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
+import 'package:mtag_queue_skipper/screens/bike_details_screen.dart';
 import 'package:mtag_queue_skipper/screens/bike_register_screen.dart';
 import 'package:mtag_queue_skipper/screens/home_screen.dart';
 import 'package:mtag_queue_skipper/screens/login_screen.dart';
@@ -11,6 +13,7 @@ import 'package:provider/provider.dart';
 void main(List<String> args) {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => AuthProvider()),
+    ChangeNotifierProvider(create: (_) => BikeDetailsProvider())
   ], child: const MyApp()));
 }
 
@@ -27,6 +30,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomeScreen(),
         '/profile': (context) => Profile(),
         '/bike-register': (context) => const BikeRegisterScreen(),
+        '/bike-details' : (context) => const BikeDetailsScreen()
       },
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
