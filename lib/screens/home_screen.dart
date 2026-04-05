@@ -93,7 +93,9 @@ class HomeScreen extends StatelessWidget {
                 "Register your bike",
                 "Easy and clean process",
                 Icons.electric_bike_outlined,
-                () {},
+                () {
+                  Navigator.pushNamed(context, '/bike-register');
+                },
               ),
               buildCard(
                 "My Token",

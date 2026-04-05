@@ -3,13 +3,14 @@ import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/screens/home_screen.dart';
 import 'package:mtag_queue_skipper/screens/login_screen.dart';
 import 'package:mtag_queue_skipper/screens/profile.dart';
+import 'package:mtag_queue_skipper/screens/bike_register_screen.dart';
 import 'package:mtag_queue_skipper/screens/register_screen.dart';
 import 'package:mtag_queue_skipper/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
 
 void main(List<String> args) {
   runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create:  (_) => AuthProvider()),
+    ChangeNotifierProvider(create: (_) => AuthProvider()),
   ], child: const MyApp()));
 }
 
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
         '/register': (context) => RegisterScreen(),
         '/home': (context) => HomeScreen(),
         '/profile': (context) => Profile(),
+        '/bike-register': (context) => const BikeRegisterScreen(),
       },
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
