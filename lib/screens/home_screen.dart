@@ -109,7 +109,7 @@ class HomeScreen extends StatelessWidget {
 
             buildRow(
               buildCard("Bike Details", "Your bike details", Icons.access_time, () {Navigator.pushNamed(context, '/bike-details');}),
-              buildCard("Profile", "Past records", Icons.person, () {
+              buildCard("Profile", "Profile Details", Icons.person, () {
                 Navigator.pushNamed(context, '/profile');
               }),
             ),
