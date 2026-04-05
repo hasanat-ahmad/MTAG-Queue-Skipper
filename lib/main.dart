@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
+import 'package:mtag_queue_skipper/screens/bike_register_screen.dart';
 import 'package:mtag_queue_skipper/screens/home_screen.dart';
 import 'package:mtag_queue_skipper/screens/login_screen.dart';
-import 'package:mtag_queue_skipper/screens/profile.dart';
-import 'package:mtag_queue_skipper/screens/bike_register_screen.dart';
+import 'package:mtag_queue_skipper/screens/profile_screen.dart';
 import 'package:mtag_queue_skipper/screens/register_screen.dart';
 import 'package:mtag_queue_skipper/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
