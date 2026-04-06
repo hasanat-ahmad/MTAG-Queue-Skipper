@@ -8,6 +8,7 @@ import 'package:mtag_queue_skipper/screens/login_screen.dart';
 import 'package:mtag_queue_skipper/screens/profile_screen.dart';
 import 'package:mtag_queue_skipper/screens/register_screen.dart';
 import 'package:mtag_queue_skipper/screens/splash_screen.dart';
+import 'package:mtag_queue_skipper/screens/token_status_screen.dart';
 import 'package:provider/provider.dart';
 
 void main(List<String> args) {
@@ -30,7 +31,8 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomeScreen(),
         '/profile': (context) => Profile(),
         '/bike-register': (context) => const BikeRegisterScreen(),
-        '/bike-details' : (context) => const BikeDetailsScreen()
+        '/bike-details' : (context) => const BikeDetailsScreen(),
+        '/token-status': (context) => const TokenStatusScreen(),
       },
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),

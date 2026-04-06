@@ -59,8 +59,9 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
       _engineCtrl,
       _chassisCtrl,
       _yearCtrl,
-    ])
+    ]) {
       c.dispose();
+    }
     super.dispose();
   }
 
@@ -179,8 +180,9 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
       _engineCtrl,
       _chassisCtrl,
       _yearCtrl,
-    ])
+    ]) {
       c.clear();
+    }
     setState(() {
       _brand = _model = _color = null;
       _accepted = false;
@@ -313,7 +315,7 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                 Switch.adaptive(
                   value: _accepted,
                   onChanged: (v) => setState(() => _accepted = v),
-                  activeColor: Colors.black,
+                  activeThumbColor: Colors.black,
                 ),
                 const SizedBox(width: 6),
                 const Expanded(
@@ -353,6 +355,28 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                     phoneNo: _phoneCtrl.text,
                   );
                   bikeDetailsProvider.setBikeDetails(bikeDetails);
+
+                  final now = DateTime.now();
+                  final tokenNumber =
+                      'TKN-${(now.millisecondsSinceEpoch % 10000).toString().padLeft(4, '0')}';
+
+                  bikeDetailsProvider.setTokenData(
+                    tokenNumber: tokenNumber,
+                    tokenStatus: 'Pending Verification',
+                    tokenEstimatedTime: '15-20 minutes',
+                    tokenGeneratedAt: now.toIso8601String(),
+                  );
+
+                  Navigator.pushNamed(
+                    context,
+                    '/token-status',
+                    arguments: {
+                      'tokenNumber': tokenNumber,
+                      'status': 'Pending Verification',
+                      'estimatedTime': '15-20 minutes',
+                      'generatedAt': now.toIso8601String(),
+                    },
+                  );
                 },
                 style: FilledButton.styleFrom(
                   backgroundColor: Colors.black,

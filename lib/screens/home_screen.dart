@@ -22,7 +22,7 @@ class HomeScreen extends StatelessWidget {
         title: "My Token",
         subtitle: "View your queue token",
         icon: Icons.confirmation_number_outlined,
-        onTap: () {},
+        onTap: () => Navigator.pushNamed(context, '/token-status'),
       ),
       _NavItem(
         title: "Bike Details",
