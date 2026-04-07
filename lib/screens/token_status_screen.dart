@@ -148,6 +148,7 @@ class TokenStatusScreen extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: Colors.black),
               onPressed: () {
                 Navigator.pushNamedAndRemoveUntil(
                   context,
@@ -189,7 +190,7 @@ class _InfoRow extends StatelessWidget {
           Flexible(
             child: Text(
               value,
-              textAlign: TextAlign.right,
+              textAlign: TextAlign.left,
               style: const TextStyle(fontWeight: FontWeight.w700),
             ),
           ),
