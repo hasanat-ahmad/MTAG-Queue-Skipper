@@ -47,6 +47,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
+
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -95,11 +97,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide(color: AppColors.error, width: 1),
+                        borderSide: BorderSide(
+                          color: AppColors.error,
+                          width: 1,
+                        ),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide(color: AppColors.error, width: 1),
+                        borderSide: BorderSide(
+                          color: AppColors.error,
+                          width: 1,
+                        ),
                       ),
                     ),
                     validator: (value) {
@@ -132,11 +140,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide(color: AppColors.error, width: 1),
+                        borderSide: BorderSide(
+                          color: AppColors.error,
+                          width: 1,
+                        ),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide(color: AppColors.error, width: 1),
+                        borderSide: BorderSide(
+                          color: AppColors.error,
+                          width: 1,
+                        ),
                       ),
                     ),
                     validator: (value) {
@@ -172,11 +186,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide(color: AppColors.error, width: 1),
+                        borderSide: BorderSide(
+                          color: AppColors.error,
+                          width: 1,
+                        ),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide(color: AppColors.error, width: 1),
+                        borderSide: BorderSide(
+                          color: AppColors.error,
+                          width: 1,
+                        ),
                       ),
                     ),
                     validator: (value) {
@@ -211,11 +231,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide(color: AppColors.error, width: 1),
+                        borderSide: BorderSide(
+                          color: AppColors.error,
+                          width: 1,
+                        ),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide(color: AppColors.error, width: 1),
+                        borderSide: BorderSide(
+                          color: AppColors.error,
+                          width: 1,
+                        ),
                       ),
                     ),
                     validator: (value) {
@@ -265,11 +291,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       errorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide(color: AppColors.error, width: 1),
+                        borderSide: BorderSide(
+                          color: AppColors.error,
+                          width: 1,
+                        ),
                       ),
                       focusedErrorBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide(color: AppColors.error, width: 1),
+                        borderSide: BorderSide(
+                          color: AppColors.error,
+                          width: 1,
+                        ),
                       ),
                     ),
                     validator: (value) {
@@ -294,49 +326,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onPressed: _isSubmitting
                           ? null
                           : () async {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          final authProvider = Provider.of<AuthProvider>(
-                            context,
-                            listen: false,
-                          );
-                          User newUser = User(
-                            name: _nameController.text,
-                            cnic: _cnicController.text,
-                            phoneNumber: _phoneController.text,
-                            email: _emailController.text,
-                            password: _passwordController.text,
-                          );
-                          setState(() {
-                            _isSubmitting = true;
-                          });
-                          final saved = await authProvider.register(newUser);
-                          if (mounted) {
-                            setState(() {
-                              _isSubmitting = false;
-                            });
-                          }
-                          if (!context.mounted) return;
-                          if (!saved) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Registered, but local session save failed.',
-                                ),
-                              ),
-                            );
-                          } else {
-                            await context.read<BikeDetailsProvider>().loadForUser(
-                              newUser.email,
-                            );
-                          }
-                          if (!context.mounted) return;
-                          Navigator.pushNamed(context, '/home');
-                        }
-                      },
+                              if (_formKey.currentState!.validate()) {
+                                _formKey.currentState!.save();
+                                final authProvider = Provider.of<AuthProvider>(
+                                  context,
+                                  listen: false,
+                                );
+                                User newUser = User(
+                                  name: _nameController.text,
+                                  cnic: _cnicController.text,
+                                  phoneNumber: _phoneController.text,
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                );
+                                setState(() {
+                                  _isSubmitting = true;
+                                });
+                                final saved = await authProvider.register(
+                                  newUser,
+                                );
+                                if (mounted) {
+                                  setState(() {
+                                    _isSubmitting = false;
+                                  });
+                                }
+                                if (!context.mounted) return;
+                                if (!saved) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Registered, but local session save failed.',
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  await context
+                                      .read<BikeDetailsProvider>()
+                                      .loadForUser(newUser.email);
+                                }
+                                if (!context.mounted) return;
+                                Navigator.pushNamed(context, '/home');
+                              }
+                            },
                       child: const Text(
                         "Register",
-                        style: TextStyle(color: AppColors.surface, fontSize: 18),
+                        style: TextStyle(
+                          color: AppColors.surface,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                   ),
