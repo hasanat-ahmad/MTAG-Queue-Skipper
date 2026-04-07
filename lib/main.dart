@@ -19,6 +19,7 @@ void main(List<String> args) {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => BikeDetailsProvider()),
       ],
+
       child: const MyApp(),
     ),
   );
