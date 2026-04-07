@@ -72,7 +72,7 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               child: ListView.separated(
                 itemCount: items.length,
-                separatorBuilder: (_, __) =>
+                separatorBuilder: (context, index) =>
                     const Divider(height: 1, color: Color(0xFFEEEEEE)),
                 itemBuilder: (context, index) {
                   final item = items[index];

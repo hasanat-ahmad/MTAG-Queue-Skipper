@@ -34,13 +34,16 @@ class TokenStatusScreen extends StatelessWidget {
         <String, dynamic>{};
 
     final routeToken = args['tokenNumber'] as String?;
-    final hasTokenFromRoute = routeToken != null && routeToken.trim().isNotEmpty;
+    final hasTokenFromRoute =
+        routeToken != null && routeToken.trim().isNotEmpty;
     final hasToken = hasTokenFromRoute || bikeDetailsProvider.hasToken;
 
     final tokenNumber =
         routeToken ?? bikeDetailsProvider.tokenNumber ?? 'TKN-0000';
     final status =
-        args['status'] as String? ?? bikeDetailsProvider.tokenStatus ?? 'Pending';
+        args['status'] as String? ??
+        bikeDetailsProvider.tokenStatus ??
+        'Pending';
     final estimatedTime =
         args['estimatedTime'] as String? ??
         bikeDetailsProvider.tokenEstimatedTime ??
@@ -55,7 +58,12 @@ class TokenStatusScreen extends StatelessWidget {
 
     if (!hasToken) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Token Status')),
+        backgroundColor: const Color(0xFFF5F5F5),
+
+        appBar: AppBar(
+          title: const Text('Token Status'),
+          backgroundColor: const Color(0xFFF5F5F5),
+        ),
         body: SafeArea(
           child: Center(
             child: Padding(
@@ -96,7 +104,12 @@ class TokenStatusScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Token Status')),
+      backgroundColor: const Color(0xFFF5F5F5),
+
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF5F5F5),
+        title: const Text('Token Status'),
+      ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),

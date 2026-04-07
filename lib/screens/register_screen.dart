@@ -4,6 +4,7 @@ import 'package:mtag_queue_skipper/constants/app_colors.dart';
 import 'package:mtag_queue_skipper/constants/app_fonts.dart';
 import 'package:mtag_queue_skipper/models/user.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
+import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -21,6 +22,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _cnicController = TextEditingController();
   final _phoneController = TextEditingController();
   bool _isPasswordHidden = true;
+  bool _isSubmitting = false;
 
   final cnicMaskFormatter = MaskTextInputFormatter(
     mask: 'xxxxx-xxxxxxx-x',
@@ -44,7 +46,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -290,17 +291,46 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         shadowColor: AppColors.primary.withAlpha(100),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      onPressed: () {
+                      onPressed: _isSubmitting
+                          ? null
+                          : () async {
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-                          User user = User(
+                          final authProvider = Provider.of<AuthProvider>(
+                            context,
+                            listen: false,
+                          );
+                          User newUser = User(
                             name: _nameController.text,
                             cnic: _cnicController.text,
                             phoneNumber: _phoneController.text,
                             email: _emailController.text,
                             password: _passwordController.text,
                           );
-                          authProvider.setUser(user);
+                          setState(() {
+                            _isSubmitting = true;
+                          });
+                          final saved = await authProvider.register(newUser);
+                          if (mounted) {
+                            setState(() {
+                              _isSubmitting = false;
+                            });
+                          }
+                          if (!context.mounted) return;
+                          if (!saved) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Registered, but local session save failed.',
+                                ),
+                              ),
+                            );
+                          } else {
+                            await context.read<BikeDetailsProvider>().loadForUser(
+                              newUser.email,
+                            );
+                          }
+                          if (!context.mounted) return;
                           Navigator.pushNamed(context, '/home');
                         }
                       },
