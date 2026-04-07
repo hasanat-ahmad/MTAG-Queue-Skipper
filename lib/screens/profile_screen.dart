@@ -8,7 +8,6 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
-    
 
     final initials = auth.user?.name
         .trim()
@@ -19,14 +18,15 @@ class Profile extends StatelessWidget {
         .join();
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
+
       appBar: AppBar(
+        backgroundColor: const Color(0xFFF5F5F5),
+
         elevation: 0,
         title: const Text(
           'Profile',
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
         ),
       ),
       body: SafeArea(
@@ -42,7 +42,7 @@ class Profile extends StatelessWidget {
                 height: 96,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.black
+                  color: Colors.black,
                 ),
                 child: Center(
                   child: Text(
@@ -190,11 +190,6 @@ class _InfoRow extends StatelessWidget {
 class _Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Divider(
-      height: 10,
-      thickness: 1,
-      color: Colors.transparent,
-    );
+    return const Divider(height: 10, thickness: 1, color: Colors.transparent);
   }
 }
-

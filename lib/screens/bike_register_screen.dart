@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mtag_queue_skipper/models/bike_details.dart';
+import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -331,7 +332,7 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
             SizedBox(
               height: 50,
               child: FilledButton(
-                onPressed: () {
+                onPressed: () async {
                   if (!_formKey.currentState!.validate()) return;
                   if (!_accepted) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -366,6 +367,16 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                     tokenEstimatedTime: '15-20 minutes',
                     tokenGeneratedAt: now.toIso8601String(),
                   );
+
+                  final currentUserEmail = context
+                      .read<AuthProvider>()
+                      .user
+                      ?.email;
+                  if (currentUserEmail != null &&
+                      currentUserEmail.trim().isNotEmpty) {
+                    await bikeDetailsProvider.saveForUser(currentUserEmail);
+                  }
+                  if (!context.mounted) return;
 
                   Navigator.pushNamed(
                     context,

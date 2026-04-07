@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/constants/app_fonts.dart';
 import 'package:mtag_queue_skipper/constants/app_colors.dart';
+import 'package:mtag_queue_skipper/providers/auth_provider.dart';
+import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -139,12 +142,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.length < 8) {
-                        return 'Password must be at least 8 characters long';
-                      }
-                      return null;
-                    },
                   ),
                   const SizedBox(height: 50),
                   SizedBox(
@@ -158,21 +155,50 @@ class _LoginScreenState extends State<LoginScreen> {
                         shadowColor: AppColors.primary.withAlpha(100),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          Navigator.pushNamed(context, '/home');
+                          _formKey.currentState!.save();
+                          final authProvider = Provider.of<AuthProvider>(
+                            context,
+                            listen: false,
+                          );
+                          bool success = await authProvider.login(
+                            _emailController.text,
+                            _passwordController.text,
+                          );
+                          if (!context.mounted) return;
+                          if (success) {
+                            final userEmail = authProvider.user?.email;
+                            if (userEmail != null &&
+                                userEmail.trim().isNotEmpty) {
+                              await context
+                                  .read<BikeDetailsProvider>()
+                                  .loadForUser(userEmail);
+                            }
+                            if (!context.mounted) return;
+                            Navigator.pushNamed(context, '/home');
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Invalid email or password'),
+                              ),
+                            );
+                          }
                         }
                       },
                       child: const Text(
                         "Login",
-                        style: TextStyle(color: AppColors.surface, fontSize: 18),
+                        style: TextStyle(
+                          color: AppColors.surface,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 25),
                   TextButton(
-                    onPressed: () => {
-                      Navigator.pushNamed(context, '/register')
+                    onPressed: () async {
+                      Navigator.pushNamed(context, '/register');
                     },
                     child: const Text(
                       "Dont have an account? Register here",

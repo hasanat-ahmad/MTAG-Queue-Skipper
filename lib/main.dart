@@ -12,10 +12,16 @@ import 'package:mtag_queue_skipper/screens/token_status_screen.dart';
 import 'package:provider/provider.dart';
 
 void main(List<String> args) {
-  runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (_) => AuthProvider()),
-    ChangeNotifierProvider(create: (_) => BikeDetailsProvider())
-  ], child: const MyApp()));
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => BikeDetailsProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -31,7 +37,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomeScreen(),
         '/profile': (context) => Profile(),
         '/bike-register': (context) => const BikeRegisterScreen(),
-        '/bike-details' : (context) => const BikeDetailsScreen(),
+        '/bike-details': (context) => const BikeDetailsScreen(),
         '/token-status': (context) => const TokenStatusScreen(),
       },
       debugShowCheckedModeBanner: false,

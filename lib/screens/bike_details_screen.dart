@@ -41,7 +41,7 @@ class BikeDetailsScreen extends StatelessWidget {
       );
     }
 
-    Widget _tile(String label, String value, IconData icon) => Padding(
+    Widget tile(String label, String value, IconData icon) => Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
@@ -135,9 +135,9 @@ class BikeDetailsScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                _tile('Full Name', bike.fullName, Icons.person_outline),
-                _tile('Phone', bike.phoneNo, Icons.phone_outlined),
-                _tile('CNIC', bike.cnic, Icons.badge_outlined),
+                tile('Full Name', bike.fullName, Icons.person_outline),
+                tile('Phone', bike.phoneNo, Icons.phone_outlined),
+                tile('CNIC', bike.cnic, Icons.badge_outlined),
               ],
             ),
           ),
@@ -151,9 +151,9 @@ class BikeDetailsScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                _tile('Plate Number', bike.plateNumber, Icons.pin_outlined),
-                _tile('Engine No.', bike.engineNo, Icons.settings_outlined),
-                _tile('Chassis No.', bike.chasisNumber, Icons.numbers_outlined),
+                tile('Plate Number', bike.plateNumber, Icons.pin_outlined),
+                tile('Engine No.', bike.engineNo, Icons.settings_outlined),
+                tile('Chassis No.', bike.chasisNumber, Icons.numbers_outlined),
               ],
             ),
           ),

@@ -4,8 +4,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:mtag_queue_skipper/models/bike_details.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BikeDetailsProvider with ChangeNotifier {
+  static const String _bikeDataPrefix = 'bike_data_';
   BikeDetails? bikeDetails;
   String? tokenNumber;
   String? tokenStatus;
@@ -39,6 +41,51 @@ class BikeDetailsProvider with ChangeNotifier {
   }
 
   bool get hasToken => tokenNumber != null && tokenNumber!.isNotEmpty;
+
+  String _storageKeyForEmail(String email) =>
+      '$_bikeDataPrefix${email.trim().toLowerCase()}';
+
+  Future<bool> saveForUser(String email) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = _storageKeyForEmail(email);
+      return await prefs.setString(key, toJson());
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<void> loadForUser(String email) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = _storageKeyForEmail(email);
+      final raw = prefs.getString(key);
+      if (raw == null || raw.trim().isEmpty) {
+        bikeDetails = null;
+        tokenNumber = null;
+        tokenStatus = null;
+        tokenEstimatedTime = null;
+        tokenGeneratedAt = null;
+        notifyListeners();
+        return;
+      }
+
+      final loaded = BikeDetailsProvider.fromJson(raw);
+      bikeDetails = loaded.bikeDetails;
+      tokenNumber = loaded.tokenNumber;
+      tokenStatus = loaded.tokenStatus;
+      tokenEstimatedTime = loaded.tokenEstimatedTime;
+      tokenGeneratedAt = loaded.tokenGeneratedAt;
+      notifyListeners();
+    } catch (_) {
+      bikeDetails = null;
+      tokenNumber = null;
+      tokenStatus = null;
+      tokenEstimatedTime = null;
+      tokenGeneratedAt = null;
+      notifyListeners();
+    }
+  }
 
   BikeDetailsProvider copyWith({
     BikeDetails? bikeDetails,
