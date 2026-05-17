@@ -9,13 +9,20 @@ class Profile extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
 
-    final initials = auth.user?.name
+    final user = auth.user;
+    final initials = user?.name
         .trim()
         .split(' ')
         .where((w) => w.isNotEmpty)
         .take(2)
         .map((w) => w[0].toUpperCase())
         .join();
+
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: Text('Not signed in')),
+      );
+    }
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
@@ -61,7 +68,7 @@ class Profile extends StatelessWidget {
 
               // Name
               Text(
-                auth.user!.name,
+                user.name,
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
@@ -71,7 +78,7 @@ class Profile extends StatelessWidget {
               const SizedBox(height: 4),
 
               Text(
-                auth.user!.email,
+                user.email,
                 style: const TextStyle(
                   color: Color(0xFF8A8A9A),
                   letterSpacing: 0.2,
@@ -87,23 +94,30 @@ class Profile extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _InfoRow(
-                      icon: Icons.badge_outlined,
-                      label: 'CNIC',
-                      value: auth.user!.cnic,
-                      isFirst: true,
-                    ),
-                    _Divider(),
-                    _InfoRow(
-                      icon: Icons.phone_outlined,
-                      label: 'Phone',
-                      value: auth.user!.phoneNumber,
-                    ),
-                    _Divider(),
+                    if (user.cnic.trim().isNotEmpty) ...[
+                      _InfoRow(
+                        icon: Icons.badge_outlined,
+                        label: 'CNIC',
+                        value: user.cnic,
+                        isFirst: true,
+                      ),
+                      _Divider(),
+                    ],
+                    if (user.phoneNumber.trim().isNotEmpty) ...[
+                      _InfoRow(
+                        icon: Icons.phone_outlined,
+                        label: 'Phone',
+                        value: user.phoneNumber,
+                        isFirst: user.cnic.trim().isEmpty,
+                      ),
+                      _Divider(),
+                    ],
                     _InfoRow(
                       icon: Icons.email_outlined,
                       label: 'Email',
-                      value: auth.user!.email,
+                      value: user.email,
+                      isFirst: user.cnic.trim().isEmpty &&
+                          user.phoneNumber.trim().isEmpty,
                       isLast: true,
                     ),
                     SizedBox(height: 70),
@@ -119,9 +133,14 @@ class Profile extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        onPressed: () {
-                          // auth.logout();
-                          Navigator.pushNamed(context, '/login');
+                        onPressed: () async {
+                          await auth.logout();
+                          if (!context.mounted) return;
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/login',
+                            (_) => false,
+                          );
                         },
                         child: const Text(
                           'Logout',

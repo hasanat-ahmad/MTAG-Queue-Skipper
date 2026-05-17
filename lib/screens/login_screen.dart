@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mtag_queue_skipper/constants/app_fonts.dart';
 import 'package:mtag_queue_skipper/constants/app_colors.dart';
+import 'package:mtag_queue_skipper/constants/app_fonts.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordHidden = true;
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -25,11 +26,48 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  Future<void> _handleAuthResult(AuthResult result, {String? email}) async {
+    if (!mounted) return;
+
+    if (!result.success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result.errorMessage ?? 'Login failed.')),
+      );
+      return;
+    }
+
+    final userEmail = email ?? context.read<AuthProvider>().user?.email;
+    if (userEmail != null && userEmail.trim().isNotEmpty) {
+      await context.read<BikeDetailsProvider>().loadForUser(userEmail);
+    }
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(context, '/home', (_) => false);
+  }
+
+  Future<void> _loginWithEmail() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isSubmitting = true);
+    final result = await context.read<AuthProvider>().signInWithEmail(
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+    if (mounted) setState(() => _isSubmitting = false);
+    await _handleAuthResult(result, email: _emailController.text);
+  }
+
+  Future<void> _loginWithGoogle() async {
+    setState(() => _isSubmitting = true);
+    final auth = context.read<AuthProvider>();
+    final result = await auth.signInWithGoogle();
+    if (mounted) setState(() => _isSubmitting = false);
+    await _handleAuthResult(result, email: auth.user?.email);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -42,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const SizedBox(height: 45),
                   const Text(
-                    "Login",
+                    'Login',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w500,
@@ -52,99 +90,41 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 80),
                   TextFormField(
                     controller: _emailController,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.email),
-                      filled: true,
-                      hintText: "Enter your email",
-                      errorStyle: const TextStyle(color: Colors.black),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(100),
-                        borderSide: const BorderSide(
-                          width: 0,
-                          color: AppColors.disabled,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(100),
-                        borderSide: const BorderSide(width: 0),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide(
-                          color: AppColors.error,
-                          width: 1,
-                        ),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide(
-                          color: AppColors.error,
-                          width: 1,
-                        ),
-                      ),
+                    keyboardType: TextInputType.emailAddress,
+                    autofillHints: const [AutofillHints.email],
+                    decoration: _inputDecoration(
+                      hint: 'Enter your email',
+                      icon: Icons.email,
                     ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Email is required';
-                      }
-                      final RegExp emailRegex = RegExp(
-                        r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
-                      );
-                      if (!emailRegex.hasMatch(value)) {
-                        return 'Enter a valid email address';
-                      }
-                      return null;
-                    },
+                    validator: _validateEmail,
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _isPasswordHidden,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.password),
-                      suffixIcon: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _isPasswordHidden = !_isPasswordHidden;
-                          });
-                        },
+                    autofillHints: const [AutofillHints.password],
+                    decoration: _inputDecoration(
+                      hint: 'Enter password',
+                      icon: Icons.lock,
+                      suffix: GestureDetector(
+                        onTap: () => setState(
+                          () => _isPasswordHidden = !_isPasswordHidden,
+                        ),
                         child: Icon(
                           _isPasswordHidden
                               ? Icons.visibility_off
                               : Icons.visibility,
                         ),
                       ),
-                      filled: true,
-                      hintText: "Enter Password",
-                      errorStyle: const TextStyle(color: Colors.black),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(100),
-                        borderSide: const BorderSide(
-                          width: 0,
-                          color: AppColors.disabled,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(100),
-                        borderSide: const BorderSide(width: 1),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide(
-                          color: AppColors.error,
-                          width: 1,
-                        ),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(100),
-                        borderSide: BorderSide(
-                          color: AppColors.error,
-                          width: 1,
-                        ),
-                      ),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Password is required';
+                      }
+                      return null;
+                    },
                   ),
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 40),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -153,56 +133,69 @@ class _LoginScreenState extends State<LoginScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(100),
                         ),
-                        shadowColor: AppColors.primary.withAlpha(100),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          final authProvider = Provider.of<AuthProvider>(
-                            context,
-                            listen: false,
-                          );
-                          bool success = await authProvider.login(
-                            _emailController.text,
-                            _passwordController.text,
-                          );
-                          if (!context.mounted) return;
-                          if (success) {
-                            final userEmail = authProvider.user?.email;
-                            if (userEmail != null &&
-                                userEmail.trim().isNotEmpty) {
-                              await context
-                                  .read<BikeDetailsProvider>()
-                                  .loadForUser(userEmail);
-                            }
-                            if (!context.mounted) return;
-                            Navigator.pushNamed(context, '/home');
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Invalid email or password'),
+                      onPressed: _isSubmitting ? null : _loginWithEmail,
+                      child: _isSubmitting
+                          ? const SizedBox(
+                              height: 22,
+                              width: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.surface,
                               ),
-                            );
-                          }
-                        }
-                      },
-                      child: const Text(
-                        "Login",
+                            )
+                          : const Text(
+                              'Login',
+                              style: TextStyle(
+                                color: AppColors.surface,
+                                fontSize: 18,
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(child: Divider(color: Colors.grey.shade400)),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        child: Text('or'),
+                      ),
+                      Expanded(child: Divider(color: Colors.grey.shade400)),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: AppColors.disabled),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      onPressed: _isSubmitting ? null : _loginWithGoogle,
+                      icon: const Icon(Icons.g_mobiledata, size: 28),
+                      label: const Text(
+                        'Continue with Google',
                         style: TextStyle(
-                          color: AppColors.surface,
-                          fontSize: 18,
+                          color: AppColors.backgroundDark,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 25),
                   TextButton(
-                    onPressed: () async {
-                      Navigator.pushNamed(context, '/register');
-                    },
+                    onPressed: _isSubmitting
+                        ? null
+                        : () => Navigator.pushNamed(context, '/register'),
                     child: const Text(
-                      "Dont have an account? Register here",
+                      "Don't have an account? Sign up",
                       style: TextStyle(
                         fontFamily: AppFonts.primaryFont,
                         color: AppColors.backgroundDark,
@@ -217,5 +210,50 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  InputDecoration _inputDecoration({
+    required String hint,
+    required IconData icon,
+    Widget? suffix,
+  }) {
+    return InputDecoration(
+      prefixIcon: Icon(icon),
+      suffixIcon: suffix,
+      filled: true,
+      hintText: hint,
+      errorStyle: const TextStyle(color: AppColors.error),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(100),
+        borderSide: const BorderSide(width: 0, color: AppColors.disabled),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(100),
+        borderSide: const BorderSide(width: 1),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(100),
+        borderSide: const BorderSide(color: AppColors.error, width: 1),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(100),
+        borderSide: const BorderSide(color: AppColors.error, width: 1),
+      ),
+    );
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Email is required';
+    }
+    final emailRegex = RegExp(
+      r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@'
+      r'((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|'
+      r'(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
+    );
+    if (!emailRegex.hasMatch(value.trim())) {
+      return 'Enter a valid email address';
+    }
+    return null;
   }
 }

@@ -15,6 +15,18 @@ import 'package:flutter/foundation.dart'
 /// );
 /// ```
 class DefaultFirebaseOptions {
+  /// Web OAuth client ID — required for Firebase Google Sign-In on Android.
+  static const String googleWebClientId =
+      '828546254721-4ift6ifbjdcv10bt3lt5uvn1e9d9r19p.apps.googleusercontent.com';
+
+  /// Debug SHA-1 for this machine — add in Firebase Console → Android app → fingerprints.
+  static const String androidDebugSha1 =
+      '13:F9:28:16:FD:0F:88:8B:23:55:D6:82:46:4B:A7:97:14:0F:65:78';
+
+  /// iOS OAuth client ID from Firebase / Google Cloud.
+  static const String googleIosClientId =
+      '828546254721-bdb4fju79irp14cvbc2oto7mdnl1ga3f.apps.googleusercontent.com';
+
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
       return web;
