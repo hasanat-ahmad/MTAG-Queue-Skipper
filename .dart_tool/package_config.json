@@ -32,6 +32,24 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "cloud_firestore",
+      "rootUri": "file:///Users/sahibzadahasanatahmad/.pub-cache/hosted/pub.dev/cloud_firestore-6.4.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
+      "name": "cloud_firestore_platform_interface",
+      "rootUri": "file:///Users/sahibzadahasanatahmad/.pub-cache/hosted/pub.dev/cloud_firestore_platform_interface-8.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
+      "name": "cloud_firestore_web",
+      "rootUri": "file:///Users/sahibzadahasanatahmad/.pub-cache/hosted/pub.dev/cloud_firestore_web-5.4.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
       "name": "collection",
       "rootUri": "file:///Users/sahibzadahasanatahmad/.pub-cache/hosted/pub.dev/collection-1.19.1",
       "packageUri": "lib/",

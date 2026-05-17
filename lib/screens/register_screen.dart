@@ -36,8 +36,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    if (email != null && email.trim().isNotEmpty) {
-      await context.read<BikeDetailsProvider>().loadForUser(email);
+    final auth = context.read<AuthProvider>();
+    final bikeProvider = context.read<BikeDetailsProvider>();
+    final uid = auth.user?.uid;
+    if (uid != null) {
+      await auth.loadUserProfileFromFirestore();
+      await bikeProvider.loadForUser(uid);
     }
     if (!mounted) return;
     Navigator.pushNamedAndRemoveUntil(context, '/home', (_) => false);

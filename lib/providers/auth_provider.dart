@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mtag_queue_skipper/firebase_options.dart';
 import 'package:mtag_queue_skipper/models/user.dart';
+import 'package:mtag_queue_skipper/services/firestore_service.dart';
 
 class AuthResult {
   final bool success;
@@ -15,8 +16,15 @@ class AuthResult {
 }
 
 class AuthProvider with ChangeNotifier {
+  AuthProvider({FirestoreService? firestoreService})
+      : _firestoreService = firestoreService ?? FirestoreService() {
+    _user = _mapFirebaseUser(_firebaseAuth.currentUser);
+    _firebaseAuth.authStateChanges().listen(_onAuthStateChanged);
+  }
+
   final firebase_auth.FirebaseAuth _firebaseAuth =
       firebase_auth.FirebaseAuth.instance;
+  final FirestoreService _firestoreService;
 
   late final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: const ['email', 'profile'],
@@ -40,17 +48,118 @@ class AuthProvider with ChangeNotifier {
   User? get user => _user;
   firebase_auth.User? get firebaseUser => _firebaseAuth.currentUser;
 
-  AuthProvider() {
-    _user = _mapFirebaseUser(_firebaseAuth.currentUser);
-    _firebaseAuth.authStateChanges().listen((firebaseUser) {
-      _user = _mapFirebaseUser(firebaseUser);
+  void _onAuthStateChanged(firebase_auth.User? firebaseUser) {
+    if (firebaseUser == null) {
+      _user = null;
       notifyListeners();
-    });
+      return;
+    }
+
+    _user = _mergeWithExistingProfile(User.fromFirebase(firebaseUser));
+    notifyListeners();
+    loadUserProfileFromFirestore();
+  }
+
+  User _mergeWithExistingProfile(User mapped) {
+    final existing = _user;
+    if (existing == null || existing.uid != mapped.uid) return mapped;
+
+    return mapped.copyWith(
+      name: existing.name.trim().isNotEmpty ? existing.name : mapped.name,
+      cnic: existing.cnic,
+      phoneNumber: existing.phoneNumber,
+    );
   }
 
   User? _mapFirebaseUser(firebase_auth.User? firebaseUser) {
     if (firebaseUser == null) return null;
-    return User.fromFirebase(firebaseUser);
+    return _mergeWithExistingProfile(User.fromFirebase(firebaseUser));
+  }
+
+  /// Loads owner profile from Firestore for the signed-in user.
+  Future<void> loadUserProfileFromFirestore() async {
+    final uid = _firebaseAuth.currentUser?.uid;
+    if (uid == null || _user == null) return;
+
+    try {
+      final data = await _firestoreService.getUserProfile(uid);
+      if (data == null || _user?.uid != uid) return;
+
+      _user = _user!.copyWith(
+        name: (data['name'] as String?)?.trim().isNotEmpty == true
+            ? data['name'] as String
+            : _user!.name,
+        cnic: data['cnic'] as String? ?? _user!.cnic,
+        phoneNumber: data['phoneNumber'] as String? ?? _user!.phoneNumber,
+        email: data['email'] as String? ?? _user!.email,
+      );
+      notifyListeners();
+    } on FirestoreException catch (e) {
+      debugPrint('Failed to load user profile from Firestore: $e');
+    } catch (e) {
+      debugPrint('Failed to load user profile from Firestore: $e');
+    }
+  }
+
+  /// Updates owner fields in memory only (e.g. after a combined Firestore save).
+  void applyLocalOwnerProfile({
+    required String name,
+    required String cnic,
+    required String phoneNumber,
+  }) {
+    if (_user == null) return;
+    _user = _user!.copyWith(
+      name: name.trim(),
+      cnic: cnic.trim(),
+      phoneNumber: phoneNumber.trim(),
+    );
+    notifyListeners();
+  }
+
+  /// Saves owner details from bike registration to profile and Firestore.
+  Future<void> updateOwnerProfile({
+    required String name,
+    required String cnic,
+    required String phoneNumber,
+  }) async {
+    if (_user == null) return;
+
+    final trimmedName = name.trim();
+    final trimmedCnic = cnic.trim();
+    final trimmedPhone = phoneNumber.trim();
+
+    _user = _user!.copyWith(
+      name: trimmedName,
+      cnic: trimmedCnic,
+      phoneNumber: trimmedPhone,
+    );
+    notifyListeners();
+
+    final firebaseUser = _firebaseAuth.currentUser;
+    final uid = firebaseUser?.uid;
+    if (uid != null) {
+      try {
+        await _firestoreService.saveUserProfile(
+          uid: uid,
+          email: _user!.email,
+          name: trimmedName,
+          cnic: trimmedCnic,
+          phoneNumber: trimmedPhone,
+        );
+      } on FirestoreException catch (e) {
+        debugPrint('Failed to save user profile to Firestore: $e');
+      } catch (e) {
+        debugPrint('Failed to save user profile to Firestore: $e');
+      }
+    }
+
+    if (firebaseUser != null && trimmedName.isNotEmpty) {
+      try {
+        await firebaseUser.updateDisplayName(trimmedName);
+      } catch (e) {
+        debugPrint('Failed to update Firebase display name: $e');
+      }
+    }
   }
 
   String _authErrorMessage(firebase_auth.FirebaseAuthException e) {
@@ -164,6 +273,7 @@ class AuthProvider with ChangeNotifier {
   Future<void> loadUser() async {
     _user = _mapFirebaseUser(_firebaseAuth.currentUser);
     notifyListeners();
+    await loadUserProfileFromFirestore();
   }
 
   bool _isAndroidDeveloperError(PlatformException e) {

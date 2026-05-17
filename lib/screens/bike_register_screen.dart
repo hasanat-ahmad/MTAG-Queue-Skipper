@@ -20,8 +20,12 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
   final _engineCtrl = TextEditingController();
   final _chassisCtrl = TextEditingController();
   final _yearCtrl = TextEditingController();
-  String? _brand, _model, _color;
+  String? _brand, _color;
   bool _accepted = false;
+  bool _ownerFieldsPrefilled = false;
+
+  static const int _minYear = 1980;
+  static const int _maxYear = 2026;
 
   static const _brands = [
     'Honda',
@@ -29,15 +33,6 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
     'Suzuki',
     'United',
     'Road Prince',
-    'Other',
-  ];
-  static const _models = [
-    'CD 70',
-    'CD 100',
-    'CD 125',
-    'Pridor',
-    'YBR 125',
-    'GS 150',
     'Other',
   ];
   static const _colors = [
@@ -49,6 +44,29 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
     'Green',
     'Other',
   ];
+
+  void _prefillOwnerFromProfile(AuthProvider auth) {
+    if (_ownerFieldsPrefilled) return;
+    final user = auth.user;
+    if (user == null) return;
+
+    if (_ownerCtrl.text.trim().isEmpty && user.name.trim().isNotEmpty) {
+      _ownerCtrl.text = user.name;
+    }
+    if (_phoneCtrl.text.trim().isEmpty && user.phoneNumber.trim().isNotEmpty) {
+      _phoneCtrl.text = user.phoneNumber;
+    }
+    if (_cnicCtrl.text.trim().isEmpty && user.cnic.trim().isNotEmpty) {
+      _cnicCtrl.text = user.cnic;
+    }
+    _ownerFieldsPrefilled = true;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _prefillOwnerFromProfile(context.read<AuthProvider>());
+  }
 
   @override
   void dispose() {
@@ -149,8 +167,9 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
   );
 
   Future<void> _pickYear() async {
-    final now = DateTime.now().year;
-    final sel = (int.tryParse(_yearCtrl.text) ?? now).clamp(1980, now + 1);
+    final currentYear = DateTime.now().year;
+    final defaultYear = int.tryParse(_yearCtrl.text) ?? currentYear;
+    final sel = defaultYear.clamp(_minYear, _maxYear);
     final y = await showDialog<int>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -160,8 +179,8 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
           width: double.maxFinite,
           height: 260,
           child: YearPicker(
-            firstDate: DateTime(1980),
-            lastDate: DateTime(now + 1),
+            firstDate: DateTime(_minYear),
+            lastDate: DateTime(_maxYear),
             selectedDate: DateTime(sel),
             onChanged: (d) => Navigator.pop(ctx, d.year),
           ),
@@ -185,14 +204,14 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
       c.clear();
     }
     setState(() {
-      _brand = _model = _color = null;
+      _brand = _color = null;
       _accepted = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final bikeDetailsProvider = Provider.of<BikeDetailsProvider>(context);
+    final bikeDetailsProvider = context.watch<BikeDetailsProvider>();
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
@@ -243,19 +262,11 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
             ]),
 
             _card('Bike Details', [
-              _row(
-                _drop(
-                  'Brand',
-                  _brands,
-                  _brand,
-                  (v) => setState(() => _brand = v),
-                ),
-                _drop(
-                  'Model',
-                  _models,
-                  _model,
-                  (v) => setState(() => _model = v),
-                ),
+              _drop(
+                'Brand',
+                _brands,
+                _brand,
+                (v) => setState(() => _brand = v),
               ),
               const SizedBox(height: 10),
               _row(
@@ -277,8 +288,14 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                       color: Colors.grey,
                     ),
                   ),
-                  validator: (v) =>
-                      int.tryParse(v ?? '') == null ? 'Required' : null,
+                  validator: (v) {
+                    final year = int.tryParse(v ?? '');
+                    if (year == null) return 'Required';
+                    if (year < _minYear || year > _maxYear) {
+                      return 'Enter a year between $_minYear and $_maxYear';
+                    }
+                    return null;
+                  },
                 ),
               ),
             ]),
@@ -346,14 +363,21 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Registration submitted ✓')),
                   );
-                  _formKey.currentState!.validate();
-                  BikeDetails bikeDetails = BikeDetails(
-                    plateNumber: _plateCtrl.text,
-                    engineNo: _engineCtrl.text,
-                    chasisNumber: _chassisCtrl.text,
-                    fullName: _ownerCtrl.text,
-                    cnic: _cnicCtrl.text,
-                    phoneNo: _phoneCtrl.text,
+                  final auth = context.read<AuthProvider>();
+                  final ownerName = _ownerCtrl.text.trim();
+                  final ownerCnic = _cnicCtrl.text.trim();
+                  final ownerPhone = _phoneCtrl.text.trim();
+
+                  final bikeDetails = BikeDetails(
+                    plateNumber: _plateCtrl.text.trim(),
+                    engineNo: _engineCtrl.text.trim(),
+                    chasisNumber: _chassisCtrl.text.trim(),
+                    fullName: ownerName,
+                    cnic: ownerCnic,
+                    phoneNo: ownerPhone,
+                    brand: _brand ?? '',
+                    color: _color ?? '',
+                    year: _yearCtrl.text.trim(),
                   );
                   bikeDetailsProvider.setBikeDetails(bikeDetails);
 
@@ -368,13 +392,35 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                     tokenGeneratedAt: now.toIso8601String(),
                   );
 
-                  final currentUserEmail = context
-                      .read<AuthProvider>()
-                      .user
-                      ?.email;
-                  if (currentUserEmail != null &&
-                      currentUserEmail.trim().isNotEmpty) {
-                    await bikeDetailsProvider.saveForUser(currentUserEmail);
+                  final user = auth.user;
+                  final uid = user?.uid;
+                  if (uid != null && user != null) {
+                    final saved = await bikeDetailsProvider.saveAllForUser(
+                      uid: uid,
+                      email: user.email,
+                      name: ownerName,
+                      cnic: ownerCnic,
+                      phoneNumber: ownerPhone,
+                    );
+                    if (!context.mounted) return;
+                    if (!saved) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            bikeDetailsProvider.lastSaveError ??
+                                'Cloud sync failed. Check Firestore setup.',
+                          ),
+                          duration: const Duration(seconds: 6),
+                        ),
+                      );
+                      return;
+                    }
+
+                    auth.applyLocalOwnerProfile(
+                      name: ownerName,
+                      cnic: ownerCnic,
+                      phoneNumber: ownerPhone,
+                    );
                   }
                   if (!context.mounted) return;
 

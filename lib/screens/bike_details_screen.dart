@@ -7,7 +7,7 @@ class BikeDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bike = Provider.of<BikeDetailsProvider>(context, listen: false).bikeDetails;
+    final bike = context.watch<BikeDetailsProvider>().bikeDetails;
     if (bike == null) {
       return Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
@@ -151,6 +151,12 @@ class BikeDetailsScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
+                if (bike.brand.trim().isNotEmpty)
+                  tile('Brand', bike.brand, Icons.branding_watermark_outlined),
+                if (bike.color.trim().isNotEmpty)
+                  tile('Color', bike.color, Icons.palette_outlined),
+                if (bike.year.trim().isNotEmpty)
+                  tile('Year', bike.year, Icons.calendar_today_outlined),
                 tile('Plate Number', bike.plateNumber, Icons.pin_outlined),
                 tile('Engine No.', bike.engineNo, Icons.settings_outlined),
                 tile('Chassis No.', bike.chasisNumber, Icons.numbers_outlined),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
+import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:provider/provider.dart';
 
 class Profile extends StatelessWidget {
@@ -94,30 +95,25 @@ class Profile extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    if (user.cnic.trim().isNotEmpty) ...[
-                      _InfoRow(
-                        icon: Icons.badge_outlined,
-                        label: 'CNIC',
-                        value: user.cnic,
-                        isFirst: true,
-                      ),
-                      _Divider(),
-                    ],
-                    if (user.phoneNumber.trim().isNotEmpty) ...[
-                      _InfoRow(
-                        icon: Icons.phone_outlined,
-                        label: 'Phone',
-                        value: user.phoneNumber,
-                        isFirst: user.cnic.trim().isEmpty,
-                      ),
-                      _Divider(),
-                    ],
+                    _InfoRow(
+                      icon: Icons.badge_outlined,
+                      label: 'CNIC',
+                      value: user.cnic.trim().isEmpty ? '—' : user.cnic,
+                      isFirst: true,
+                    ),
+                    _Divider(),
+                    _InfoRow(
+                      icon: Icons.phone_outlined,
+                      label: 'Phone',
+                      value: user.phoneNumber.trim().isEmpty
+                          ? '—'
+                          : user.phoneNumber,
+                    ),
+                    _Divider(),
                     _InfoRow(
                       icon: Icons.email_outlined,
                       label: 'Email',
                       value: user.email,
-                      isFirst: user.cnic.trim().isEmpty &&
-                          user.phoneNumber.trim().isEmpty,
                       isLast: true,
                     ),
                     SizedBox(height: 70),
@@ -135,6 +131,8 @@ class Profile extends StatelessWidget {
                         ),
                         onPressed: () async {
                           await auth.logout();
+                          if (!context.mounted) return;
+                          context.read<BikeDetailsProvider>().clear();
                           if (!context.mounted) return;
                           Navigator.pushNamedAndRemoveUntil(
                             context,

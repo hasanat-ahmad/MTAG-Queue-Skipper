@@ -36,9 +36,12 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    final userEmail = email ?? context.read<AuthProvider>().user?.email;
-    if (userEmail != null && userEmail.trim().isNotEmpty) {
-      await context.read<BikeDetailsProvider>().loadForUser(userEmail);
+    final auth = context.read<AuthProvider>();
+    final bikeProvider = context.read<BikeDetailsProvider>();
+    final uid = auth.user?.uid;
+    if (uid != null) {
+      await auth.loadUserProfileFromFirestore();
+      await bikeProvider.loadForUser(uid);
     }
     if (!mounted) return;
     Navigator.pushNamedAndRemoveUntil(context, '/home', (_) => false);
