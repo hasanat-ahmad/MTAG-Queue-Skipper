@@ -21,10 +21,9 @@ class BikeDetailsProvider with ChangeNotifier {
     this.tokenGeneratedAt,
   });
 
-  void setBikeDetails(BikeDetails bikeDetails){
+  void setBikeDetails(BikeDetails bikeDetails) {
     this.bikeDetails = bikeDetails;
     notifyListeners();
-
   }
 
   void setTokenData({
@@ -115,17 +114,28 @@ class BikeDetailsProvider with ChangeNotifier {
 
   factory BikeDetailsProvider.fromMap(Map<String, dynamic> map) {
     return BikeDetailsProvider(
-      bikeDetails: map['bikeDetails'] != null ? BikeDetails.fromMap(map['bikeDetails'] as Map<String,dynamic>) : null,
-      tokenNumber: map['tokenNumber'] != null ? map['tokenNumber'] as String : null,
-      tokenStatus: map['tokenStatus'] != null ? map['tokenStatus'] as String : null,
-      tokenEstimatedTime: map['tokenEstimatedTime'] != null ? map['tokenEstimatedTime'] as String : null,
-      tokenGeneratedAt: map['tokenGeneratedAt'] != null ? map['tokenGeneratedAt'] as String : null,
+      bikeDetails: map['bikeDetails'] != null
+          ? BikeDetails.fromMap(map['bikeDetails'] as Map<String, dynamic>)
+          : null,
+      tokenNumber: map['tokenNumber'] != null
+          ? map['tokenNumber'] as String
+          : null,
+      tokenStatus: map['tokenStatus'] != null
+          ? map['tokenStatus'] as String
+          : null,
+      tokenEstimatedTime: map['tokenEstimatedTime'] != null
+          ? map['tokenEstimatedTime'] as String
+          : null,
+      tokenGeneratedAt: map['tokenGeneratedAt'] != null
+          ? map['tokenGeneratedAt'] as String
+          : null,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory BikeDetailsProvider.fromJson(String source) => BikeDetailsProvider.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory BikeDetailsProvider.fromJson(String source) =>
+      BikeDetailsProvider.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() {
@@ -135,21 +145,20 @@ class BikeDetailsProvider with ChangeNotifier {
   @override
   bool operator ==(covariant BikeDetailsProvider other) {
     if (identical(this, other)) return true;
-  
-    return 
-      other.bikeDetails == bikeDetails &&
-      other.tokenNumber == tokenNumber &&
-      other.tokenStatus == tokenStatus &&
-      other.tokenEstimatedTime == tokenEstimatedTime &&
-      other.tokenGeneratedAt == tokenGeneratedAt;
+
+    return other.bikeDetails == bikeDetails &&
+        other.tokenNumber == tokenNumber &&
+        other.tokenStatus == tokenStatus &&
+        other.tokenEstimatedTime == tokenEstimatedTime &&
+        other.tokenGeneratedAt == tokenGeneratedAt;
   }
 
   @override
   int get hashCode {
     return bikeDetails.hashCode ^
-      tokenNumber.hashCode ^
-      tokenStatus.hashCode ^
-      tokenEstimatedTime.hashCode ^
-      tokenGeneratedAt.hashCode;
+        tokenNumber.hashCode ^
+        tokenStatus.hashCode ^
+        tokenEstimatedTime.hashCode ^
+        tokenGeneratedAt.hashCode;
   }
 }
