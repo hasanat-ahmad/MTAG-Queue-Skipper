@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +29,7 @@ class TokenStatusScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bikeDetailsProvider = context.watch<BikeDetailsProvider>();
+    final user = context.watch<AuthProvider>().user;
 
     final args =
         (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?) ??
@@ -153,7 +155,9 @@ class TokenStatusScreen extends StatelessWidget {
                     ),
                     _InfoRow(
                       label: 'Owner',
-                      value: bikeDetails?.fullName ?? 'N/A',
+                      value: user?.name.trim().isNotEmpty == true
+                          ? user!.name
+                          : 'N/A',
                     ),
                   ],
                 ),

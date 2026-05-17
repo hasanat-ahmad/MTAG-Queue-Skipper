@@ -372,9 +372,6 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                     plateNumber: _plateCtrl.text.trim(),
                     engineNo: _engineCtrl.text.trim(),
                     chasisNumber: _chassisCtrl.text.trim(),
-                    fullName: ownerName,
-                    cnic: ownerCnic,
-                    phoneNo: ownerPhone,
                     brand: _brand ?? '',
                     color: _color ?? '',
                     year: _yearCtrl.text.trim(),
@@ -426,7 +423,7 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
 
                   Navigator.pushNamed(
                     context,
-                    '/token-status',
+                    '/face-capture',
                     arguments: {
                       'tokenNumber': tokenNumber,
                       'status': 'Pending Verification',

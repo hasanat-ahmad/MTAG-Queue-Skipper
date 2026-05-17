@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -8,6 +9,7 @@ class BikeDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bike = context.watch<BikeDetailsProvider>().bikeDetails;
+    final user = context.watch<AuthProvider>().user;
     if (bike == null) {
       return Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
@@ -106,7 +108,7 @@ class BikeDetailsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      bike.fullName,
+                      user?.name.trim().isNotEmpty == true ? user!.name : '—',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -135,9 +137,23 @@ class BikeDetailsScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                tile('Full Name', bike.fullName, Icons.person_outline),
-                tile('Phone', bike.phoneNo, Icons.phone_outlined),
-                tile('CNIC', bike.cnic, Icons.badge_outlined),
+                tile(
+                  'Full Name',
+                  user?.name.trim().isNotEmpty == true ? user!.name : '—',
+                  Icons.person_outline,
+                ),
+                tile(
+                  'Phone',
+                  user?.phoneNumber.trim().isNotEmpty == true
+                      ? user!.phoneNumber
+                      : '—',
+                  Icons.phone_outlined,
+                ),
+                tile(
+                  'CNIC',
+                  user?.cnic.trim().isNotEmpty == true ? user!.cnic : '—',
+                  Icons.badge_outlined,
+                ),
               ],
             ),
           ),

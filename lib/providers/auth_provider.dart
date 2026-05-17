@@ -17,7 +17,7 @@ class AuthResult {
 
 class AuthProvider with ChangeNotifier {
   AuthProvider({FirestoreService? firestoreService})
-      : _firestoreService = firestoreService ?? FirestoreService() {
+    : _firestoreService = firestoreService ?? FirestoreService() {
     _user = _mapFirebaseUser(_firebaseAuth.currentUser);
     _firebaseAuth.authStateChanges().listen(_onAuthStateChanged);
   }
@@ -244,8 +244,9 @@ class AuthProvider with ChangeNotifier {
         idToken: googleAuth.idToken,
       );
 
-      final userCredential =
-          await _firebaseAuth.signInWithCredential(credential);
+      final userCredential = await _firebaseAuth.signInWithCredential(
+        credential,
+      );
       _user = _mapFirebaseUser(userCredential.user);
       notifyListeners();
       return const AuthResult.success();
@@ -263,7 +264,8 @@ class AuthProvider with ChangeNotifier {
     } catch (e, stackTrace) {
       debugPrint('Google sign-in error: $e\n$stackTrace');
       final errorText = e.toString().toLowerCase();
-      if (errorText.contains('apiexception: 10') || errorText.contains(': 10:')) {
+      if (errorText.contains('apiexception: 10') ||
+          errorText.contains(': 10:')) {
         return AuthResult.failure(_androidDeveloperErrorMessage);
       }
       return AuthResult.failure('Google sign-in failed: $e');
@@ -293,10 +295,7 @@ class AuthProvider with ChangeNotifier {
       'android/app/google-services.json, and run flutter clean && flutter run.';
 
   Future<void> logout() async {
-    await Future.wait([
-      _firebaseAuth.signOut(),
-      _googleSignIn.signOut(),
-    ]);
+    await Future.wait([_firebaseAuth.signOut(), _googleSignIn.signOut()]);
     _user = null;
     notifyListeners();
   }

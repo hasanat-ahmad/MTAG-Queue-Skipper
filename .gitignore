@@ -5,3 +5,7 @@
 /.packages
 /.pub/
 /.pub-cache/
+
+# Local API keys (never commit)
+/lib/config/stripe_config.local.dart
+/lib/config/cloudinary_config.local.dart

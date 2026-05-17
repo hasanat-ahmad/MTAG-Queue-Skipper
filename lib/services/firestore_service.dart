@@ -53,6 +53,20 @@ class FirestoreService {
     return user.uid;
   }
 
+  static const _legacyOwnerKeysInBikeDetails = [
+    'fullName',
+    'cnic',
+    'phoneNo',
+  ];
+
+  Future<void> _removeLegacyOwnerFieldsFromBikeDetails(String uid) async {
+    final updates = <String, dynamic>{
+      for (final key in _legacyOwnerKeysInBikeDetails)
+        'bikeRegistration.bikeDetails.$key': FieldValue.delete(),
+    };
+    await _userDoc(uid).update(updates);
+  }
+
   Map<String, dynamic> _sanitizeMap(Map<String, dynamic> input) {
     final output = <String, dynamic>{};
     input.forEach((key, value) {
@@ -147,6 +161,7 @@ class FirestoreService {
         }),
         SetOptions(merge: true),
       );
+      await _removeLegacyOwnerFieldsFromBikeDetails(verifiedUid);
     } catch (e) {
       _rethrowAsFirestoreException(e);
     }
@@ -171,6 +186,52 @@ class FirestoreService {
           'bikeRegistration': _sanitizeMap(bikeRegistration),
           'updatedAt': FieldValue.serverTimestamp(),
         }),
+        SetOptions(merge: true),
+      );
+      await _removeLegacyOwnerFieldsFromBikeDetails(verifiedUid);
+    } catch (e) {
+      _rethrowAsFirestoreException(e);
+    }
+  }
+
+  Future<void> saveFacePhotoUrl({
+    required String uid,
+    required String facePhotoUrl,
+  }) async {
+    try {
+      final verifiedUid = await _requireMatchingUid(uid);
+      await _userDoc(verifiedUid).set(
+        {
+          'facePhotoUrl': facePhotoUrl,
+          'facePhotoCapturedAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      _rethrowAsFirestoreException(e);
+    }
+  }
+
+  Future<void> savePaymentRecord({
+    required String uid,
+    required String paymentIntentId,
+    required int amountCents,
+    required String currency,
+  }) async {
+    try {
+      final verifiedUid = await _requireMatchingUid(uid);
+      await _userDoc(verifiedUid).set(
+        {
+          'payment': {
+            'status': 'paid',
+            'amountCents': amountCents,
+            'currency': currency,
+            'stripePaymentIntentId': paymentIntentId,
+            'paidAt': FieldValue.serverTimestamp(),
+          },
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
         SetOptions(merge: true),
       );
     } catch (e) {

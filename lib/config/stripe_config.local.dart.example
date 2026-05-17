@@ -1,0 +1,11 @@
+/// Copy this file to `stripe_config.local.dart` (same folder).
+/// `stripe_config.local.dart` is gitignored and never pushed to GitHub.
+///
+/// Get test keys from Stripe Dashboard → Developers → API keys (test mode).
+
+class StripeLocalSecrets {
+  StripeLocalSecrets._();
+
+  static const String publishableKey = 'pk_test_YOUR_KEY_HERE';
+  static const String secretKey = 'sk_test_YOUR_KEY_HERE';
+}
