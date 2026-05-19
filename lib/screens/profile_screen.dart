@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
+import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
 import 'package:provider/provider.dart';
 
 class Profile extends StatelessWidget {
@@ -8,10 +9,17 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context);
-
+    final auth = context.watch<AuthProvider>();
     final user = auth.user;
-    final initials = user?.name
+
+    if (user == null) {
+      return const MtagScreen(
+        title: 'Profile',
+        body: Center(child: Text('Not signed in')),
+      );
+    }
+
+    final initials = user.name
         .trim()
         .split(' ')
         .where((w) => w.isNotEmpty)
@@ -19,217 +27,93 @@ class Profile extends StatelessWidget {
         .map((w) => w[0].toUpperCase())
         .join();
 
-    if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text('Not signed in')),
-      );
-    }
-
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5F5F5),
-
-        elevation: 0,
-        title: const Text(
-          'Profile',
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Column(
-            children: [
-              const SizedBox(height: 16),
-
-              // Avatar
-              Container(
-                width: 96,
-                height: 96,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.black,
-                ),
-                child: Center(
-                  child: Text(
-                    initials ?? 'Empty Text',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Name
-              Text(
-                user.name,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-
-              const SizedBox(height: 4),
-
-              Text(
-                user.email,
-                style: const TextStyle(
-                  color: Color(0xFF8A8A9A),
-                  letterSpacing: 0.2,
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // Info Card
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  children: [
-                    _InfoRow(
-                      icon: Icons.badge_outlined,
-                      label: 'CNIC',
-                      value: user.cnic.trim().isEmpty ? '—' : user.cnic,
-                      isFirst: true,
-                    ),
-                    _Divider(),
-                    _InfoRow(
-                      icon: Icons.phone_outlined,
-                      label: 'Phone',
-                      value: user.phoneNumber.trim().isEmpty
-                          ? '—'
-                          : user.phoneNumber,
-                    ),
-                    _Divider(),
-                    _InfoRow(
-                      icon: Icons.email_outlined,
-                      label: 'Email',
-                      value: user.email,
-                      isLast: true,
-                    ),
-                    SizedBox(height: 70),
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        onPressed: () async {
-                          await auth.logout();
-                          if (!context.mounted) return;
-                          context.read<BikeDetailsProvider>().clear();
-                          if (!context.mounted) return;
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            '/login',
-                            (_) => false,
-                          );
-                        },
-                        child: const Text(
-                          'Logout',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 32),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final bool isFirst;
-  final bool isLast;
-
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.isFirst = false,
-    this.isLast = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.vertical(
-          top: isFirst ? const Radius.circular(20) : Radius.zero,
-          bottom: isLast ? const Radius.circular(20) : Radius.zero,
-        ),
-      ),
-      child: Row(
+    return MtagScreen(
+      title: 'Profile',
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: const Color(0xFF6C63FF).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: Colors.black, size: 20),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
+          Center(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF8A8A9A),
-                    letterSpacing: 0.8,
+                Container(
+                  width: 88,
+                  height: 88,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF01411C), Color(0xFF027A2E)],
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      initials.isEmpty ? '?' : initials,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 12),
                 Text(
-                  value,
+                  user.name.trim().isEmpty ? 'Rider' : user.name,
                   style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF1A1A2E),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
                   ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  user.email,
+                  style: const TextStyle(color: Colors.black54, fontSize: 14),
                 ),
               ],
             ),
           ),
+          const SizedBox(height: 24),
+          MtagCard(
+            title: 'Your details',
+            child: Column(
+              children: [
+                MtagInfoTile(
+                  icon: Icons.badge_outlined,
+                  label: 'CNIC',
+                  value: user.cnic.trim().isEmpty ? '—' : user.cnic,
+                ),
+                const Divider(height: 1, color: MtagUi.cardBorder),
+                MtagInfoTile(
+                  icon: Icons.phone_outlined,
+                  label: 'Phone',
+                  value:
+                      user.phoneNumber.trim().isEmpty ? '—' : user.phoneNumber,
+                ),
+                const Divider(height: 1, color: MtagUi.cardBorder),
+                MtagInfoTile(
+                  icon: Icons.email_outlined,
+                  label: 'Email',
+                  value: user.email,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          MtagOutlinedButton(
+            label: 'Log out',
+            onPressed: () async {
+              await auth.logout();
+              if (!context.mounted) return;
+              context.read<BikeDetailsProvider>().clear();
+              if (!context.mounted) return;
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/login',
+                (_) => false,
+              );
+            },
+          ),
         ],
       ),
     );
-  }
-}
-
-class _Divider extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Divider(height: 10, thickness: 1, color: Colors.transparent);
   }
 }

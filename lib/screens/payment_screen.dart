@@ -4,6 +4,7 @@ import 'package:mtag_queue_skipper/config/stripe_config.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/services/firestore_service.dart';
 import 'package:mtag_queue_skipper/services/stripe_service.dart';
+import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
 import 'package:provider/provider.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -96,37 +97,38 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Widget build(BuildContext context) {
     final configured = StripeConfig.isConfigured;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5F5F5),
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-        title: const Text(
-          'Registration Payment',
-          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-        ),
-      ),
+    return MtagScreen(
+      title: 'Payment',
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const MtagPageHeader(
+                title: 'Almost there',
+                subtitle: 'Pay the registration fee to get your queue token.',
+                icon: Icons.payments_outlined,
+              ),
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.black,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF01411C), Color(0xFF027A2E)],
+                  ),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'MTAG registration fee',
-                      style: TextStyle(color: Colors.white70, fontSize: 13),
+                    Text(
+                      'Registration fee',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.85),
+                        fontSize: 13,
+                      ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
                       StripeConfig.formattedAmount,
                       style: const TextStyle(
@@ -135,57 +137,41 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    const Text(
+                    const SizedBox(height: 4),
+                    Text(
                       'Test mode · Stripe',
-                      style: TextStyle(color: Colors.white54, fontSize: 12),
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.6),
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFE0E0E0)),
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Test card (Stripe test mode)',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      '4242 4242 4242 4242\n'
-                      'Any future expiry · any CVC · any ZIP',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.black87,
-                        height: 1.4,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 14),
+              const MtagCard(
+                title: 'Test card',
+                child: Text(
+                  '4242 4242 4242 4242\n'
+                  'Any future expiry · any CVC · any ZIP',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black87,
+                    height: 1.45,
+                  ),
                 ),
               ),
               if (!configured) ...[
-                const SizedBox(height: 16),
+                const SizedBox(height: 14),
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFF3E0),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Color(0xFFFFCC80)),
+                    color: const Color(0xFFFFF8E1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Color(0xFFFFE082)),
                   ),
                   child: const Text(
-                    'Copy lib/config/stripe_config.local.dart.example to '
-                    'stripe_config.local.dart and add your Stripe test keys.',
+                    'Add Stripe test keys in lib/config/stripe_config.local.dart',
                     style: TextStyle(fontSize: 13, color: Colors.black87),
                   ),
                 ),
@@ -199,30 +185,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
               ],
               const Spacer(),
-              SizedBox(
-                height: 50,
-                child: FilledButton(
-                  onPressed: !configured || _paying ? null : _pay,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: _paying
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Text(
-                          'Pay with Stripe',
-                          style: TextStyle(fontWeight: FontWeight.w700),
-                        ),
-                ),
+              MtagPrimaryButton(
+                label: 'Pay with Stripe',
+                loading: _paying,
+                onPressed: !configured || _paying ? null : _pay,
               ),
             ],
           ),

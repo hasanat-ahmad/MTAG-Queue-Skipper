@@ -9,6 +9,7 @@ import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/services/face_verification_service.dart';
 import 'package:mtag_queue_skipper/services/firestore_service.dart';
 import 'package:mtag_queue_skipper/utils/token_display.dart';
+import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -272,19 +273,10 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5F5F5),
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-        title: Text(
-          _step == _IssuanceStep.success
-              ? 'MTAG Card Issued'
-              : 'Collect MTAG Card',
-          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-        ),
-      ),
+    return MtagScreen(
+      title: _step == _IssuanceStep.success
+          ? 'Card issued'
+          : 'Collect card',
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -302,31 +294,21 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Icon(Icons.credit_card_outlined, size: 56, color: Colors.black87),
-        const SizedBox(height: 16),
-        const Text(
-          'Enter your token number',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+        const MtagPageHeader(
+          title: 'Got your token?',
+          subtitle:
+              'Enter it below, then we will match your face to your registration photo.',
+          icon: Icons.credit_card_outlined,
         ),
-        const SizedBox(height: 8),
-        const Text(
-          'We will verify your identity with a live photo and issue your MTAG card.',
-          style: TextStyle(fontSize: 13, color: Colors.black54),
-        ),
-        const SizedBox(height: 24),
         Form(
           key: _tokenFormKey,
           child: TextFormField(
             controller: _tokenController,
             textCapitalization: TextCapitalization.characters,
-            decoration: InputDecoration(
-              labelText: 'Token number',
-              hintText: 'e.g. TKN-1234',
-              filled: true,
-              fillColor: Colors.white,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+            decoration: MtagUi.inputDecoration(
+              label: 'Token number',
+              hint: 'e.g. TKN-1234',
+              prefixIcon: Icons.confirmation_number_outlined,
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
@@ -345,28 +327,10 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
           ),
         ],
         const Spacer(),
-        FilledButton(
-          onPressed: _loading ? null : _validateToken,
-          style: FilledButton.styleFrom(
-            backgroundColor: Colors.black,
-            minimumSize: const Size.fromHeight(50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          child: _loading
-              ? const SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-              : const Text(
-                  'Continue',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
+        MtagPrimaryButton(
+          label: 'Continue',
+          loading: _loading,
+          onPressed: _validateToken,
         ),
       ],
     );
@@ -378,34 +342,17 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: const Color(0xFFEEF3FF),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.confirmation_number_outlined, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Token: ${validation.tokenNumber}',
-                  style: const TextStyle(fontWeight: FontWeight.w700),
-                ),
-              ),
-            ],
-          ),
+        MtagHighlightBanner(
+          label: 'Your token',
+          value: validation.tokenNumber,
+          icon: Icons.confirmation_number_outlined,
         ),
         const SizedBox(height: 12),
-        const Text(
-          'Take a live photo for verification',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-        ),
-        const SizedBox(height: 6),
-        const Text(
-          'Your live photo is compared with your registration photo using on-device face recognition.',
-          style: TextStyle(fontSize: 13, color: Colors.black54),
+        const MtagPageHeader(
+          title: 'Quick face check',
+          subtitle:
+              'Take a selfie — we compare it to the photo from registration.',
+          icon: Icons.face_retouching_natural_outlined,
         ),
         const SizedBox(height: 12),
         Expanded(child: _buildCameraArea()),
@@ -564,27 +511,17 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
           tokenNumber: validation.tokenNumber,
           plateNumber: validation.plateNumber,
         ),
-        const Spacer(),
-        FilledButton(
-          onPressed: () {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/home',
-              (route) => false,
-            );
-          },
-          style: FilledButton.styleFrom(
-            backgroundColor: Colors.black,
-            minimumSize: const Size.fromHeight(50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+          const Spacer(),
+          MtagPrimaryButton(
+            label: 'Done',
+            onPressed: () {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/home',
+                (route) => false,
+              );
+            },
           ),
-          child: const Text(
-            'Done',
-            style: TextStyle(fontWeight: FontWeight.w700),
-          ),
-        ),
       ],
     );
   }

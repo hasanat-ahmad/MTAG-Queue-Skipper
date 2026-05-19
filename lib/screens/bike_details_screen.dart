@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mtag_queue_skipper/constants/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
+import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
 import 'package:provider/provider.dart';
 
 class BikeDetailsScreen extends StatelessWidget {
@@ -10,172 +12,158 @@ class BikeDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final bike = context.watch<BikeDetailsProvider>().bikeDetails;
     final user = context.watch<AuthProvider>().user;
+
     if (bike == null) {
-      return Scaffold(
-        backgroundColor: const Color(0xFFF5F5F5),
-        appBar: AppBar(
-          backgroundColor: const Color(0xFFF5F5F5),
-          elevation: 0,
-          surfaceTintColor: Colors.transparent,
-          title: const Text(
-            'Bike Details',
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-          ),
-        ),
-        body: const Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.two_wheeler_outlined, size: 48, color: Colors.grey),
-              SizedBox(height: 12),
-              Text(
-                'No bike registered',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'Register a bike to see its details here.',
-                style: TextStyle(fontSize: 13, color: Colors.grey),
-              ),
-            ],
+      return MtagScreen(
+        title: 'Bike Details',
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5E9),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(
+                    Icons.two_wheeler_outlined,
+                    size: 36,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Nothing here yet',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Register your bike and your details will show up.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black54),
+                ),
+                const SizedBox(height: 20),
+                MtagPrimaryButton(
+                  label: 'Register bike',
+                  onPressed: () =>
+                      Navigator.pushNamed(context, '/bike-register'),
+                ),
+              ],
+            ),
           ),
         ),
       );
     }
 
-    Widget tile(String label, String value, IconData icon) => Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: Colors.grey),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5F5F5),
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-        title: const Text(
-          'Bike Details',
-          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-        ),
-      ),
+    return MtagScreen(
+      title: 'Bike Details',
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.black,
+              gradient: const LinearGradient(
+                colors: [Color(0xFF01411C), Color(0xFF027A2E)],
+              ),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Row(
               children: [
-                const Icon(
-                  Icons.two_wheeler_rounded,
-                  color: Colors.white,
-                  size: 28,
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      user?.name.trim().isNotEmpty == true ? user!.name : '—',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
+                const Icon(Icons.two_wheeler_rounded, color: Colors.white, size: 32),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        user?.name.trim().isNotEmpty == true ? user!.name : '—',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
-                    ),
-                    Text(
-                      bike.plateNumber,
-                      style: const TextStyle(
-                        color: Colors.white60,
-                        fontSize: 13,
+                      Text(
+                        bike.plateNumber,
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.85),
+                          fontSize: 14,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFE0E0E0)),
-            ),
+          const SizedBox(height: 14),
+          MtagCard(
+            title: 'Owner',
             child: Column(
               children: [
-                tile(
-                  'Full Name',
-                  user?.name.trim().isNotEmpty == true ? user!.name : '—',
-                  Icons.person_outline,
+                MtagInfoTile(
+                  icon: Icons.person_outline,
+                  label: 'Name',
+                  value: user?.name.trim().isNotEmpty == true ? user!.name : '—',
                 ),
-                tile(
-                  'Phone',
-                  user?.phoneNumber.trim().isNotEmpty == true
+                MtagInfoTile(
+                  icon: Icons.phone_outlined,
+                  label: 'Phone',
+                  value: user?.phoneNumber.trim().isNotEmpty == true
                       ? user!.phoneNumber
                       : '—',
-                  Icons.phone_outlined,
                 ),
-                tile(
-                  'CNIC',
-                  user?.cnic.trim().isNotEmpty == true ? user!.cnic : '—',
-                  Icons.badge_outlined,
+                MtagInfoTile(
+                  icon: Icons.badge_outlined,
+                  label: 'CNIC',
+                  value: user?.cnic.trim().isNotEmpty == true ? user!.cnic : '—',
                 ),
               ],
             ),
           ),
           const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFE0E0E0)),
-            ),
+          MtagCard(
+            title: 'Motorcycle',
             child: Column(
               children: [
                 if (bike.brand.trim().isNotEmpty)
-                  tile('Brand', bike.brand, Icons.branding_watermark_outlined),
+                  MtagInfoTile(
+                    icon: Icons.branding_watermark_outlined,
+                    label: 'Brand',
+                    value: bike.brand,
+                  ),
                 if (bike.color.trim().isNotEmpty)
-                  tile('Color', bike.color, Icons.palette_outlined),
+                  MtagInfoTile(
+                    icon: Icons.palette_outlined,
+                    label: 'Color',
+                    value: bike.color,
+                  ),
                 if (bike.year.trim().isNotEmpty)
-                  tile('Year', bike.year, Icons.calendar_today_outlined),
-                tile('Plate Number', bike.plateNumber, Icons.pin_outlined),
-                tile('Engine No.', bike.engineNo, Icons.settings_outlined),
-                tile('Chassis No.', bike.chasisNumber, Icons.numbers_outlined),
+                  MtagInfoTile(
+                    icon: Icons.calendar_today_outlined,
+                    label: 'Year',
+                    value: bike.year,
+                  ),
+                MtagInfoTile(
+                  icon: Icons.pin_outlined,
+                  label: 'Plate',
+                  value: bike.plateNumber,
+                ),
+                MtagInfoTile(
+                  icon: Icons.settings_outlined,
+                  label: 'Engine no.',
+                  value: bike.engineNo,
+                ),
+                MtagInfoTile(
+                  icon: Icons.numbers_outlined,
+                  label: 'Chassis no.',
+                  value: bike.chasisNumber,
+                ),
               ],
             ),
           ),

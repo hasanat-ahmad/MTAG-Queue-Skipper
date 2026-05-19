@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mtag_queue_skipper/constants/app_colors.dart';
-import 'package:mtag_queue_skipper/constants/app_fonts.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
+import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
 import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -26,7 +25,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  Future<void> _handleAuthResult(AuthResult result, {String? email}) async {
+  Future<void> _handleAuthResult(AuthResult result) async {
     if (!mounted) return;
 
     if (!result.success) {
@@ -56,198 +55,88 @@ class _RegisterScreenState extends State<RegisterScreen> {
       password: _passwordController.text,
     );
     if (mounted) setState(() => _isSubmitting = false);
-    await _handleAuthResult(result, email: _emailController.text);
+    await _handleAuthResult(result);
   }
 
   Future<void> _signUpWithGoogle() async {
     setState(() => _isSubmitting = true);
-    final auth = context.read<AuthProvider>();
-    final result = await auth.signInWithGoogle();
+    final result = await context.read<AuthProvider>().signInWithGoogle();
     if (mounted) setState(() => _isSubmitting = false);
-    await _handleAuthResult(result, email: auth.user?.email);
+    await _handleAuthResult(result);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  const SizedBox(height: 45),
-                  const Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: AppFonts.primaryFont,
-                    ),
+    return MtagAuthLayout(
+      title: 'Create your account',
+      subtitle: 'Sign up with email or jump in with Google — takes a minute.',
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              controller: _emailController,
+              keyboardType: TextInputType.emailAddress,
+              autofillHints: const [AutofillHints.email],
+              decoration: MtagUi.inputDecoration(
+                label: 'Email',
+                hint: 'you@example.com',
+                prefixIcon: Icons.email_outlined,
+              ),
+              validator: _validateEmail,
+            ),
+            const SizedBox(height: 14),
+            TextFormField(
+              controller: _passwordController,
+              obscureText: _isPasswordHidden,
+              autofillHints: const [AutofillHints.newPassword],
+              decoration: MtagUi.inputDecoration(
+                label: 'Password',
+                hint: 'At least 6 characters',
+                prefixIcon: Icons.lock_outline,
+                suffix: IconButton(
+                  icon: Icon(
+                    _isPasswordHidden
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Create an account with your email and password',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: AppFonts.primaryFont,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    autofillHints: const [AutofillHints.email],
-                    decoration: _inputDecoration(
-                      hint: 'email@example.com',
-                      icon: Icons.email,
-                    ),
-                    validator: _validateEmail,
-                  ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _isPasswordHidden,
-                    autofillHints: const [AutofillHints.newPassword],
-                    decoration: _inputDecoration(
-                      hint: 'Password',
-                      icon: Icons.lock,
-                      suffix: GestureDetector(
-                        onTap: () => setState(
-                          () => _isPasswordHidden = !_isPasswordHidden,
-                        ),
-                        child: Icon(
-                          _isPasswordHidden
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 32),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.backgroundDark,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      onPressed: _isSubmitting ? null : _signUpWithEmail,
-                      child: _isSubmitting
-                          ? const SizedBox(
-                              height: 22,
-                              width: 22,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.surface,
-                              ),
-                            )
-                          : const Text(
-                              'Sign Up',
-                              style: TextStyle(
-                                color: AppColors.surface,
-                                fontSize: 18,
-                              ),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Expanded(child: Divider(color: Colors.grey.shade400)),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        child: Text('or'),
-                      ),
-                      Expanded(child: Divider(color: Colors.grey.shade400)),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        side: const BorderSide(color: AppColors.disabled),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      onPressed: _isSubmitting ? null : _signUpWithGoogle,
-                      icon: const Icon(Icons.g_mobiledata, size: 28),
-                      label: const Text(
-                        'Sign up with Google',
-                        style: TextStyle(
-                          color: AppColors.backgroundDark,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  TextButton(
-                    onPressed: _isSubmitting
-                        ? null
-                        : () => Navigator.pop(context),
-                    child: const Text(
-                      'Already have an account? Log in',
-                      style: TextStyle(
-                        fontFamily: AppFonts.primaryFont,
-                        color: AppColors.backgroundDark,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ],
+                  onPressed: () =>
+                      setState(() => _isPasswordHidden = !_isPasswordHidden),
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.length < 6) {
+                  return 'Password must be at least 6 characters';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 24),
+            MtagPrimaryButton(
+              label: 'Sign up',
+              loading: _isSubmitting,
+              onPressed: _signUpWithEmail,
+            ),
+            const MtagOrDivider(),
+            MtagGoogleButton(
+              label: 'Sign up with Google',
+              enabled: !_isSubmitting,
+              onPressed: _signUpWithGoogle,
+            ),
+            const SizedBox(height: 20),
+            TextButton(
+              onPressed: _isSubmitting ? null : () => Navigator.pop(context),
+              child: const Text(
+                'Already have an account? Log in',
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ),
+          ],
         ),
-      ),
-    );
-  }
-
-  InputDecoration _inputDecoration({
-    required String hint,
-    required IconData icon,
-    Widget? suffix,
-  }) {
-    return InputDecoration(
-      prefixIcon: Icon(icon),
-      suffixIcon: suffix,
-      filled: true,
-      hintText: hint,
-      errorStyle: const TextStyle(color: AppColors.error),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(100),
-        borderSide: const BorderSide(width: 0, color: AppColors.disabled),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(100),
-        borderSide: const BorderSide(width: 1),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(100),
-        borderSide: const BorderSide(color: AppColors.error, width: 1),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(100),
-        borderSide: const BorderSide(color: AppColors.error, width: 1),
       ),
     );
   }

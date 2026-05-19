@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:mtag_queue_skipper/models/bike_details.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
+import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
 import 'package:provider/provider.dart';
 
 class BikeRegisterScreen extends StatefulWidget {
@@ -212,28 +213,24 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final bikeDetailsProvider = context.watch<BikeDetailsProvider>();
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5F5F5),
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-        title: const Text(
-          'Bike Register',
-          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+    return MtagScreen(
+      title: 'Register Bike',
+      actions: [
+        TextButton(
+          onPressed: _clear,
+          child: const Text('Clear', style: TextStyle(color: Colors.black54)),
         ),
-        actions: [
-          TextButton(
-            onPressed: _clear,
-            child: const Text('Clear', style: TextStyle(color: Colors.grey)),
-          ),
-        ],
-      ),
+      ],
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(14, 4, 14, 32),
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
           children: [
+            const MtagPageHeader(
+              title: 'Bike registration',
+              subtitle: 'Fill in your details — we will generate a queue token after payment.',
+              icon: Icons.electric_bike_outlined,
+            ),
             _card('Owner Details', [
               TextFormField(
                 controller: _ownerCtrl,

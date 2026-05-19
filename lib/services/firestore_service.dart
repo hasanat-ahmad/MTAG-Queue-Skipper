@@ -29,11 +29,9 @@ class FirestoreException implements Exception {
 }
 
 class FirestoreService {
-  FirestoreService({
-    FirebaseFirestore? firestore,
-    FirebaseAuth? auth,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _auth = auth ?? FirebaseAuth.instance;
+  FirestoreService({FirebaseFirestore? firestore, FirebaseAuth? auth})
+    : _firestore = firestore ?? FirebaseFirestore.instance,
+      _auth = auth ?? FirebaseAuth.instance;
 
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
@@ -69,11 +67,7 @@ class FirestoreService {
     return user.uid;
   }
 
-  static const _legacyOwnerKeysInBikeDetails = [
-    'fullName',
-    'cnic',
-    'phoneNo',
-  ];
+  static const _legacyOwnerKeysInBikeDetails = ['fullName', 'cnic', 'phoneNo'];
 
   Future<void> _removeLegacyOwnerFieldsFromBikeDetails(String uid) async {
     final updates = <String, dynamic>{
@@ -103,10 +97,7 @@ class FirestoreService {
       throw error;
     }
     if (error is FirebaseException) {
-      throw FirestoreException(
-        _friendlyMessage(error),
-        code: error.code,
-      );
+      throw FirestoreException(_friendlyMessage(error), code: error.code);
     }
     throw FirestoreException(error.toString());
   }
@@ -216,14 +207,11 @@ class FirestoreService {
   }) async {
     try {
       final verifiedUid = await _requireMatchingUid(uid);
-      await _userDoc(verifiedUid).set(
-        {
-          'facePhotoUrl': facePhotoUrl,
-          'facePhotoCapturedAt': FieldValue.serverTimestamp(),
-          'updatedAt': FieldValue.serverTimestamp(),
-        },
-        SetOptions(merge: true),
-      );
+      await _userDoc(verifiedUid).set({
+        'facePhotoUrl': facePhotoUrl,
+        'facePhotoCapturedAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
     } catch (e) {
       _rethrowAsFirestoreException(e);
     }
@@ -237,19 +225,16 @@ class FirestoreService {
   }) async {
     try {
       final verifiedUid = await _requireMatchingUid(uid);
-      await _userDoc(verifiedUid).set(
-        {
-          'payment': {
-            'status': 'paid',
-            'amountCents': amountCents,
-            'currency': currency,
-            'stripePaymentIntentId': paymentIntentId,
-            'paidAt': FieldValue.serverTimestamp(),
-          },
-          'updatedAt': FieldValue.serverTimestamp(),
+      await _userDoc(verifiedUid).set({
+        'payment': {
+          'status': 'paid',
+          'amountCents': amountCents,
+          'currency': currency,
+          'stripePaymentIntentId': paymentIntentId,
+          'paidAt': FieldValue.serverTimestamp(),
         },
-        SetOptions(merge: true),
-      );
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
     } catch (e) {
       _rethrowAsFirestoreException(e);
     }
@@ -278,8 +263,8 @@ class FirestoreService {
       final bikeMap = bikeReg is Map<String, dynamic>
           ? bikeReg
           : bikeReg is Map
-              ? Map<String, dynamic>.from(bikeReg)
-              : <String, dynamic>{};
+          ? Map<String, dynamic>.from(bikeReg)
+          : <String, dynamic>{};
 
       final storedToken = (bikeMap['tokenNumber'] as String? ?? '').trim();
       if (storedToken.isEmpty) {
@@ -288,15 +273,17 @@ class FirestoreService {
         );
       }
       if (storedToken != normalizedToken) {
-        throw FirestoreException('Token number does not match your registration.');
+        throw FirestoreException(
+          'Token number does not match your registration.',
+        );
       }
 
       final payment = data['payment'];
       final paymentMap = payment is Map<String, dynamic>
           ? payment
           : payment is Map
-              ? Map<String, dynamic>.from(payment)
-              : <String, dynamic>{};
+          ? Map<String, dynamic>.from(payment)
+          : <String, dynamic>{};
       final paymentStatus = paymentMap['status'] as String? ?? '';
       if (paymentStatus != 'paid') {
         throw FirestoreException(
@@ -308,8 +295,8 @@ class FirestoreService {
       final mtagMap = mtagCard is Map<String, dynamic>
           ? mtagCard
           : mtagCard is Map
-              ? Map<String, dynamic>.from(mtagCard)
-              : <String, dynamic>{};
+          ? Map<String, dynamic>.from(mtagCard)
+          : <String, dynamic>{};
       if (mtagMap['issued'] == true) {
         throw FirestoreException('Your MTAG card has already been issued.');
       }
@@ -325,8 +312,8 @@ class FirestoreService {
       final bikeDetails = bikeDetailsRaw is Map<String, dynamic>
           ? bikeDetailsRaw
           : bikeDetailsRaw is Map
-              ? Map<String, dynamic>.from(bikeDetailsRaw)
-              : <String, dynamic>{};
+          ? Map<String, dynamic>.from(bikeDetailsRaw)
+          : <String, dynamic>{};
 
       return MtagTokenValidation(
         uid: verifiedUid,
@@ -346,19 +333,16 @@ class FirestoreService {
   }) async {
     try {
       final verifiedUid = await _requireMatchingUid(uid);
-      await _userDoc(verifiedUid).set(
-        {
-          'mtagCard': {
-            'issued': true,
-            'tokenNumber': tokenNumber.trim(),
-            'issuedAt': FieldValue.serverTimestamp(),
-          },
-          'bikeRegistration.tokenStatus': 'Card Issued',
-          'bikeRegistration.tokenEstimatedTime': '—',
-          'updatedAt': FieldValue.serverTimestamp(),
+      await _userDoc(verifiedUid).set({
+        'mtagCard': {
+          'issued': true,
+          'tokenNumber': tokenNumber.trim(),
+          'issuedAt': FieldValue.serverTimestamp(),
         },
-        SetOptions(merge: true),
-      );
+        'bikeRegistration.tokenStatus': 'Card Issued',
+        'bikeRegistration.tokenEstimatedTime': '—',
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
     } catch (e) {
       _rethrowAsFirestoreException(e);
     }
@@ -383,8 +367,8 @@ class FirestoreService {
       final mtagMap = mtagCard is Map<String, dynamic>
           ? mtagCard
           : mtagCard is Map
-              ? Map<String, dynamic>.from(mtagCard)
-              : <String, dynamic>{};
+          ? Map<String, dynamic>.from(mtagCard)
+          : <String, dynamic>{};
       final mtagCardIssued = mtagMap['issued'] == true;
 
       bikeMap['mtagCardIssued'] = mtagCardIssued;

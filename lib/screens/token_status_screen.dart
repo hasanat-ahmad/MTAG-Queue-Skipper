@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mtag_queue_skipper/constants/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/utils/token_display.dart';
+import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
 import 'package:provider/provider.dart';
 
 class TokenStatusScreen extends StatelessWidget {
@@ -65,197 +67,120 @@ class TokenStatusScreen extends StatelessWidget {
         bikeDetailsProvider.tokenGeneratedAt ??
         'N/A';
     final generatedAt = _formatGeneratedAt(generatedAtRaw);
-
     final bikeDetails = bikeDetailsProvider.bikeDetails;
 
     if (!hasToken) {
-      return Scaffold(
-        backgroundColor: const Color(0xFFF5F5F5),
-
-        appBar: AppBar(
-          title: const Text('Token Status'),
-          backgroundColor: const Color(0xFFF5F5F5),
-        ),
-        body: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
+      return MtagScreen(
+        title: 'My Token',
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: MtagUi.highlightBg,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(
                     Icons.confirmation_number_outlined,
-                    size: 68,
-                    color: Colors.grey,
+                    size: 36,
+                    color: AppColors.accent,
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'No token generated yet',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Register your bike to get a token and track its status.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.black54, fontSize: 14),
-                  ),
-                  const SizedBox(height: 18),
-                  FilledButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/bike-register');
-                    },
-                    child: const Text('Register Bike'),
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'No token yet',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Register your bike first — then your queue token shows up here.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.black54, fontSize: 14),
+                ),
+                const SizedBox(height: 24),
+                MtagPrimaryButton(
+                  label: 'Register bike',
+                  onPressed: () =>
+                      Navigator.pushNamed(context, '/bike-register'),
+                ),
+              ],
             ),
           ),
         ),
       );
     }
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5F5F5),
-        title: const Text('Token Status'),
-      ),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFEEF3FF),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Your token is generated',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    tokenNumber,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 14),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  children: [
-                    _InfoRow(label: 'Status', value: status),
-                    _InfoRow(label: 'Estimated Time', value: estimatedTime),
-                    _InfoRow(label: 'Generated At', value: generatedAt),
-                    _InfoRow(
-                      label: 'Plate Number',
-                      value: bikeDetails?.plateNumber ?? 'N/A',
-                    ),
-                    _InfoRow(
-                      label: 'Owner',
-                      value: user?.name.trim().isNotEmpty == true
-                          ? user!.name
-                          : 'N/A',
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 14),
-            if (!isCollected)
-              FilledButton(
-                style: FilledButton.styleFrom(backgroundColor: Colors.black),
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/mtag-card',
-                    arguments: {'tokenNumber': tokenNumber},
-                  );
-                },
-                child: const Text('Collect MTAG Card'),
-              ),
-            if (!isCollected) const SizedBox(height: 10),
-            if (isCollected)
-              FilledButton(
-                style: FilledButton.styleFrom(backgroundColor: Colors.black),
-                onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    '/home',
-                    (route) => false,
-                  );
-                },
-                child: const Text('Back to Home'),
-              )
-            else
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(50),
-                  side: const BorderSide(color: Colors.black),
-                ),
-                onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    '/home',
-                    (route) => false,
-                  );
-                },
-                child: const Text(
-                  'Back to Home',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
+    return MtagScreen(
+      title: 'My Token',
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(
-                color: Colors.black54,
-                fontWeight: FontWeight.w600,
-              ),
+          MtagHighlightBanner(
+            label: 'Your queue token',
+            value: tokenNumber,
+            icon: Icons.confirmation_number_outlined,
+          ),
+          const SizedBox(height: 14),
+          MtagCard(
+            title: 'Status details',
+            child: Column(
+              children: [
+                MtagInfoTile(label: 'Status', value: status),
+                MtagInfoTile(label: 'Estimated wait', value: estimatedTime),
+                MtagInfoTile(label: 'Generated at', value: generatedAt),
+                MtagInfoTile(
+                  label: 'Plate',
+                  value: bikeDetails?.plateNumber ?? 'N/A',
+                ),
+                MtagInfoTile(
+                  label: 'Owner',
+                  value: user?.name.trim().isNotEmpty == true
+                      ? user!.name
+                      : 'N/A',
+                ),
+              ],
             ),
           ),
-          const SizedBox(width: 12),
-          Flexible(
-            child: Text(
-              value,
-              textAlign: TextAlign.left,
-              style: const TextStyle(fontWeight: FontWeight.w700),
+          const SizedBox(height: 20),
+          if (!isCollected)
+            MtagPrimaryButton(
+              label: 'Collect MTAG card',
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  '/mtag-card',
+                  arguments: {'tokenNumber': tokenNumber},
+                );
+              },
             ),
-          ),
+          if (!isCollected) const SizedBox(height: 10),
+          if (isCollected)
+            MtagPrimaryButton(
+              label: 'Back to home',
+              onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/home',
+                  (route) => false,
+                );
+              },
+            )
+          else
+            MtagOutlinedButton(
+              label: 'Back to home',
+              onPressed: () {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/home',
+                  (route) => false,
+                );
+              },
+            ),
         ],
       ),
     );

@@ -7,6 +7,7 @@ import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/services/firestore_service.dart';
 import 'package:mtag_queue_skipper/services/cloudinary_service.dart';
 import 'package:mtag_queue_skipper/services/face_verification_service.dart';
+import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -200,35 +201,19 @@ class _FaceCaptureScreenState extends State<FaceCaptureScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5F5F5),
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-        title: const Text(
-          'Face Verification',
-          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-        ),
-      ),
+    return MtagScreen(
+      title: 'Face photo',
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'Take a clear photo of your face',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'This helps us verify your identity when you arrive at the counter.',
-                style: TextStyle(fontSize: 13, color: Colors.black54),
+              const MtagPageHeader(
+                title: 'Snap a quick selfie',
+                subtitle:
+                    'We save this so we can check it is really you when you collect your card.',
+                icon: Icons.face_retouching_natural_outlined,
               ),
               const SizedBox(height: 16),
               Expanded(child: _buildPreviewArea()),
