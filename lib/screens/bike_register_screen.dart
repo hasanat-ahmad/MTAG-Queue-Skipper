@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:mtag_queue_skipper/models/bike_details.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
+import 'package:mtag_queue_skipper/utils/pakistan_validators.dart';
 import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -246,14 +247,14 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                   decoration: _dec('Phone', hint: '03xx-xxxxxxx'),
                   keyboardType: TextInputType.phone,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  validator: (v) =>
-                      (v == null || v.trim().length < 10) ? 'Invalid' : null,
+                  validator: PakistanValidators.validatePhone,
                 ),
                 TextFormField(
                   controller: _cnicCtrl,
-                  decoration: _dec('CNIC'),
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                  decoration: _dec('CNIC', hint: '35202-1234567-1'),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  validator: PakistanValidators.validateCnic,
                 ),
               ),
             ]),
@@ -362,8 +363,10 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                   );
                   final auth = context.read<AuthProvider>();
                   final ownerName = _ownerCtrl.text.trim();
-                  final ownerCnic = _cnicCtrl.text.trim();
-                  final ownerPhone = _phoneCtrl.text.trim();
+                  final ownerCnic =
+                      PakistanValidators.normalizeCnic(_cnicCtrl.text);
+                  final ownerPhone =
+                      PakistanValidators.normalizePhone(_phoneCtrl.text);
 
                   final bikeDetails = BikeDetails(
                     plateNumber: _plateCtrl.text.trim(),
