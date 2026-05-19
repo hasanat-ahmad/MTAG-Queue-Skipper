@@ -2,6 +2,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
+class MtagTokenValidation {
+  const MtagTokenValidation({
+    required this.uid,
+    required this.tokenNumber,
+    required this.ownerName,
+    required this.plateNumber,
+    required this.facePhotoUrl,
+  });
+
+  final String uid;
+  final String tokenNumber;
+  final String ownerName;
+  final String plateNumber;
+  final String facePhotoUrl;
+}
+
 class FirestoreException implements Exception {
   FirestoreException(this.message, {this.code});
 
@@ -230,6 +246,114 @@ class FirestoreService {
             'stripePaymentIntentId': paymentIntentId,
             'paidAt': FieldValue.serverTimestamp(),
           },
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    } catch (e) {
+      _rethrowAsFirestoreException(e);
+    }
+  }
+
+  /// Validates [tokenNumber] for the signed-in user and returns profile data
+  /// needed for MTAG card collection.
+  Future<MtagTokenValidation> validateTokenForCollection({
+    required String uid,
+    required String tokenNumber,
+  }) async {
+    try {
+      final verifiedUid = await _requireMatchingUid(uid);
+      final normalizedToken = tokenNumber.trim();
+      if (normalizedToken.isEmpty) {
+        throw FirestoreException('Please enter your token number.');
+      }
+
+      final snapshot = await _userDoc(verifiedUid).get();
+      if (!snapshot.exists) {
+        throw FirestoreException('No registration found for your account.');
+      }
+
+      final data = snapshot.data() ?? <String, dynamic>{};
+      final bikeReg = data['bikeRegistration'];
+      final bikeMap = bikeReg is Map<String, dynamic>
+          ? bikeReg
+          : bikeReg is Map
+              ? Map<String, dynamic>.from(bikeReg)
+              : <String, dynamic>{};
+
+      final storedToken = (bikeMap['tokenNumber'] as String? ?? '').trim();
+      if (storedToken.isEmpty) {
+        throw FirestoreException(
+          'No token found on your account. Complete registration first.',
+        );
+      }
+      if (storedToken != normalizedToken) {
+        throw FirestoreException('Token number does not match your registration.');
+      }
+
+      final payment = data['payment'];
+      final paymentMap = payment is Map<String, dynamic>
+          ? payment
+          : payment is Map
+              ? Map<String, dynamic>.from(payment)
+              : <String, dynamic>{};
+      final paymentStatus = paymentMap['status'] as String? ?? '';
+      if (paymentStatus != 'paid') {
+        throw FirestoreException(
+          'Payment is required before collecting your MTAG card.',
+        );
+      }
+
+      final mtagCard = data['mtagCard'];
+      final mtagMap = mtagCard is Map<String, dynamic>
+          ? mtagCard
+          : mtagCard is Map
+              ? Map<String, dynamic>.from(mtagCard)
+              : <String, dynamic>{};
+      if (mtagMap['issued'] == true) {
+        throw FirestoreException('Your MTAG card has already been issued.');
+      }
+
+      final facePhotoUrl = data['facePhotoUrl'] as String? ?? '';
+      if (facePhotoUrl.trim().isEmpty) {
+        throw FirestoreException(
+          'No registration photo on file. Complete face verification first.',
+        );
+      }
+
+      final bikeDetailsRaw = bikeMap['bikeDetails'];
+      final bikeDetails = bikeDetailsRaw is Map<String, dynamic>
+          ? bikeDetailsRaw
+          : bikeDetailsRaw is Map
+              ? Map<String, dynamic>.from(bikeDetailsRaw)
+              : <String, dynamic>{};
+
+      return MtagTokenValidation(
+        uid: verifiedUid,
+        tokenNumber: storedToken,
+        ownerName: data['name'] as String? ?? '',
+        plateNumber: bikeDetails['plateNumber'] as String? ?? '',
+        facePhotoUrl: facePhotoUrl,
+      );
+    } catch (e) {
+      _rethrowAsFirestoreException(e);
+    }
+  }
+
+  Future<void> issueMtagCard({
+    required String uid,
+    required String tokenNumber,
+  }) async {
+    try {
+      final verifiedUid = await _requireMatchingUid(uid);
+      await _userDoc(verifiedUid).set(
+        {
+          'mtagCard': {
+            'issued': true,
+            'tokenNumber': tokenNumber.trim(),
+            'issuedAt': FieldValue.serverTimestamp(),
+          },
+          'bikeRegistration.tokenStatus': 'Card Issued',
           'updatedAt': FieldValue.serverTimestamp(),
         },
         SetOptions(merge: true),

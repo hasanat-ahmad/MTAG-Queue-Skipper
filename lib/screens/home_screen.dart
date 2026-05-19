@@ -25,6 +25,12 @@ class HomeScreen extends StatelessWidget {
         onTap: () => Navigator.pushNamed(context, '/token-status'),
       ),
       _NavItem(
+        title: "Collect MTAG Card",
+        subtitle: "Verify face & receive your card",
+        icon: Icons.credit_card_outlined,
+        onTap: () => Navigator.pushNamed(context, '/mtag-card'),
+      ),
+      _NavItem(
         title: "Bike Details",
         subtitle: "Your bike info",
         icon: Icons.two_wheeler_outlined,

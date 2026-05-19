@@ -15,6 +15,7 @@ import 'package:mtag_queue_skipper/screens/payment_screen.dart';
 import 'package:mtag_queue_skipper/screens/profile_screen.dart';
 import 'package:mtag_queue_skipper/screens/register_screen.dart';
 import 'package:mtag_queue_skipper/screens/splash_screen.dart';
+import 'package:mtag_queue_skipper/screens/mtag_card_issuance_screen.dart';
 import 'package:mtag_queue_skipper/screens/token_status_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
         '/payment': (context) => const PaymentScreen(),
         '/bike-details': (context) => const BikeDetailsScreen(),
         '/token-status': (context) => const TokenStatusScreen(),
+        '/mtag-card': (context) => const MtagCardIssuanceScreen(),
       },
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),

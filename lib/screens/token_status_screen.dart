@@ -164,17 +164,52 @@ class TokenStatusScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 14),
-            FilledButton(
-              style: FilledButton.styleFrom(backgroundColor: Colors.black),
-              onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/home',
-                  (route) => false,
-                );
-              },
-              child: const Text('Back to Home'),
-            ),
+            if (status != 'Card Issued')
+              FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: Colors.black),
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/mtag-card',
+                    arguments: {'tokenNumber': tokenNumber},
+                  );
+                },
+                child: const Text('Collect MTAG Card'),
+              ),
+            if (status != 'Card Issued') const SizedBox(height: 10),
+            if (status == 'Card Issued')
+              FilledButton(
+                style: FilledButton.styleFrom(backgroundColor: Colors.black),
+                onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/home',
+                    (route) => false,
+                  );
+                },
+                child: const Text('Back to Home'),
+              )
+            else
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(50),
+                  side: const BorderSide(color: Colors.black),
+                ),
+                onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/home',
+                    (route) => false,
+                  );
+                },
+                child: const Text(
+                  'Back to Home',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
           ],
         ),
       ),
