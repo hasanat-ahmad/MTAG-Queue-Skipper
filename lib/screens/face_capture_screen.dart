@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/services/firestore_service.dart';
 import 'package:mtag_queue_skipper/services/cloudinary_service.dart';
+import 'package:mtag_queue_skipper/services/face_verification_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +28,7 @@ class _FaceCaptureScreenState extends State<FaceCaptureScreen> {
 
   final _cloudinaryService = CloudinaryService();
   final _firestoreService = FirestoreService();
+  final _faceVerificationService = FaceVerificationService.instance;
 
   Map<String, dynamic> get _tokenArgs {
     final args =
@@ -158,6 +160,10 @@ class _FaceCaptureScreenState extends State<FaceCaptureScreen> {
         uid: uid,
         facePhotoUrl: imageUrl,
       );
+      await _faceVerificationService.registerReferenceFace(
+        uid: uid,
+        imagePath: file.path,
+      );
 
       if (!mounted) return;
       Navigator.pushReplacementNamed(
@@ -166,6 +172,12 @@ class _FaceCaptureScreenState extends State<FaceCaptureScreen> {
         arguments: _tokenArgs,
       );
     } on CloudinaryException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _uploading = false;
+        _uploadError = e.message;
+      });
+    } on FaceVerificationException catch (e) {
       if (!mounted) return;
       setState(() {
         _uploading = false;

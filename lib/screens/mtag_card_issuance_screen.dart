@@ -8,6 +8,7 @@ import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/services/face_verification_service.dart';
 import 'package:mtag_queue_skipper/services/firestore_service.dart';
+import 'package:mtag_queue_skipper/utils/token_display.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -25,7 +26,7 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
   final _tokenFormKey = GlobalKey<FormState>();
 
   final _firestoreService = FirestoreService();
-  final _faceVerificationService = FaceVerificationService();
+  final _faceVerificationService = FaceVerificationService.instance;
 
   _IssuanceStep _step = _IssuanceStep.token;
   bool _loading = false;
@@ -66,7 +67,6 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
   void dispose() {
     _tokenController.dispose();
     _cameraController?.dispose();
-    _faceVerificationService.dispose();
     super.dispose();
   }
 
@@ -207,7 +207,6 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
     if (validation == null || captured == null) return;
 
     final bikeProvider = context.read<BikeDetailsProvider>();
-    final estimatedTime = bikeProvider.tokenEstimatedTime ?? 'N/A';
     final generatedAt = bikeProvider.tokenGeneratedAt ?? '';
 
     setState(() {
@@ -217,6 +216,7 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
 
     try {
       final verification = await _faceVerificationService.verifyFaces(
+        uid: validation.uid,
         storedImageUrl: validation.facePhotoUrl,
         liveImagePath: captured.path,
       );
@@ -239,8 +239,8 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
       if (!mounted) return;
       bikeProvider.setTokenData(
         tokenNumber: validation.tokenNumber,
-        tokenStatus: 'Card Issued',
-        tokenEstimatedTime: estimatedTime,
+        tokenStatus: TokenDisplay.collectedStatus,
+        tokenEstimatedTime: TokenDisplay.collectedEstimatedTime,
         tokenGeneratedAt: generatedAt,
       );
 
@@ -404,7 +404,7 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
         ),
         const SizedBox(height: 6),
         const Text(
-          'ML Kit will compare your face with the photo saved during registration.',
+          'Your live photo is compared with your registration photo using on-device face recognition.',
           style: TextStyle(fontSize: 13, color: Colors.black54),
         ),
         const SizedBox(height: 12),

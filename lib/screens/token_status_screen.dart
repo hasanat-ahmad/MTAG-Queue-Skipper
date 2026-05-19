@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
+import 'package:mtag_queue_skipper/utils/token_display.dart';
 import 'package:provider/provider.dart';
 
 class TokenStatusScreen extends StatelessWidget {
@@ -42,14 +43,23 @@ class TokenStatusScreen extends StatelessWidget {
 
     final tokenNumber =
         routeToken ?? bikeDetailsProvider.tokenNumber ?? 'TKN-0000';
-    final status =
-        args['status'] as String? ??
-        bikeDetailsProvider.tokenStatus ??
-        'Pending';
-    final estimatedTime =
+    final rawStatus =
+        args['status'] as String? ?? bikeDetailsProvider.tokenStatus;
+    final rawEstimatedTime =
         args['estimatedTime'] as String? ??
-        bikeDetailsProvider.tokenEstimatedTime ??
-        'N/A';
+        bikeDetailsProvider.tokenEstimatedTime;
+    final status = TokenDisplay.statusLabel(
+      status: rawStatus,
+      mtagCardIssued: bikeDetailsProvider.mtagCardIssued,
+    );
+    final estimatedTime = TokenDisplay.estimatedTimeLabel(
+      estimatedTime: rawEstimatedTime,
+      status: rawStatus,
+      mtagCardIssued: bikeDetailsProvider.mtagCardIssued,
+    );
+    final isCollected =
+        bikeDetailsProvider.isCardCollected ||
+        TokenDisplay.isCollected(status: rawStatus);
     final generatedAtRaw =
         args['generatedAt'] as String? ??
         bikeDetailsProvider.tokenGeneratedAt ??
@@ -164,7 +174,7 @@ class TokenStatusScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 14),
-            if (status != 'Card Issued')
+            if (!isCollected)
               FilledButton(
                 style: FilledButton.styleFrom(backgroundColor: Colors.black),
                 onPressed: () {
@@ -176,8 +186,8 @@ class TokenStatusScreen extends StatelessWidget {
                 },
                 child: const Text('Collect MTAG Card'),
               ),
-            if (status != 'Card Issued') const SizedBox(height: 10),
-            if (status == 'Card Issued')
+            if (!isCollected) const SizedBox(height: 10),
+            if (isCollected)
               FilledButton(
                 style: FilledButton.styleFrom(backgroundColor: Colors.black),
                 onPressed: () {

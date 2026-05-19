@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:mtag_queue_skipper/models/bike_details.dart';
 import 'package:mtag_queue_skipper/services/firestore_service.dart';
+import 'package:mtag_queue_skipper/utils/token_display.dart';
 
 class BikeDetailsProvider with ChangeNotifier {
   BikeDetailsProvider({FirestoreService? firestoreService})
@@ -16,9 +17,26 @@ class BikeDetailsProvider with ChangeNotifier {
   String? tokenStatus;
   String? tokenEstimatedTime;
   String? tokenGeneratedAt;
+  bool mtagCardIssued = false;
   String? lastSaveError;
 
   bool get hasToken => tokenNumber != null && tokenNumber!.isNotEmpty;
+
+  bool get isCardCollected => TokenDisplay.isCollected(
+        status: tokenStatus,
+        mtagCardIssued: mtagCardIssued,
+      );
+
+  String get displayTokenStatus => TokenDisplay.statusLabel(
+        status: tokenStatus,
+        mtagCardIssued: mtagCardIssued,
+      );
+
+  String get displayEstimatedTime => TokenDisplay.estimatedTimeLabel(
+        estimatedTime: tokenEstimatedTime,
+        status: tokenStatus,
+        mtagCardIssued: mtagCardIssued,
+      );
 
   void setBikeDetails(BikeDetails bikeDetails) {
     this.bikeDetails = bikeDetails;
@@ -35,6 +53,11 @@ class BikeDetailsProvider with ChangeNotifier {
     this.tokenStatus = tokenStatus;
     this.tokenEstimatedTime = tokenEstimatedTime;
     this.tokenGeneratedAt = tokenGeneratedAt;
+    if (TokenDisplay.isCollected(status: tokenStatus)) {
+      mtagCardIssued = true;
+      this.tokenStatus = TokenDisplay.collectedStatus;
+      this.tokenEstimatedTime = TokenDisplay.collectedEstimatedTime;
+    }
     notifyListeners();
   }
 
@@ -44,6 +67,7 @@ class BikeDetailsProvider with ChangeNotifier {
     tokenStatus = null;
     tokenEstimatedTime = null;
     tokenGeneratedAt = null;
+    mtagCardIssued = false;
     lastSaveError = null;
     notifyListeners();
   }
@@ -133,6 +157,8 @@ class BikeDetailsProvider with ChangeNotifier {
       tokenStatus = loaded.tokenStatus;
       tokenEstimatedTime = loaded.tokenEstimatedTime;
       tokenGeneratedAt = loaded.tokenGeneratedAt;
+      mtagCardIssued = loaded.mtagCardIssued;
+      _applyCollectedState();
       lastSaveError = null;
       notifyListeners();
     } on FirestoreException catch (e) {
@@ -144,12 +170,19 @@ class BikeDetailsProvider with ChangeNotifier {
     }
   }
 
+  void _applyCollectedState() {
+    if (!isCardCollected) return;
+    mtagCardIssued = true;
+    tokenStatus = TokenDisplay.collectedStatus;
+    tokenEstimatedTime = TokenDisplay.collectedEstimatedTime;
+  }
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'bikeDetails': bikeDetails!.toMap(),
       'tokenNumber': tokenNumber ?? '',
-      'tokenStatus': tokenStatus ?? '',
-      'tokenEstimatedTime': tokenEstimatedTime ?? '',
+      'tokenStatus': displayTokenStatus,
+      'tokenEstimatedTime': displayEstimatedTime,
       'tokenGeneratedAt': tokenGeneratedAt ?? '',
     };
   }
@@ -167,7 +200,8 @@ class BikeDetailsProvider with ChangeNotifier {
       ..tokenNumber = _asString(map['tokenNumber'])
       ..tokenStatus = _asString(map['tokenStatus'])
       ..tokenEstimatedTime = _asString(map['tokenEstimatedTime'])
-      ..tokenGeneratedAt = _asString(map['tokenGeneratedAt']);
+      ..tokenGeneratedAt = _asString(map['tokenGeneratedAt'])
+      ..mtagCardIssued = map['mtagCardIssued'] == true;
   }
 
   static String? _asString(Object? value) {

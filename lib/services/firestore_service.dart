@@ -354,6 +354,7 @@ class FirestoreService {
             'issuedAt': FieldValue.serverTimestamp(),
           },
           'bikeRegistration.tokenStatus': 'Card Issued',
+          'bikeRegistration.tokenEstimatedTime': '—',
           'updatedAt': FieldValue.serverTimestamp(),
         },
         SetOptions(merge: true),
@@ -370,11 +371,28 @@ class FirestoreService {
       if (!snapshot.exists) return null;
       final data = snapshot.data();
       final bike = data?['bikeRegistration'];
-      if (bike is Map<String, dynamic>) return bike;
-      if (bike is Map) {
-        return Map<String, dynamic>.from(bike);
+      Map<String, dynamic>? bikeMap;
+      if (bike is Map<String, dynamic>) {
+        bikeMap = Map<String, dynamic>.from(bike);
+      } else if (bike is Map) {
+        bikeMap = Map<String, dynamic>.from(bike);
       }
-      return null;
+      if (bikeMap == null) return null;
+
+      final mtagCard = data?['mtagCard'];
+      final mtagMap = mtagCard is Map<String, dynamic>
+          ? mtagCard
+          : mtagCard is Map
+              ? Map<String, dynamic>.from(mtagCard)
+              : <String, dynamic>{};
+      final mtagCardIssued = mtagMap['issued'] == true;
+
+      bikeMap['mtagCardIssued'] = mtagCardIssued;
+      if (mtagCardIssued) {
+        bikeMap['tokenStatus'] = 'Card Issued';
+        bikeMap['tokenEstimatedTime'] = '—';
+      }
+      return bikeMap;
     } on FirestoreException {
       rethrow;
     } catch (e) {

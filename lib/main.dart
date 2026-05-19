@@ -17,6 +17,7 @@ import 'package:mtag_queue_skipper/screens/register_screen.dart';
 import 'package:mtag_queue_skipper/screens/splash_screen.dart';
 import 'package:mtag_queue_skipper/screens/mtag_card_issuance_screen.dart';
 import 'package:mtag_queue_skipper/screens/token_status_screen.dart';
+import 'package:mtag_queue_skipper/services/face_verification_service.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -26,6 +27,14 @@ Future<void> main() async {
   if (!kIsWeb && StripeConfig.isConfigured) {
     Stripe.publishableKey = StripeConfig.publishableKey.trim();
     await Stripe.instance.applySettings();
+  }
+
+  if (!kIsWeb) {
+    try {
+      await FaceVerificationService.instance.ensureInitialized();
+    } catch (e) {
+      debugPrint('Face verification init skipped: $e');
+    }
   }
 
   runApp(

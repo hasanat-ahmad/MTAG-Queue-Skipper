@@ -1,8 +1,7 @@
 import 'dart:io';
-import 'dart:math' as math;
 
+import 'package:face_verification/face_verification.dart';
 import 'package:flutter/foundation.dart';
-import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:http/http.dart' as http;
 
 class FaceVerificationException implements Exception {
@@ -17,58 +16,146 @@ class FaceVerificationException implements Exception {
 class FaceVerificationResult {
   const FaceVerificationResult({
     required this.isMatch,
-    required this.similarityScore,
+    required this.matchedUserId,
   });
 
   final bool isMatch;
-  final double similarityScore;
+  final String? matchedUserId;
 }
 
-/// Compares two face photos using ML Kit face detection and landmark geometry.
+/// On-device face identity checks using FaceNet-style embeddings (TFLite).
 class FaceVerificationService {
-  FaceVerificationService({FaceDetector? detector})
-      : _detector = detector ??
-            FaceDetector(
-              options: FaceDetectorOptions(
-                enableLandmarks: true,
-                enableContours: false,
-                enableClassification: false,
-                performanceMode: FaceDetectorMode.accurate,
-                minFaceSize: 0.15,
-              ),
-            );
+  FaceVerificationService._();
 
-  final FaceDetector _detector;
+  static final FaceVerificationService instance = FaceVerificationService._();
 
-  /// Minimum cosine similarity (0–1) to treat faces as a match.
-  static const double matchThreshold = 0.72;
+  static const String _referenceImageId = 'registration';
 
-  Future<FaceVerificationResult> verifyFaces({
-    required String storedImageUrl,
-    required String liveImagePath,
-  }) async {
+  /// Stricter than the plugin default (0.70).
+  static const double _matchThreshold = 0.80;
+
+  bool _initialized = false;
+
+  Future<void> ensureInitialized() async {
+    if (_initialized) return;
     if (kIsWeb) {
       throw FaceVerificationException(
         'Face verification is not supported on web. Use a mobile device.',
       );
     }
+    await FaceVerification.instance.init();
+    _initialized = true;
+  }
 
-    final storedPath = await _downloadToTempFile(storedImageUrl);
-    try {
-      final storedFeatures = await _extractFeaturesFromPath(storedPath);
-      final liveFeatures = await _extractFeaturesFromPath(liveImagePath);
+  Future<bool> _isReferenceEnrolled(String uid) async {
+    return FaceVerification.instance.isFaceRegisteredWithImageId(
+      uid,
+      _referenceImageId,
+    );
+  }
 
-      final score = _cosineSimilarity(storedFeatures, liveFeatures);
-      return FaceVerificationResult(
-        isMatch: score >= matchThreshold,
-        similarityScore: score,
-      );
-    } finally {
-      final storedFile = File(storedPath);
-      if (await storedFile.exists()) {
-        await storedFile.delete();
-      }
+  /// Enrolls or replaces the reference face for [uid].
+  Future<void> registerReferenceFace({
+    required String uid,
+    required String imagePath,
+  }) async {
+    await ensureInitialized();
+    final file = File(imagePath);
+    if (!await file.exists()) {
+      throw FaceVerificationException('Reference photo file was not found.');
     }
+
+    try {
+      await _enrollReferenceFace(uid: uid, imagePath: imagePath);
+    } catch (e) {
+      final message = e.toString();
+      if (message.toLowerCase().contains('multiple faces')) {
+        throw FaceVerificationException(
+          'Multiple faces detected. Use a photo with only your face visible.',
+        );
+      }
+      throw FaceVerificationException(
+        'Could not save your face photo for verification. $message',
+      );
+    }
+  }
+
+  /// Compares [liveImagePath] to the reference enrolled at registration.
+  /// Re-downloads from [storedImageUrl] only if this device has no enrollment yet.
+  Future<FaceVerificationResult> verifyFaces({
+    required String uid,
+    required String storedImageUrl,
+    required String liveImagePath,
+  }) async {
+    await ensureInitialized();
+
+    final liveFile = File(liveImagePath);
+    if (!await liveFile.exists()) {
+      throw FaceVerificationException('Live photo file was not found.');
+    }
+
+    try {
+      final enrolled = await _isReferenceEnrolled(uid);
+      if (!enrolled) {
+        final storedPath = await _downloadToTempFile(storedImageUrl);
+        try {
+          await _enrollReferenceFace(uid: uid, imagePath: storedPath);
+        } finally {
+          final storedFile = File(storedPath);
+          if (await storedFile.exists()) {
+            await storedFile.delete();
+          }
+        }
+      }
+
+      final matchedId =
+          await FaceVerification.instance.verifyFromImagePathIsolate(
+        imagePath: liveImagePath,
+        threshold: _matchThreshold,
+        staffId: uid,
+      );
+
+      debugPrint(
+        'Face verify uid=$uid matchedId=$matchedId threshold=$_matchThreshold',
+      );
+
+      return FaceVerificationResult(
+        isMatch: matchedId == uid,
+        matchedUserId: matchedId,
+      );
+    } catch (e) {
+      if (e is FaceVerificationException) rethrow;
+      final message = e.toString();
+      if (message.toLowerCase().contains('multiple faces')) {
+        throw FaceVerificationException(
+          'Multiple faces detected. Only one person should be in the frame.',
+        );
+      }
+      if (message.toLowerCase().contains('no face')) {
+        throw FaceVerificationException(
+          'No face detected. Center your face and try again.',
+        );
+      }
+      throw FaceVerificationException('Face verification failed. $message');
+    }
+  }
+
+  /// Plugin throws if (id, imageId) exists even when replace=true — delete first.
+  Future<void> _enrollReferenceFace({
+    required String uid,
+    required String imagePath,
+  }) async {
+    final exists = await _isReferenceEnrolled(uid);
+    if (exists) {
+      await FaceVerification.instance.deleteFaceRecord(uid, _referenceImageId);
+    }
+
+    await FaceVerification.instance.registerFromImagePath(
+      id: uid,
+      imagePath: imagePath,
+      imageId: _referenceImageId,
+      replace: true,
+    );
   }
 
   Future<String> _downloadToTempFile(String url) async {
@@ -83,104 +170,9 @@ class FaceVerificationService {
     }
 
     final file = File(
-      '${Directory.systemTemp.path}/mtag_stored_${DateTime.now().millisecondsSinceEpoch}.jpg',
+      '${Directory.systemTemp.path}/mtag_ref_${DateTime.now().millisecondsSinceEpoch}.jpg',
     );
     await file.writeAsBytes(response.bodyBytes);
     return file.path;
   }
-
-  Future<List<double>> _extractFeaturesFromPath(String path) async {
-    final inputImage = InputImage.fromFilePath(path);
-    return _extractFeatures(inputImage);
-  }
-
-  Future<List<double>> _extractFeatures(InputImage inputImage) async {
-    final faces = await _detector.processImage(inputImage);
-    if (faces.isEmpty) {
-      throw FaceVerificationException(
-        'No face detected. Use a clear, front-facing photo.',
-      );
-    }
-
-    final face = _largestFace(faces);
-    return _landmarkFeatureVector(face);
-  }
-
-  Face _largestFace(List<Face> faces) {
-    faces.sort((a, b) {
-      final aArea = a.boundingBox.width * a.boundingBox.height;
-      final bArea = b.boundingBox.width * b.boundingBox.height;
-      return bArea.compareTo(aArea);
-    });
-    return faces.first;
-  }
-
-  List<double> _landmarkFeatureVector(Face face) {
-    final leftEye = face.landmarks[FaceLandmarkType.leftEye]?.position;
-    final rightEye = face.landmarks[FaceLandmarkType.rightEye]?.position;
-    final nose = face.landmarks[FaceLandmarkType.noseBase]?.position;
-
-    if (leftEye == null || rightEye == null || nose == null) {
-      throw FaceVerificationException(
-        'Face landmarks were incomplete. Ensure your full face is visible.',
-      );
-    }
-
-    final eyeMidX = (leftEye.x + rightEye.x) / 2;
-    final eyeMidY = (leftEye.y + rightEye.y) / 2;
-    final eyeDistance = math.sqrt(
-      math.pow(rightEye.x - leftEye.x, 2) + math.pow(rightEye.y - leftEye.y, 2),
-    );
-    if (eyeDistance < 1) {
-      throw FaceVerificationException('Face is too small in the image.');
-    }
-
-    final types = [
-      FaceLandmarkType.leftEye,
-      FaceLandmarkType.rightEye,
-      FaceLandmarkType.noseBase,
-      FaceLandmarkType.leftMouth,
-      FaceLandmarkType.rightMouth,
-      FaceLandmarkType.bottomMouth,
-      FaceLandmarkType.leftCheek,
-      FaceLandmarkType.rightCheek,
-    ];
-
-    final features = <double>[];
-    for (final type in types) {
-      final point = face.landmarks[type]?.position;
-      if (point == null) continue;
-      features.addAll([
-        (point.x - eyeMidX) / eyeDistance,
-        (point.y - eyeMidY) / eyeDistance,
-      ]);
-    }
-
-    if (features.length < 8) {
-      throw FaceVerificationException(
-        'Not enough facial landmarks detected. Improve lighting and retry.',
-      );
-    }
-
-    return features;
-  }
-
-  double _cosineSimilarity(List<double> a, List<double> b) {
-    final length = math.min(a.length, b.length);
-    if (length == 0) return 0;
-
-    var dot = 0.0;
-    var normA = 0.0;
-    var normB = 0.0;
-    for (var i = 0; i < length; i++) {
-      dot += a[i] * b[i];
-      normA += a[i] * a[i];
-      normB += b[i] * b[i];
-    }
-
-    if (normA == 0 || normB == 0) return 0;
-    return dot / (math.sqrt(normA) * math.sqrt(normB));
-  }
-
-  Future<void> dispose() => _detector.close();
 }
