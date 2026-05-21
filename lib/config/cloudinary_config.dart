@@ -1,16 +1,16 @@
-/// Cloudinary unsigned upload settings.
-///
-/// Fill in your values below, then run the app normally (`flutter run`).
-///
-/// In [Cloudinary Dashboard](https://console.cloudinary.com):
-/// 1. Copy **Cloud name** from the dashboard home page.
-/// 2. Settings → Upload → Upload presets → Add preset → **Signing: Unsigned**.
-/// 3. Paste the preset name into [uploadPreset].
+// Cloudinary unsigned upload settings (no secrets in this file).
+// Copy cloudinary_config.local.dart.example → cloudinary_config.local.dart and add values.
+
+import 'cloudinary_config_stub.dart'
+    if (dart.library.io) 'cloudinary_config.local.dart' as cloudinary_secrets;
+
 class CloudinaryConfig {
   CloudinaryConfig._();
 
-  static const String cloudName = 'dkccflpej';
-  static const String uploadPreset = 'dkccflpej';
+  static String get cloudName =>
+      cloudinary_secrets.CloudinaryLocalSecrets.cloudName;
+  static String get uploadPreset =>
+      cloudinary_secrets.CloudinaryLocalSecrets.uploadPreset;
 
   static bool get isConfigured =>
       cloudName.trim().isNotEmpty && uploadPreset.trim().isNotEmpty;

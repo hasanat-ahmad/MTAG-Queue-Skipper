@@ -23,8 +23,8 @@ class CloudinaryService {
   void _ensureConfigured() {
     if (!CloudinaryConfig.isConfigured) {
       throw CloudinaryException(
-        'Cloudinary is not configured. Open lib/config/cloudinary_config.dart '
-        'and set cloudName and uploadPreset.',
+        'Cloudinary is not configured. Copy lib/config/cloudinary_config.local.dart.example '
+        'to cloudinary_config.local.dart and set cloudName and uploadPreset.',
         code: 'not-configured',
       );
     }
