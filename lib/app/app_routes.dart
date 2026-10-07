@@ -6,10 +6,10 @@ import 'package:mtag_queue_skipper/features/bike_registration/bike_registration_
 import 'package:mtag_queue_skipper/features/face_capture/face_capture_screen.dart';
 import 'package:mtag_queue_skipper/features/home/home_screen.dart';
 import 'package:mtag_queue_skipper/features/payment/payment_screen.dart';
+import 'package:mtag_queue_skipper/features/profile/profile_screen.dart';
 import 'package:mtag_queue_skipper/features/splash/splash_screen.dart';
 import 'package:mtag_queue_skipper/features/token_status/token_status_screen.dart';
 import 'package:mtag_queue_skipper/screens/mtag_card_issuance_screen.dart';
-import 'package:mtag_queue_skipper/screens/profile_screen.dart';
 
 /// Named routes for every screen.
 ///
@@ -37,7 +37,7 @@ class AppRoutes {
     login: (_) => const LoginScreen(),
     register: (_) => const RegisterScreen(),
     home: (_) => const HomeScreen(),
-    profile: (_) => const Profile(),
+    profile: (_) => const ProfileScreen(),
     bikeRegistration: (_) => const BikeRegistrationScreen(),
     faceCapture: (_) => const FaceCaptureScreen(),
     payment: (_) => const PaymentScreen(),
