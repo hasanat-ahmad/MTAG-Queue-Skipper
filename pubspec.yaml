@@ -44,6 +44,7 @@ dependencies:
   http: ^1.6.0
   flutter_stripe: ^12.6.0
   face_verification: ^0.3.6
+  cloud_functions: ^6.5.0
 
 dev_dependencies:
   flutter_test:
