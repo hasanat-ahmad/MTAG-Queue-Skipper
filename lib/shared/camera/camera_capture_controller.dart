@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mtag_queue_skipper/core/state/safe_change_notifier.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Front-camera preview and still capture for the selfie screens
@@ -7,12 +8,11 @@ import 'package:permission_handler/permission_handler.dart';
 ///
 /// Call [initialize] once the screen is visible and [dispose] when it
 /// closes. The current photo is available as [photo] after [capture].
-class CameraCaptureController with ChangeNotifier {
+class CameraCaptureController extends SafeChangeNotifier {
   CameraController? _camera;
   bool _isInitializing = true;
   String? _error;
   XFile? _photo;
-  bool _isDisposed = false;
 
   /// Live camera, once [initialize] has succeeded.
   CameraController? get camera => _camera;
@@ -32,7 +32,7 @@ class CameraCaptureController with ChangeNotifier {
   Future<void> initialize() async {
     _isInitializing = true;
     _error = null;
-    _notify();
+    notifyListeners();
 
     if (kIsWeb) {
       _fail('Camera capture is not supported on web.');
@@ -40,7 +40,7 @@ class CameraCaptureController with ChangeNotifier {
     }
 
     final status = await Permission.camera.request();
-    if (_isDisposed) return;
+    if (isDisposed) return;
     if (!status.isGranted) {
       _fail('Camera permission is required to verify your identity.');
       return;
@@ -66,13 +66,13 @@ class CameraCaptureController with ChangeNotifier {
       );
       await camera.initialize();
 
-      if (_isDisposed) {
+      if (isDisposed) {
         await camera.dispose();
         return;
       }
       _camera = camera;
       _isInitializing = false;
-      _notify();
+      notifyListeners();
     } catch (e) {
       _fail(e.toString());
     }
@@ -86,9 +86,9 @@ class CameraCaptureController with ChangeNotifier {
 
     try {
       final photo = await camera.takePicture();
-      if (_isDisposed) return null;
+      if (isDisposed) return null;
       _photo = photo;
-      _notify();
+      notifyListeners();
       return null;
     } catch (e) {
       return 'Could not capture photo: $e';
@@ -98,23 +98,17 @@ class CameraCaptureController with ChangeNotifier {
   /// Discards the captured photo and returns to the live preview.
   void retake() {
     _photo = null;
-    _notify();
+    notifyListeners();
   }
 
   void _fail(String message) {
-    if (_isDisposed) return;
     _isInitializing = false;
     _error = message;
-    _notify();
-  }
-
-  void _notify() {
-    if (!_isDisposed) notifyListeners();
+    notifyListeners();
   }
 
   @override
   void dispose() {
-    _isDisposed = true;
     _camera?.dispose();
     super.dispose();
   }
