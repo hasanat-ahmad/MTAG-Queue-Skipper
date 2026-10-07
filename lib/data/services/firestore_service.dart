@@ -63,31 +63,6 @@ class FirestoreService {
     return user.uid;
   }
 
-  static const _legacyOwnerKeysInBikeDetails = ['fullName', 'cnic', 'phoneNo'];
-
-  Future<void> _removeLegacyOwnerFieldsFromBikeDetails(String uid) async {
-    final updates = <String, dynamic>{
-      for (final key in _legacyOwnerKeysInBikeDetails)
-        'bikeRegistration.bikeDetails.$key': FieldValue.delete(),
-    };
-    await _userDoc(uid).update(updates);
-  }
-
-  Map<String, dynamic> _sanitizeMap(Map<String, dynamic> input) {
-    final output = <String, dynamic>{};
-    input.forEach((key, value) {
-      if (value == null) return;
-      if (value is Map) {
-        output[key] = _sanitizeMap(Map<String, dynamic>.from(value));
-      } else if (value is List) {
-        output[key] = value.where((item) => item != null).toList();
-      } else {
-        output[key] = value;
-      }
-    });
-    return output;
-  }
-
   Never _rethrowAsFirestoreException(Object error) {
     if (error is FirestoreException) {
       throw error;
@@ -127,6 +102,11 @@ class FirestoreService {
     }
   }
 
+  /// Saves the owner details and bike registration in one write.
+  ///
+  /// Each key of [bikeRegistration] replaces the stored value as a whole
+  /// (`mergeFields`), so `bikeDetails` no longer keeps owner fields that
+  /// older app versions stored inside it. Other fields stay untouched.
   Future<void> saveUserAndBike({
     required String uid,
     required String email,
@@ -138,17 +118,25 @@ class FirestoreService {
     try {
       final verifiedUid = _requireMatchingUid(uid);
       await _userDoc(verifiedUid).set(
-        _sanitizeMap({
+        {
           'email': email,
           'name': name,
           'cnic': cnic,
           'phoneNumber': phoneNumber,
-          'bikeRegistration': _sanitizeMap(bikeRegistration),
+          'bikeRegistration': bikeRegistration,
           'updatedAt': FieldValue.serverTimestamp(),
-        }),
-        SetOptions(merge: true),
+        },
+        SetOptions(
+          mergeFields: [
+            'email',
+            'name',
+            'cnic',
+            'phoneNumber',
+            'updatedAt',
+            for (final key in bikeRegistration.keys) 'bikeRegistration.$key',
+          ],
+        ),
       );
-      await _removeLegacyOwnerFieldsFromBikeDetails(verifiedUid);
     } catch (e) {
       _rethrowAsFirestoreException(e);
     }
