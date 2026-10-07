@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:mtag_queue_skipper/core/state/safe_change_notifier.dart';
 import 'package:mtag_queue_skipper/core/utils/pakistan_validators.dart';
-import 'package:mtag_queue_skipper/data/models/queue_token.dart';
 import 'package:mtag_queue_skipper/data/models/user_profile.dart';
 import 'package:mtag_queue_skipper/data/services/firestore_service.dart';
 import 'package:mtag_queue_skipper/features/bike_registration/bike_registration_input.dart';
@@ -13,14 +12,11 @@ class BikeRegistrationController extends SafeChangeNotifier {
   BikeRegistrationController({
     required AuthController auth,
     required RegistrationController registration,
-    DateTime Function()? clock,
   }) : _auth = auth,
-       _registration = registration,
-       _clock = clock ?? DateTime.now;
+       _registration = registration;
 
   final AuthController _auth;
   final RegistrationController _registration;
-  final DateTime Function() _clock;
 
   bool _isSubmitting = false;
 
@@ -46,7 +42,6 @@ class BikeRegistrationController extends SafeChangeNotifier {
       await _registration.saveRegistration(
         owner: owner,
         bike: input.toBikeDetails(),
-        token: _newToken(),
       );
       _auth.applyLocalOwnerProfile(
         name: owner.name,
@@ -64,19 +59,5 @@ class BikeRegistrationController extends SafeChangeNotifier {
       _isSubmitting = false;
       notifyListeners();
     }
-  }
-
-  QueueToken _newToken() {
-    final now = _clock();
-    final suffix = (now.millisecondsSinceEpoch % 10000).toString().padLeft(
-      4,
-      '0',
-    );
-    return QueueToken(
-      number: 'TKN-$suffix',
-      status: 'Pending Verification',
-      estimatedWait: '15-20 minutes',
-      generatedAt: now.toIso8601String(),
-    );
   }
 }

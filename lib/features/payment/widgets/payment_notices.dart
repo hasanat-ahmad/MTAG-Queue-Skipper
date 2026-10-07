@@ -33,7 +33,7 @@ class StripeSetupWarning extends StatelessWidget {
         border: Border.all(color: AppColors.warningBorder),
       ),
       child: const Text(
-        'Add Stripe test keys in lib/config/stripe_config.local.dart',
+        'Add your Stripe publishable key in lib/config/stripe_config.local.dart',
         style: TextStyle(fontSize: 13, color: Colors.black87),
       ),
     );

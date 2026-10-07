@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mtag_queue_skipper/core/errors/app_exception.dart';
+import 'package:mtag_queue_skipper/data/models/bike_details.dart';
 import 'package:mtag_queue_skipper/data/models/card_collection_ticket.dart';
 import 'package:mtag_queue_skipper/data/models/registration_record.dart';
+import 'package:mtag_queue_skipper/data/models/user_profile.dart';
 
 class FirestoreException extends AppException {
   const FirestoreException(super.message, {super.code});
@@ -82,28 +84,25 @@ class FirestoreService {
     }
   }
 
-  /// Saves the owner details and bike registration in one write.
+  /// Saves the owner details and the bike in one write.
   ///
-  /// Each key of [bikeRegistration] replaces the stored value as a whole
-  /// (`mergeFields`), so `bikeDetails` no longer keeps owner fields that
-  /// older app versions stored inside it. Other fields stay untouched.
-  Future<void> saveUserAndBike({
-    required String uid,
-    required String email,
-    required String name,
-    required String cnic,
-    required String phoneNumber,
-    required Map<String, dynamic> bikeRegistration,
+  /// `bikeRegistration.bikeDetails` is replaced as a whole (`mergeFields`),
+  /// which also drops owner fields that older app versions stored inside
+  /// it. Queue token, payment and card fields belong to the Cloud Functions
+  /// and are never written from the app (see firestore.rules).
+  Future<void> saveOwnerAndBike({
+    required UserProfile owner,
+    required BikeDetails bike,
   }) async {
     try {
-      final verifiedUid = _requireMatchingUid(uid);
+      final verifiedUid = _requireMatchingUid(owner.uid);
       await _userDoc(verifiedUid).set(
         {
-          'email': email,
-          'name': name,
-          'cnic': cnic,
-          'phoneNumber': phoneNumber,
-          'bikeRegistration': bikeRegistration,
+          'email': owner.email,
+          'name': owner.name,
+          'cnic': owner.cnic,
+          'phoneNumber': owner.phoneNumber,
+          'bikeRegistration': {'bikeDetails': bike.toMap()},
           'updatedAt': FieldValue.serverTimestamp(),
         },
         SetOptions(
@@ -113,7 +112,7 @@ class FirestoreService {
             'cnic',
             'phoneNumber',
             'updatedAt',
-            for (final key in bikeRegistration.keys) 'bikeRegistration.$key',
+            'bikeRegistration.bikeDetails',
           ],
         ),
       );
@@ -131,29 +130,6 @@ class FirestoreService {
       await _userDoc(verifiedUid).set({
         'facePhotoUrl': facePhotoUrl,
         'facePhotoCapturedAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
-    } catch (e) {
-      _rethrowAsFirestoreException(e);
-    }
-  }
-
-  Future<void> savePaymentRecord({
-    required String uid,
-    required String paymentIntentId,
-    required int amountCents,
-    required String currency,
-  }) async {
-    try {
-      final verifiedUid = _requireMatchingUid(uid);
-      await _userDoc(verifiedUid).set({
-        'payment': {
-          'status': 'paid',
-          'amountCents': amountCents,
-          'currency': currency,
-          'stripePaymentIntentId': paymentIntentId,
-          'paidAt': FieldValue.serverTimestamp(),
-        },
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } catch (e) {

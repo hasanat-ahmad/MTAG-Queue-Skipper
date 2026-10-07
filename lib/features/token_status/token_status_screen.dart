@@ -28,7 +28,7 @@ class TokenStatusScreen extends StatelessWidget {
               iconBackground: AppColors.accentSoft,
               title: 'No token yet',
               message:
-                  'Register your bike first — then your queue token shows up here.',
+                  'Register your bike and pay the fee — then your queue token shows up here.',
               actionLabel: 'Register bike',
               onAction: () =>
                   Navigator.pushNamed(context, AppRoutes.bikeRegistration),

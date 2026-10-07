@@ -13,7 +13,8 @@ class PaymentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => PaymentController(auth: context.read()),
+      create: (context) =>
+          PaymentController(auth: context.read(), registration: context.read()),
       child: const _PaymentView(),
     );
   }
@@ -69,7 +70,9 @@ class _PaymentView extends StatelessWidget {
               ],
               const Spacer(),
               MtagPrimaryButton(
-                label: 'Pay with Stripe',
+                label: controller.hasUnconfirmedPayment
+                    ? 'Confirm payment'
+                    : 'Pay with Stripe',
                 loading: controller.isPaying,
                 onPressed: controller.isConfigured ? () => _pay(context) : null,
               ),

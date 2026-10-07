@@ -25,31 +25,23 @@ class RegistrationController with ChangeNotifier {
   /// The rider has a token but has not collected the MTAG card yet.
   bool get isReadyToCollectCard => hasToken && !isCardCollected;
 
-  /// Saves [owner]'s details together with [bike] and [token].
+  /// Saves [owner]'s details together with [bike].
   ///
-  /// Local state changes only after Firestore accepted the write, so a
-  /// failed save never leaves a token on screen that was not stored.
+  /// Local state changes only after Firestore accepted the write. The queue
+  /// token is assigned later by the server, once the fee is paid.
   /// Throws [FirestoreException] on failure.
   Future<void> saveRegistration({
     required UserProfile owner,
     required BikeDetails bike,
-    required QueueToken token,
   }) async {
-    await _firestoreService.saveUserAndBike(
-      uid: owner.uid,
-      email: owner.email,
-      name: owner.name,
-      cnic: owner.cnic,
-      phoneNumber: owner.phoneNumber,
-      bikeRegistration: <String, dynamic>{
-        'bikeDetails': bike.toMap(),
-        'tokenNumber': token.number,
-        'tokenStatus': token.statusLabel,
-        'tokenEstimatedTime': token.estimatedWaitLabel,
-        'tokenGeneratedAt': token.generatedAt,
-      },
-    );
-    _record = _record.copyWith(bike: bike, token: token);
+    await _firestoreService.saveOwnerAndBike(owner: owner, bike: bike);
+    _record = _record.copyWith(bike: bike);
+    notifyListeners();
+  }
+
+  /// Stores the queue token the server assigned after a confirmed payment.
+  void recordPayment(QueueToken token) {
+    _record = _record.copyWith(token: token);
     notifyListeners();
   }
 
