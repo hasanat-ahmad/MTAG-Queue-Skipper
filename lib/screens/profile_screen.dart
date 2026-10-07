@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
@@ -107,7 +108,7 @@ class Profile extends StatelessWidget {
               if (!context.mounted) return;
               Navigator.pushNamedAndRemoveUntil(
                 context,
-                '/login',
+                AppRoutes.login,
                 (_) => false,
               );
             },

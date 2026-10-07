@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/config/stripe_config.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
@@ -63,7 +64,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       if (!mounted) return;
       Navigator.pushReplacementNamed(
         context,
-        '/token-status',
+        AppRoutes.tokenStatus,
         arguments: _tokenArgs,
       );
     } on StripePaymentException catch (e) {

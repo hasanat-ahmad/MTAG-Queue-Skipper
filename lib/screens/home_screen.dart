@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/core/theme/app_text_styles.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
@@ -24,7 +25,7 @@ class HomeScreen extends StatelessWidget {
         icon: Icons.electric_bike_outlined,
         iconBg: AppColors.primarySoft,
         iconColor: AppColors.primary,
-        onTap: () => Navigator.pushNamed(context, '/bike-register'),
+        onTap: () => Navigator.pushNamed(context, AppRoutes.bikeRegistration),
       ),
       _NavItem(
         title: 'My Token',
@@ -32,7 +33,7 @@ class HomeScreen extends StatelessWidget {
         icon: Icons.confirmation_number_outlined,
         iconBg: AppColors.accentSoft,
         iconColor: AppColors.accent,
-        onTap: () => Navigator.pushNamed(context, '/token-status'),
+        onTap: () => Navigator.pushNamed(context, AppRoutes.tokenStatus),
       ),
       _NavItem(
         title: 'Collect MTAG Card',
@@ -40,7 +41,7 @@ class HomeScreen extends StatelessWidget {
         icon: Icons.credit_card_outlined,
         iconBg: AppColors.primarySoft,
         iconColor: AppColors.primary,
-        onTap: () => Navigator.pushNamed(context, '/mtag-card'),
+        onTap: () => Navigator.pushNamed(context, AppRoutes.cardIssuance),
         highlight: bike.hasToken && !bike.isCardCollected,
       ),
       _NavItem(
@@ -49,7 +50,7 @@ class HomeScreen extends StatelessWidget {
         icon: Icons.two_wheeler_outlined,
         iconBg: AppColors.neutralSoft,
         iconColor: Colors.black87,
-        onTap: () => Navigator.pushNamed(context, '/bike-details'),
+        onTap: () => Navigator.pushNamed(context, AppRoutes.bikeDetails),
       ),
       _NavItem(
         title: 'Profile',
@@ -57,7 +58,7 @@ class HomeScreen extends StatelessWidget {
         icon: Icons.person_outline_rounded,
         iconBg: Colors.black,
         iconColor: Colors.white,
-        onTap: () => Navigator.pushNamed(context, '/profile'),
+        onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
       ),
     ];
 
@@ -90,7 +91,8 @@ class HomeScreen extends StatelessWidget {
                 tokenNumber: bike.tokenNumber!,
                 status: bike.displayTokenStatus,
                 estimatedTime: bike.displayEstimatedTime,
-                onTap: () => Navigator.pushNamed(context, '/token-status'),
+                onTap: () =>
+                    Navigator.pushNamed(context, AppRoutes.tokenStatus),
               ),
             ],
             const SizedBox(height: 20),

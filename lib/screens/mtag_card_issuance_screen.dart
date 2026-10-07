@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
@@ -518,7 +519,7 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
           onPressed: () {
             Navigator.pushNamedAndRemoveUntil(
               context,
-              '/home',
+              AppRoutes.home,
               (route) => false,
             );
           },

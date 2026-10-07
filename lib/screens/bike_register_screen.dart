@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/models/bike_details.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
@@ -427,7 +428,7 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
 
                   Navigator.pushNamed(
                     context,
-                    '/face-capture',
+                    AppRoutes.faceCapture,
                     arguments: {
                       'tokenNumber': tokenNumber,
                       'status': 'Pending Verification',

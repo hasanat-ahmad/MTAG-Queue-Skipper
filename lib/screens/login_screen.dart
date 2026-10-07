@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
@@ -43,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await bikeProvider.loadForUser(uid);
     }
     if (!mounted) return;
-    Navigator.pushNamedAndRemoveUntil(context, '/home', (_) => false);
+    Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (_) => false);
   }
 
   Future<void> _loginWithEmail() async {
@@ -127,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
             TextButton(
               onPressed: _isSubmitting
                   ? null
-                  : () => Navigator.pushNamed(context, '/register'),
+                  : () => Navigator.pushNamed(context, AppRoutes.register),
               child: const Text(
                 "Don't have an account? Sign up",
                 style: TextStyle(
