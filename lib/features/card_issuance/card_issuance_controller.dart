@@ -1,6 +1,7 @@
 import 'package:mtag_queue_skipper/core/errors/app_exception.dart';
 import 'package:mtag_queue_skipper/core/state/safe_change_notifier.dart';
 import 'package:mtag_queue_skipper/data/models/card_collection_ticket.dart';
+import 'package:mtag_queue_skipper/data/services/backend_service.dart';
 import 'package:mtag_queue_skipper/data/services/face_verification_service.dart';
 import 'package:mtag_queue_skipper/data/services/firestore_service.dart';
 import 'package:mtag_queue_skipper/shared/camera/camera_capture_controller.dart';
@@ -26,11 +27,13 @@ class CardIssuanceController extends SafeChangeNotifier {
     required AuthController auth,
     required RegistrationController registration,
     CameraCaptureController? camera,
+    BackendService? backend,
     FirestoreService? firestore,
     FaceVerificationService? faceVerification,
   }) : _auth = auth,
        _registration = registration,
        camera = camera ?? CameraCaptureController(),
+       _backend = backend ?? BackendService(),
        _firestore = firestore ?? FirestoreService(),
        _faceVerification =
            faceVerification ?? FaceVerificationService.instance {
@@ -39,6 +42,7 @@ class CardIssuanceController extends SafeChangeNotifier {
 
   final AuthController _auth;
   final RegistrationController _registration;
+  final BackendService _backend;
   final FirestoreService _firestore;
   final FaceVerificationService _faceVerification;
 
@@ -65,7 +69,9 @@ class CardIssuanceController extends SafeChangeNotifier {
   String? get suggestedToken => _registration.token?.number;
 
   /// Step 1: checks [tokenNumber] against the rider's registration and, if
-  /// it is valid, opens the camera for the face check.
+  /// it is valid, opens the camera for the face check. The server repeats
+  /// these checks when issuing the card; doing them here first saves the
+  /// rider a selfie that would be rejected anyway.
   Future<void> submitToken(String tokenNumber) async {
     final uid = _auth.uid;
     if (uid == null) {
@@ -109,8 +115,8 @@ class CardIssuanceController extends SafeChangeNotifier {
     notifyListeners();
   }
 
-  /// Step 2: matches the selfie against the registration photo and, on a
-  /// match, issues the card.
+  /// Step 2: matches the selfie against the registration photo on the
+  /// device and, on a match, asks the server to issue the card.
   Future<void> verifyAndIssue() async {
     final ticket = _ticket;
     final photo = camera.photo;
@@ -133,10 +139,7 @@ class CardIssuanceController extends SafeChangeNotifier {
         return;
       }
 
-      await _firestore.issueMtagCard(
-        uid: ticket.uid,
-        tokenNumber: ticket.tokenNumber,
-      );
+      await _backend.issueMtagCard(ticket.tokenNumber);
       _registration.markCardCollected(tokenNumber: ticket.tokenNumber);
       _step = CardIssuanceStep.issued;
       _isBusy = false;

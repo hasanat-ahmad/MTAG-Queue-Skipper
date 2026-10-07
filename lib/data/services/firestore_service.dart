@@ -224,27 +224,6 @@ class FirestoreService {
     }
   }
 
-  Future<void> issueMtagCard({
-    required String uid,
-    required String tokenNumber,
-  }) async {
-    try {
-      final verifiedUid = _requireMatchingUid(uid);
-      await _userDoc(verifiedUid).set({
-        'mtagCard': {
-          'issued': true,
-          'tokenNumber': tokenNumber.trim(),
-          'issuedAt': FieldValue.serverTimestamp(),
-        },
-        'bikeRegistration.tokenStatus': 'Card Issued',
-        'bikeRegistration.tokenEstimatedTime': '—',
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
-    } catch (e) {
-      _rethrowAsFirestoreException(e);
-    }
-  }
-
   /// Loads the rider's bike, queue token and card status.
   Future<RegistrationRecord?> fetchRegistration(String uid) async {
     try {
