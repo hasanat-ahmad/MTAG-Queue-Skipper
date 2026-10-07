@@ -58,8 +58,8 @@ class FaceEnrollmentController extends SafeChangeNotifier {
     notifyListeners();
   }
 
-  /// Uploads the selfie, stores its URL on the rider's record and enrols the
-  /// face for on-device matching. Returns true when the rider can move on
+  /// Enrols the face for on-device matching, uploads the selfie and stores
+  /// its URL on the rider's record. Returns true when the rider can move on
   /// to payment; otherwise [error] explains what went wrong.
   Future<bool> saveReferencePhoto() async {
     final photo = camera.photo;
@@ -77,13 +77,15 @@ class FaceEnrollmentController extends SafeChangeNotifier {
     notifyListeners();
 
     try {
-      final bytes = await photo.readAsBytes();
-      final imageUrl = await _cloudinary.uploadFacePhoto(bytes);
-      await _firestore.saveFacePhotoUrl(uid: uid, facePhotoUrl: imageUrl);
+      // Enrol first: it rejects photos without exactly one face before
+      // anything is uploaded or stored as the rider's reference.
       await _faceVerification.registerReferenceFace(
         uid: uid,
         imagePath: photo.path,
       );
+      final bytes = await photo.readAsBytes();
+      final imageUrl = await _cloudinary.uploadFacePhoto(bytes);
+      await _firestore.saveFacePhotoUrl(uid: uid, facePhotoUrl: imageUrl);
       return true;
     } on AppException catch (e) {
       _error = e.message;
