@@ -13,6 +13,12 @@ class FormValidators {
   /// Firebase Auth rejects shorter passwords.
   static const int minPasswordLength = 6;
 
+  /// Rejects empty or whitespace-only input.
+  static String? required(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Required';
+    return null;
+  }
+
   static String? email(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Email is required';

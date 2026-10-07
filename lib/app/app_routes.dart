@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:mtag_queue_skipper/features/auth/login_screen.dart';
 import 'package:mtag_queue_skipper/features/auth/register_screen.dart';
+import 'package:mtag_queue_skipper/features/bike_registration/bike_registration_screen.dart';
 import 'package:mtag_queue_skipper/features/home/home_screen.dart';
 import 'package:mtag_queue_skipper/features/splash/splash_screen.dart';
 import 'package:mtag_queue_skipper/screens/bike_details_screen.dart';
-import 'package:mtag_queue_skipper/screens/bike_register_screen.dart';
 import 'package:mtag_queue_skipper/screens/face_capture_screen.dart';
 import 'package:mtag_queue_skipper/screens/mtag_card_issuance_screen.dart';
 import 'package:mtag_queue_skipper/screens/payment_screen.dart';
@@ -38,7 +38,7 @@ class AppRoutes {
     register: (_) => const RegisterScreen(),
     home: (_) => const HomeScreen(),
     profile: (_) => const Profile(),
-    bikeRegistration: (_) => const BikeRegisterScreen(),
+    bikeRegistration: (_) => const BikeRegistrationScreen(),
     faceCapture: (_) => const FaceCaptureScreen(),
     payment: (_) => const PaymentScreen(),
     tokenStatus: (_) => const TokenStatusScreen(),

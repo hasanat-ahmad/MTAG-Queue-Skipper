@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mtag_queue_skipper/data/models/bike_details.dart';
 import 'package:mtag_queue_skipper/data/models/queue_token.dart';
 import 'package:mtag_queue_skipper/data/models/registration_record.dart';
+import 'package:mtag_queue_skipper/data/models/user_profile.dart';
 import 'package:mtag_queue_skipper/data/services/firestore_service.dart';
 
 /// App-wide state for the signed-in rider's registration: bike details,
@@ -15,7 +16,6 @@ class RegistrationController with ChangeNotifier {
   final FirestoreService _firestoreService;
 
   RegistrationRecord _record = RegistrationRecord.empty;
-  String? lastSaveError;
 
   BikeDetails? get bikeDetails => _record.bike;
   QueueToken? get token => _record.token;
@@ -25,13 +25,31 @@ class RegistrationController with ChangeNotifier {
   /// The rider has a token but has not collected the MTAG card yet.
   bool get isReadyToCollectCard => hasToken && !isCardCollected;
 
-  void setBikeDetails(BikeDetails bikeDetails) {
-    _record = _record.copyWith(bike: bikeDetails);
-    notifyListeners();
-  }
-
-  void setToken(QueueToken token) {
-    _record = _record.copyWith(token: token);
+  /// Saves [owner]'s details together with [bike] and [token].
+  ///
+  /// Local state changes only after Firestore accepted the write, so a
+  /// failed save never leaves a token on screen that was not stored.
+  /// Throws [FirestoreException] on failure.
+  Future<void> saveRegistration({
+    required UserProfile owner,
+    required BikeDetails bike,
+    required QueueToken token,
+  }) async {
+    await _firestoreService.saveUserAndBike(
+      uid: owner.uid,
+      email: owner.email,
+      name: owner.name,
+      cnic: owner.cnic,
+      phoneNumber: owner.phoneNumber,
+      bikeRegistration: <String, dynamic>{
+        'bikeDetails': bike.toMap(),
+        'tokenNumber': token.number,
+        'tokenStatus': token.statusLabel,
+        'tokenEstimatedTime': token.estimatedWaitLabel,
+        'tokenGeneratedAt': token.generatedAt,
+      },
+    );
+    _record = _record.copyWith(bike: bike, token: token);
     notifyListeners();
   }
 
@@ -47,47 +65,7 @@ class RegistrationController with ChangeNotifier {
 
   void clear() {
     _record = RegistrationRecord.empty;
-    lastSaveError = null;
     notifyListeners();
-  }
-
-  Future<bool> saveAllForUser({
-    required String uid,
-    required String email,
-    required String name,
-    required String cnic,
-    required String phoneNumber,
-  }) async {
-    lastSaveError = null;
-    if (uid.trim().isEmpty) {
-      lastSaveError = 'Missing user id. Please sign in again.';
-      return false;
-    }
-    final bike = _record.bike;
-    if (bike == null) {
-      lastSaveError = 'No bike details to save.';
-      return false;
-    }
-
-    try {
-      await _firestoreService.saveUserAndBike(
-        uid: uid,
-        email: email,
-        name: name,
-        cnic: cnic,
-        phoneNumber: phoneNumber,
-        bikeRegistration: _bikeRegistrationMap(bike),
-      );
-      return true;
-    } on FirestoreException catch (e) {
-      lastSaveError = e.message;
-      debugPrint('Failed to save registration to Firestore: $e');
-      return false;
-    } catch (e, stackTrace) {
-      lastSaveError = e.toString();
-      debugPrint('Failed to save registration to Firestore: $e\n$stackTrace');
-      return false;
-    }
   }
 
   Future<void> loadForUser(String uid) async {
@@ -99,7 +77,6 @@ class RegistrationController with ChangeNotifier {
     try {
       final record = await _firestoreService.fetchRegistration(uid);
       _record = record ?? RegistrationRecord.empty;
-      lastSaveError = null;
       notifyListeners();
     } on FirestoreException catch (e) {
       debugPrint('Failed to load bike registration: $e');
@@ -108,16 +85,5 @@ class RegistrationController with ChangeNotifier {
       debugPrint('Failed to load bike registration: $e\n$stackTrace');
       clear();
     }
-  }
-
-  Map<String, dynamic> _bikeRegistrationMap(BikeDetails bike) {
-    final token = _record.token;
-    return <String, dynamic>{
-      'bikeDetails': bike.toMap(),
-      'tokenNumber': token?.number ?? '',
-      'tokenStatus': token?.statusLabel ?? 'Pending',
-      'tokenEstimatedTime': token?.estimatedWaitLabel ?? 'N/A',
-      'tokenGeneratedAt': token?.generatedAt ?? '',
-    };
   }
 }
