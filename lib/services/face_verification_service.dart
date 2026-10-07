@@ -108,12 +108,12 @@ class FaceVerificationService {
         }
       }
 
-      final matchedId =
-          await FaceVerification.instance.verifyFromImagePathIsolate(
-        imagePath: liveImagePath,
-        threshold: _matchThreshold,
-        staffId: uid,
-      );
+      final matchedId = await FaceVerification.instance
+          .verifyFromImagePathIsolate(
+            imagePath: liveImagePath,
+            threshold: _matchThreshold,
+            staffId: uid,
+          );
 
       debugPrint(
         'Face verify uid=$uid matchedId=$matchedId threshold=$_matchThreshold',

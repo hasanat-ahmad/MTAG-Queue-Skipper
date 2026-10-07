@@ -86,9 +86,7 @@ class StripeService {
     }
   }
 
-  Future<void> presentPaymentSheet({
-    required String clientSecret,
-  }) async {
+  Future<void> presentPaymentSheet({required String clientSecret}) async {
     ensureConfigured();
 
     try {
@@ -101,10 +99,7 @@ class StripeService {
       await Stripe.instance.presentPaymentSheet();
     } on StripeException catch (e) {
       if (e.error.code == FailureCode.Canceled) {
-        throw StripePaymentException(
-          'Payment cancelled.',
-          code: 'canceled',
-        );
+        throw StripePaymentException('Payment cancelled.', code: 'canceled');
       }
       throw StripePaymentException(
         e.error.localizedMessage ?? e.error.message ?? 'Payment failed.',

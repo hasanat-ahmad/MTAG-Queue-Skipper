@@ -8,7 +8,7 @@ import 'package:mtag_queue_skipper/utils/token_display.dart';
 
 class BikeDetailsProvider with ChangeNotifier {
   BikeDetailsProvider({FirestoreService? firestoreService})
-      : _firestoreService = firestoreService ?? FirestoreService();
+    : _firestoreService = firestoreService ?? FirestoreService();
 
   final FirestoreService _firestoreService;
 
@@ -23,20 +23,20 @@ class BikeDetailsProvider with ChangeNotifier {
   bool get hasToken => tokenNumber != null && tokenNumber!.isNotEmpty;
 
   bool get isCardCollected => TokenDisplay.isCollected(
-        status: tokenStatus,
-        mtagCardIssued: mtagCardIssued,
-      );
+    status: tokenStatus,
+    mtagCardIssued: mtagCardIssued,
+  );
 
   String get displayTokenStatus => TokenDisplay.statusLabel(
-        status: tokenStatus,
-        mtagCardIssued: mtagCardIssued,
-      );
+    status: tokenStatus,
+    mtagCardIssued: mtagCardIssued,
+  );
 
   String get displayEstimatedTime => TokenDisplay.estimatedTimeLabel(
-        estimatedTime: tokenEstimatedTime,
-        status: tokenStatus,
-        mtagCardIssued: mtagCardIssued,
-      );
+    estimatedTime: tokenEstimatedTime,
+    status: tokenStatus,
+    mtagCardIssued: mtagCardIssued,
+  );
 
   void setBikeDetails(BikeDetails bikeDetails) {
     this.bikeDetails = bikeDetails;
@@ -84,10 +84,7 @@ class BikeDetailsProvider with ChangeNotifier {
     }
 
     try {
-      await _firestoreService.saveBikeRegistration(
-        uid: uid,
-        data: toMap(),
-      );
+      await _firestoreService.saveBikeRegistration(uid: uid, data: toMap());
       return true;
     } on FirestoreException catch (e) {
       lastSaveError = e.message;

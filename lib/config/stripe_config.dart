@@ -3,7 +3,8 @@
 // Test card: 4242 4242 4242 4242 · any future expiry · any CVC · any ZIP
 
 import 'stripe_config_stub.dart'
-    if (dart.library.io) 'stripe_config.local.dart' as stripe_secrets;
+    if (dart.library.io) 'stripe_config.local.dart'
+    as stripe_secrets;
 
 class StripeConfig {
   StripeConfig._();

@@ -16,7 +16,8 @@ class CloudinaryException implements Exception {
 }
 
 class CloudinaryService {
-  CloudinaryService({FirebaseAuth? auth}) : _auth = auth ?? FirebaseAuth.instance;
+  CloudinaryService({FirebaseAuth? auth})
+    : _auth = auth ?? FirebaseAuth.instance;
 
   final FirebaseAuth _auth;
 
@@ -61,11 +62,7 @@ class CloudinaryService {
       ..fields['folder'] = 'mtag/users/$uid'
       ..fields['public_id'] = 'face'
       ..files.add(
-        http.MultipartFile.fromBytes(
-          'file',
-          imageBytes,
-          filename: 'face.jpg',
-        ),
+        http.MultipartFile.fromBytes('file', imageBytes, filename: 'face.jpg'),
       );
 
     try {

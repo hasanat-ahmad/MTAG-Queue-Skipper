@@ -5,8 +5,7 @@ class PakistanValidators {
   static final RegExp _cnicDigits = RegExp(r'^\d{13}$');
   static final RegExp _mobileLocal = RegExp(r'^03\d{9}$');
 
-  static String digitsOnly(String value) =>
-      value.replaceAll(RegExp(r'\D'), '');
+  static String digitsOnly(String value) => value.replaceAll(RegExp(r'\D'), '');
 
   /// Normalizes to 11-digit local mobile: `03XXXXXXXXX`.
   static String normalizePhone(String value) {

@@ -5,10 +5,7 @@ class TokenDisplay {
   static const String collectedStatus = 'Card Issued';
   static const String collectedEstimatedTime = '—';
 
-  static bool isCollected({
-    String? status,
-    bool mtagCardIssued = false,
-  }) {
+  static bool isCollected({String? status, bool mtagCardIssued = false}) {
     if (mtagCardIssued) return true;
     final normalized = status?.trim().toLowerCase() ?? '';
     return normalized == 'card issued' ||
@@ -16,10 +13,7 @@ class TokenDisplay {
         normalized == 'issued';
   }
 
-  static String statusLabel({
-    String? status,
-    bool mtagCardIssued = false,
-  }) {
+  static String statusLabel({String? status, bool mtagCardIssued = false}) {
     if (isCollected(status: status, mtagCardIssued: mtagCardIssued)) {
       return collectedStatus;
     }

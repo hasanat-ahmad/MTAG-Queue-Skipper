@@ -2,7 +2,8 @@
 // Copy cloudinary_config.local.dart.example → cloudinary_config.local.dart and add values.
 
 import 'cloudinary_config_stub.dart'
-    if (dart.library.io) 'cloudinary_config.local.dart' as cloudinary_secrets;
+    if (dart.library.io) 'cloudinary_config.local.dart'
+    as cloudinary_secrets;
 
 class CloudinaryConfig {
   CloudinaryConfig._();
