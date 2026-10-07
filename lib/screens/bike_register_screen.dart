@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/models/bike_details.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
@@ -99,11 +100,11 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+          borderSide: const BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+          borderSide: const BorderSide(color: AppColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -125,7 +126,7 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(14),
-      border: Border.all(color: const Color(0xFFE0E0E0)),
+      border: Border.all(color: AppColors.border),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -229,7 +230,8 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
           children: [
             const MtagPageHeader(
               title: 'Bike registration',
-              subtitle: 'Fill in your details — we will generate a queue token after payment.',
+              subtitle:
+                  'Fill in your details — we will generate a queue token after payment.',
               icon: Icons.electric_bike_outlined,
             ),
             _card('Owner Details', [
@@ -363,10 +365,12 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                   );
                   final auth = context.read<AuthProvider>();
                   final ownerName = _ownerCtrl.text.trim();
-                  final ownerCnic =
-                      PakistanValidators.normalizeCnic(_cnicCtrl.text);
-                  final ownerPhone =
-                      PakistanValidators.normalizePhone(_phoneCtrl.text);
+                  final ownerCnic = PakistanValidators.normalizeCnic(
+                    _cnicCtrl.text,
+                  );
+                  final ownerPhone = PakistanValidators.normalizePhone(
+                    _phoneCtrl.text,
+                  );
 
                   final bikeDetails = BikeDetails(
                     plateNumber: _plateCtrl.text.trim(),

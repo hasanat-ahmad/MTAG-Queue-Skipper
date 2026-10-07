@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mtag_queue_skipper/constants/app_colors.dart';
+import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/utils/token_display.dart';
@@ -82,7 +82,7 @@ class TokenStatusScreen extends StatelessWidget {
                   width: 72,
                   height: 72,
                   decoration: BoxDecoration(
-                    color: MtagUi.highlightBg,
+                    color: AppColors.accentSoft,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Icon(

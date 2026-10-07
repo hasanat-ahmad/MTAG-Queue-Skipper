@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mtag_queue_skipper/constants/app_colors.dart';
-import 'package:mtag_queue_skipper/constants/app_fonts.dart';
+import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
+import 'package:mtag_queue_skipper/core/theme/app_text_styles.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  static const Color _screenBg = Color(0xFFF5F5F5);
-  static const Color _highlightBg = Color(0xFFEEF3FF);
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +22,7 @@ class HomeScreen extends StatelessWidget {
         title: 'Register Bike',
         subtitle: 'Add your motorcycle details',
         icon: Icons.electric_bike_outlined,
-        iconBg: const Color(0xFFE8F5E9),
+        iconBg: AppColors.primarySoft,
         iconColor: AppColors.primary,
         onTap: () => Navigator.pushNamed(context, '/bike-register'),
       ),
@@ -33,7 +30,7 @@ class HomeScreen extends StatelessWidget {
         title: 'My Token',
         subtitle: 'Track queue status & wait time',
         icon: Icons.confirmation_number_outlined,
-        iconBg: _highlightBg,
+        iconBg: AppColors.accentSoft,
         iconColor: AppColors.accent,
         onTap: () => Navigator.pushNamed(context, '/token-status'),
       ),
@@ -41,7 +38,7 @@ class HomeScreen extends StatelessWidget {
         title: 'Collect MTAG Card',
         subtitle: 'Verify face & receive your card',
         icon: Icons.credit_card_outlined,
-        iconBg: const Color(0xFFE8F5E9),
+        iconBg: AppColors.primarySoft,
         iconColor: AppColors.primary,
         onTap: () => Navigator.pushNamed(context, '/mtag-card'),
         highlight: bike.hasToken && !bike.isCardCollected,
@@ -50,7 +47,7 @@ class HomeScreen extends StatelessWidget {
         title: 'Bike Details',
         subtitle: 'Plate, engine & registration info',
         icon: Icons.two_wheeler_outlined,
-        iconBg: const Color(0xFFF2F2F2),
+        iconBg: AppColors.neutralSoft,
         iconColor: Colors.black87,
         onTap: () => Navigator.pushNamed(context, '/bike-details'),
       ),
@@ -65,9 +62,9 @@ class HomeScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: _screenBg,
+      backgroundColor: AppColors.screenBackground,
       appBar: AppBar(
-        backgroundColor: _screenBg,
+        backgroundColor: AppColors.screenBackground,
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
@@ -76,7 +73,7 @@ class HomeScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            fontFamily: AppFonts.primaryFont,
+            fontFamily: AppTextStyles.brandFontFamily,
             color: Colors.black,
             letterSpacing: 1.5,
           ),
@@ -130,11 +127,7 @@ class _WelcomeCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF01411C), Color(0xFF027A2E)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: AppGradients.brandDiagonal,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
@@ -150,7 +143,10 @@ class _WelcomeCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(6),
@@ -222,7 +218,7 @@ class _TokenStatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: HomeScreen._highlightBg,
+      color: AppColors.accentSoft,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         onTap: onTap,
@@ -333,7 +329,7 @@ class _ActionCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             border: item.highlight
                 ? Border.all(color: AppColors.primary, width: 1.5)
-                : Border.all(color: const Color(0xFFE8E8E8)),
+                : Border.all(color: AppColors.borderLight),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           child: Row(

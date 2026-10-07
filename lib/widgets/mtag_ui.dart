@@ -1,39 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mtag_queue_skipper/constants/app_colors.dart';
-import 'package:mtag_queue_skipper/constants/app_fonts.dart';
+import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
+import 'package:mtag_queue_skipper/core/theme/app_text_styles.dart';
 import 'package:mtag_queue_skipper/widgets/google_logo.dart';
 
 /// Shared casual UI pieces — matches the home screen vibe, not corporate.
 class MtagUi {
   MtagUi._();
-
-  static const Color screenBg = Color(0xFFF5F5F5);
-  static const Color highlightBg = Color(0xFFEEF3FF);
-  static const Color cardBorder = Color(0xFFE8E8E8);
-
-  static const TextStyle appBarTitle = TextStyle(
-    fontSize: 17,
-    fontWeight: FontWeight.w800,
-    color: Colors.black,
-  );
-
-  static const TextStyle pageTitle = TextStyle(
-    fontSize: 22,
-    fontWeight: FontWeight.w800,
-    color: Colors.black,
-  );
-
-  static const TextStyle pageSubtitle = TextStyle(
-    fontSize: 14,
-    color: Colors.black54,
-    height: 1.35,
-  );
-
-  static const TextStyle sectionLabel = TextStyle(
-    fontSize: 13,
-    fontWeight: FontWeight.w700,
-    color: Colors.black87,
-  );
 
   static InputDecoration inputDecoration({
     required String label,
@@ -52,7 +24,7 @@ class MtagUi {
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: cardBorder),
+        borderSide: const BorderSide(color: AppColors.borderLight),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -81,13 +53,13 @@ class MtagScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MtagUi.screenBg,
+      backgroundColor: AppColors.screenBackground,
       appBar: AppBar(
-        backgroundColor: MtagUi.screenBg,
+        backgroundColor: AppColors.screenBackground,
         elevation: 0,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
-        title: Text(title, style: MtagUi.appBarTitle),
+        title: Text(title, style: AppTextStyles.appBarTitle),
         actions: actions,
       ),
       body: body,
@@ -119,7 +91,7 @@ class MtagPageHeader extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: MtagUi.highlightBg,
+                color: AppColors.accentSoft,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: AppColors.accent, size: 22),
@@ -130,10 +102,10 @@ class MtagPageHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: MtagUi.pageTitle),
+                Text(title, style: AppTextStyles.pageTitle),
                 if (subtitle != null) ...[
                   const SizedBox(height: 4),
-                  Text(subtitle!, style: MtagUi.pageSubtitle),
+                  Text(subtitle!, style: AppTextStyles.pageSubtitle),
                 ],
               ],
             ),
@@ -164,13 +136,13 @@ class MtagCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: MtagUi.cardBorder),
+        border: Border.all(color: AppColors.borderLight),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (title != null) ...[
-            Text(title!, style: MtagUi.sectionLabel),
+            Text(title!, style: AppTextStyles.sectionLabel),
             const SizedBox(height: 12),
           ],
           child,
@@ -198,7 +170,7 @@ class MtagHighlightBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: MtagUi.highlightBg,
+        color: AppColors.accentSoft,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -307,7 +279,9 @@ class MtagPrimaryButton extends StatelessWidget {
         onPressed: loading ? null : onPressed,
         style: FilledButton.styleFrom(
           backgroundColor: Colors.black,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
         child: loading
             ? const SizedBox(
@@ -320,7 +294,10 @@ class MtagPrimaryButton extends StatelessWidget {
               )
             : Text(
                 label,
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
               ),
       ),
     );
@@ -346,7 +323,9 @@ class MtagOutlinedButton extends StatelessWidget {
         onPressed: onPressed,
         style: OutlinedButton.styleFrom(
           side: const BorderSide(color: Colors.black),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
         child: Text(
           label,
@@ -382,8 +361,10 @@ class MtagGoogleButton extends StatelessWidget {
         onPressed: enabled ? onPressed : null,
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white,
-          side: const BorderSide(color: MtagUi.cardBorder),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          side: const BorderSide(color: AppColors.borderLight),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -420,7 +401,7 @@ class MtagAuthLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MtagUi.screenBg,
+      backgroundColor: AppColors.screenBackground,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -429,9 +410,12 @@ class MtagAuthLayout extends StatelessWidget {
             children: [
               const SizedBox(height: 24),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE8F5E9),
+                  color: AppColors.primarySoft,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -441,14 +425,14 @@ class MtagAuthLayout extends StatelessWidget {
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.2,
                     color: AppColors.primary,
-                    fontFamily: AppFonts.primaryFont,
+                    fontFamily: AppTextStyles.brandFontFamily,
                   ),
                 ),
               ),
               const SizedBox(height: 20),
-              Text(title, style: MtagUi.pageTitle),
+              Text(title, style: AppTextStyles.pageTitle),
               const SizedBox(height: 8),
-              Text(subtitle, style: MtagUi.pageSubtitle),
+              Text(subtitle, style: AppTextStyles.pageSubtitle),
               const SizedBox(height: 28),
               child,
             ],
@@ -468,12 +452,12 @@ class MtagOrDivider extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 20),
       child: Row(
         children: [
-          Expanded(child: Divider(color: MtagUi.cardBorder)),
+          Expanded(child: Divider(color: AppColors.borderLight)),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 12),
             child: Text('or', style: TextStyle(color: Colors.black45)),
           ),
-          Expanded(child: Divider(color: MtagUi.cardBorder)),
+          Expanded(child: Divider(color: AppColors.borderLight)),
         ],
       ),
     );

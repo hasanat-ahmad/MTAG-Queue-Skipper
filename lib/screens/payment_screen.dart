@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/config/stripe_config.dart';
+import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/services/firestore_service.dart';
 import 'package:mtag_queue_skipper/services/stripe_service.dart';
@@ -48,7 +49,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     try {
       final intent = await _stripeService.createPaymentIntent();
-      await _stripeService.presentPaymentSheet(clientSecret: intent.clientSecret);
+      await _stripeService.presentPaymentSheet(
+        clientSecret: intent.clientSecret,
+      );
 
       await _firestoreService.savePaymentRecord(
         uid: uid,
@@ -70,9 +73,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
         _error = e.code == 'canceled' ? null : e.message;
       });
       if (e.code == 'canceled') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Payment cancelled')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Payment cancelled')));
       }
     } on FirestoreException catch (e) {
       if (!mounted) return;
@@ -113,9 +116,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF01411C), Color(0xFF027A2E)],
-                  ),
+                  gradient: AppGradients.brand,
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Column(
@@ -166,9 +167,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFF8E1),
+                    color: AppColors.warningSoft,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Color(0xFFFFE082)),
+                    border: Border.all(color: AppColors.warningBorder),
                   ),
                   child: const Text(
                     'Add Stripe test keys in lib/config/stripe_config.local.dart',

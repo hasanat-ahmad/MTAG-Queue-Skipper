@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mtag_queue_skipper/constants/app_colors.dart';
+import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/services/face_verification_service.dart';
@@ -189,9 +189,9 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not capture photo: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not capture photo: $e')));
     }
   }
 
@@ -274,9 +274,7 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
   @override
   Widget build(BuildContext context) {
     return MtagScreen(
-      title: _step == _IssuanceStep.success
-          ? 'Card issued'
-          : 'Collect card',
+      title: _step == _IssuanceStep.success ? 'Card issued' : 'Collect card',
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -381,7 +379,10 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
       return _messageCard(
         icon: Icons.no_photography_outlined,
         message: _cameraError!,
-        action: TextButton(onPressed: _initCamera, child: const Text('Try again')),
+        action: TextButton(
+          onPressed: _initCamera,
+          child: const Text('Try again'),
+        ),
       );
     }
 
@@ -511,17 +512,17 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
           tokenNumber: validation.tokenNumber,
           plateNumber: validation.plateNumber,
         ),
-          const Spacer(),
-          MtagPrimaryButton(
-            label: 'Done',
-            onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/home',
-                (route) => false,
-              );
-            },
-          ),
+        const Spacer(),
+        MtagPrimaryButton(
+          label: 'Done',
+          onPressed: () {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/home',
+              (route) => false,
+            );
+          },
+        ),
       ],
     );
   }
@@ -536,7 +537,7 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
+        border: Border.all(color: AppColors.border),
       ),
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -572,11 +573,7 @@ class _MtagCardWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF01411C), Color(0xFF027A2E)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: AppGradients.brandDiagonal,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(

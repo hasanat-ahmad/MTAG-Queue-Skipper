@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/services/firestore_service.dart';
 import 'package:mtag_queue_skipper/services/cloudinary_service.dart';
@@ -120,9 +121,9 @@ class _FaceCaptureScreenState extends State<FaceCaptureScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not capture photo: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not capture photo: $e')));
     }
   }
 
@@ -236,7 +237,9 @@ class _FaceCaptureScreenState extends State<FaceCaptureScreen> {
 
   Widget _buildPreviewArea() {
     if (_initializing) {
-      return const Center(child: CircularProgressIndicator(color: Colors.black));
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.black),
+      );
     }
 
     if (_initError != null) {
@@ -262,10 +265,7 @@ class _FaceCaptureScreenState extends State<FaceCaptureScreen> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.file(
-              File(_capturedFile!.path),
-              fit: BoxFit.cover,
-            ),
+            Image.file(File(_capturedFile!.path), fit: BoxFit.cover),
             const DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -327,7 +327,7 @@ class _FaceCaptureScreenState extends State<FaceCaptureScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
+        border: Border.all(color: AppColors.border),
       ),
       padding: const EdgeInsets.all(24),
       child: Column(

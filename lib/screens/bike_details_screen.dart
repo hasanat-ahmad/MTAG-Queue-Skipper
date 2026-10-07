@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mtag_queue_skipper/constants/app_colors.dart';
+import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
@@ -26,7 +26,7 @@ class BikeDetailsScreen extends StatelessWidget {
                   width: 72,
                   height: 72,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE8F5E9),
+                    color: AppColors.primarySoft,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Icon(
@@ -67,14 +67,16 @@ class BikeDetailsScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF01411C), Color(0xFF027A2E)],
-              ),
+              gradient: AppGradients.brand,
               borderRadius: BorderRadius.circular(14),
             ),
             child: Row(
               children: [
-                const Icon(Icons.two_wheeler_rounded, color: Colors.white, size: 32),
+                const Icon(
+                  Icons.two_wheeler_rounded,
+                  color: Colors.white,
+                  size: 32,
+                ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
@@ -109,7 +111,9 @@ class BikeDetailsScreen extends StatelessWidget {
                 MtagInfoTile(
                   icon: Icons.person_outline,
                   label: 'Name',
-                  value: user?.name.trim().isNotEmpty == true ? user!.name : '—',
+                  value: user?.name.trim().isNotEmpty == true
+                      ? user!.name
+                      : '—',
                 ),
                 MtagInfoTile(
                   icon: Icons.phone_outlined,
@@ -121,7 +125,9 @@ class BikeDetailsScreen extends StatelessWidget {
                 MtagInfoTile(
                   icon: Icons.badge_outlined,
                   label: 'CNIC',
-                  value: user?.cnic.trim().isNotEmpty == true ? user!.cnic : '—',
+                  value: user?.cnic.trim().isNotEmpty == true
+                      ? user!.cnic
+                      : '—',
                 ),
               ],
             ),
