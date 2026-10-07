@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mtag_queue_skipper/core/state/safe_change_notifier.dart';
@@ -7,7 +9,8 @@ import 'package:permission_handler/permission_handler.dart';
 /// (face enrolment and MTAG card collection).
 ///
 /// Call [initialize] once the screen is visible and [dispose] when it
-/// closes. The current photo is available as [photo] after [capture].
+/// closes. The current photo is available as [photo] after [capture]; the
+/// file is deleted on [retake] and [dispose].
 class CameraCaptureController extends SafeChangeNotifier {
   CameraController? _camera;
   bool _isInitializing = true;
@@ -97,6 +100,7 @@ class CameraCaptureController extends SafeChangeNotifier {
 
   /// Discards the captured photo and returns to the live preview.
   void retake() {
+    _deletePhotoFile();
     _photo = null;
     notifyListeners();
   }
@@ -107,8 +111,17 @@ class CameraCaptureController extends SafeChangeNotifier {
     notifyListeners();
   }
 
+  /// Selfies are biometric data: once used or discarded they should not
+  /// stay in the app's cache folder.
+  void _deletePhotoFile() {
+    final path = _photo?.path;
+    if (path == null || kIsWeb) return;
+    File(path).delete().ignore();
+  }
+
   @override
   void dispose() {
+    _deletePhotoFile();
     _camera?.dispose();
     super.dispose();
   }
