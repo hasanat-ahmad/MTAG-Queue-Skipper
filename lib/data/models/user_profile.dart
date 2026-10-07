@@ -59,6 +59,10 @@ class UserProfile {
 
   /// Returns a copy updated with the owner fields stored in the rider's
   /// Firestore document. A blank stored name keeps the current name.
+  ///
+  /// The e-mail always comes from Firebase Auth, never from Firestore:
+  /// firestore.rules only accept the address in the rider's auth token,
+  /// so a stale stored copy must not overwrite it.
   UserProfile mergeStoredProfile(Map<String, dynamic> data) {
     final storedName = _stringOrNull(data['name']);
     return copyWith(
@@ -67,7 +71,6 @@ class UserProfile {
           : null,
       cnic: _stringOrNull(data['cnic']),
       phoneNumber: _stringOrNull(data['phoneNumber']),
-      email: _stringOrNull(data['email']),
     );
   }
 

@@ -17,19 +17,22 @@ void main() {
       expect(profile.initials, '?');
     });
 
-    test('merges stored owner details but keeps the name when blank', () {
-      const profile = UserProfile(uid: 'u1', name: 'Ali', email: 'a@b.co');
-      final merged = profile.mergeStoredProfile({
-        'name': '   ',
-        'cnic': '3520212345671',
-        'phoneNumber': '03001234567',
-        'email': 42,
-      });
-      expect(merged.name, 'Ali');
-      expect(merged.cnic, '3520212345671');
-      expect(merged.phoneNumber, '03001234567');
-      expect(merged.email, 'a@b.co');
-    });
+    test(
+      'merges stored owner details, keeping the name when blank and the auth e-mail',
+      () {
+        const profile = UserProfile(uid: 'u1', name: 'Ali', email: 'a@b.co');
+        final merged = profile.mergeStoredProfile({
+          'name': '   ',
+          'cnic': '3520212345671',
+          'phoneNumber': '03001234567',
+          'email': 'stale@example.com',
+        });
+        expect(merged.name, 'Ali');
+        expect(merged.cnic, '3520212345671');
+        expect(merged.phoneNumber, '03001234567');
+        expect(merged.email, 'a@b.co');
+      },
+    );
 
     test('toString leaves out CNIC and phone number', () {
       const profile = UserProfile(
