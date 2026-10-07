@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
-import 'package:mtag_queue_skipper/providers/auth_provider.dart';
-import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
+import 'package:mtag_queue_skipper/state/auth_controller.dart';
+import 'package:mtag_queue_skipper/state/registration_controller.dart';
 import 'package:provider/provider.dart';
 
 class BikeDetailsScreen extends StatelessWidget {
@@ -11,8 +11,8 @@ class BikeDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bike = context.watch<BikeDetailsProvider>().bikeDetails;
-    final user = context.watch<AuthProvider>().user;
+    final bike = context.watch<RegistrationController>().bikeDetails;
+    final user = context.watch<AuthController>().user;
 
     if (bike == null) {
       return MtagScaffold(

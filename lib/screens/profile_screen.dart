@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
-import 'package:mtag_queue_skipper/providers/auth_provider.dart';
-import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
+import 'package:mtag_queue_skipper/state/auth_controller.dart';
+import 'package:mtag_queue_skipper/state/registration_controller.dart';
 import 'package:provider/provider.dart';
 
 class Profile extends StatelessWidget {
@@ -11,7 +11,7 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
+    final auth = context.watch<AuthController>();
     final user = auth.user;
 
     if (user == null) {
@@ -94,9 +94,9 @@ class Profile extends StatelessWidget {
           MtagOutlinedButton(
             label: 'Log out',
             onPressed: () async {
-              await auth.logout();
+              await auth.signOut();
               if (!context.mounted) return;
-              context.read<BikeDetailsProvider>().clear();
+              context.read<RegistrationController>().clear();
               if (!context.mounted) return;
               Navigator.pushNamedAndRemoveUntil(
                 context,

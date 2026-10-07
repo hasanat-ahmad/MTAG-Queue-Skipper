@@ -5,8 +5,8 @@ import 'package:mtag_queue_skipper/config/stripe_config.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/data/services/firestore_service.dart';
 import 'package:mtag_queue_skipper/data/services/stripe_service.dart';
-import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
+import 'package:mtag_queue_skipper/state/auth_controller.dart';
 import 'package:provider/provider.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -31,7 +31,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       return;
     }
 
-    final uid = context.read<AuthProvider>().user?.uid;
+    final uid = context.read<AuthController>().user?.uid;
     if (uid == null) {
       setState(() => _error = 'Please sign in to complete payment.');
       return;

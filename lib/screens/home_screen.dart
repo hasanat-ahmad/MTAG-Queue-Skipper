@@ -3,8 +3,8 @@ import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/core/theme/app_text_styles.dart';
 import 'package:mtag_queue_skipper/data/models/queue_token.dart';
-import 'package:mtag_queue_skipper/providers/auth_provider.dart';
-import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
+import 'package:mtag_queue_skipper/state/auth_controller.dart';
+import 'package:mtag_queue_skipper/state/registration_controller.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -12,8 +12,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
-    final bike = context.watch<BikeDetailsProvider>();
+    final auth = context.watch<AuthController>();
+    final registration = context.watch<RegistrationController>();
     final firstName = auth.user?.firstName ?? 'User';
 
     final items = [
@@ -40,7 +40,7 @@ class HomeScreen extends StatelessWidget {
         iconBg: AppColors.primarySoft,
         iconColor: AppColors.primary,
         onTap: () => Navigator.pushNamed(context, AppRoutes.cardIssuance),
-        highlight: bike.hasToken && !bike.isCardCollected,
+        highlight: registration.hasToken && !registration.isCardCollected,
       ),
       _NavItem(
         title: 'Bike Details',
@@ -83,12 +83,12 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
           children: [
             _WelcomeCard(firstName: firstName),
-            if (bike.hasToken) ...[
+            if (registration.hasToken) ...[
               const SizedBox(height: 14),
               _TokenStatusCard(
-                tokenNumber: bike.token!.number,
-                status: bike.token!.statusLabel,
-                estimatedTime: bike.token!.estimatedWaitLabel,
+                tokenNumber: registration.token!.number,
+                status: registration.token!.statusLabel,
+                estimatedTime: registration.token!.estimatedWaitLabel,
                 onTap: () =>
                     Navigator.pushNamed(context, AppRoutes.tokenStatus),
               ),

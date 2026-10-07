@@ -7,9 +7,9 @@ import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/data/services/face_verification_service.dart';
 import 'package:mtag_queue_skipper/data/services/firestore_service.dart';
-import 'package:mtag_queue_skipper/providers/auth_provider.dart';
-import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
+import 'package:mtag_queue_skipper/state/auth_controller.dart';
+import 'package:mtag_queue_skipper/state/registration_controller.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -49,8 +49,8 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
     if (_tokenPrefilled) return;
     _tokenPrefilled = true;
 
-    final provider = context.read<BikeDetailsProvider>();
-    final storedToken = provider.token?.number;
+    final registration = context.read<RegistrationController>();
+    final storedToken = registration.token?.number;
     if (storedToken != null) {
       _tokenController.text = storedToken;
     }
@@ -66,7 +66,7 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
   Future<void> _validateToken() async {
     if (!_tokenFormKey.currentState!.validate()) return;
 
-    final uid = context.read<AuthProvider>().user?.uid;
+    final uid = context.read<AuthController>().user?.uid;
     if (uid == null) {
       setState(() => _error = 'Please sign in to collect your MTAG card.');
       return;
@@ -199,7 +199,7 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
     final captured = _capturedFile;
     if (validation == null || captured == null) return;
 
-    final bikeProvider = context.read<BikeDetailsProvider>();
+    final registration = context.read<RegistrationController>();
 
     setState(() {
       _verifying = true;
@@ -229,7 +229,7 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
       );
 
       if (!mounted) return;
-      bikeProvider.markCardCollected(tokenNumber: validation.tokenNumber);
+      registration.markCardCollected(tokenNumber: validation.tokenNumber);
 
       if (!mounted) return;
       setState(() {

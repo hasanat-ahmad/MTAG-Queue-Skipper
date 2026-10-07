@@ -4,8 +4,12 @@ import 'package:mtag_queue_skipper/data/models/queue_token.dart';
 import 'package:mtag_queue_skipper/data/models/registration_record.dart';
 import 'package:mtag_queue_skipper/data/services/firestore_service.dart';
 
-class BikeDetailsProvider with ChangeNotifier {
-  BikeDetailsProvider({FirestoreService? firestoreService})
+/// App-wide state for the signed-in rider's registration: bike details,
+/// queue token and whether the MTAG card has been collected.
+///
+/// Load it with [loadForUser] after sign-in and [clear] it on sign-out.
+class RegistrationController with ChangeNotifier {
+  RegistrationController({FirestoreService? firestoreService})
     : _firestoreService = firestoreService ?? FirestoreService();
 
   final FirestoreService _firestoreService;

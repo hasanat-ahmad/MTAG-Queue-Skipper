@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
-import 'package:mtag_queue_skipper/providers/auth_provider.dart';
-import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
+import 'package:mtag_queue_skipper/state/auth_controller.dart';
+import 'package:mtag_queue_skipper/state/registration_controller.dart';
 import 'package:provider/provider.dart';
 
 class TokenStatusScreen extends StatelessWidget {
@@ -11,12 +11,12 @@ class TokenStatusScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bikeDetailsProvider = context.watch<BikeDetailsProvider>();
-    final user = context.watch<AuthProvider>().user;
+    final registration = context.watch<RegistrationController>();
+    final user = context.watch<AuthController>().user;
 
-    final token = bikeDetailsProvider.token;
-    final isCollected = bikeDetailsProvider.isCardCollected;
-    final bikeDetails = bikeDetailsProvider.bikeDetails;
+    final token = registration.token;
+    final isCollected = registration.isCardCollected;
+    final bikeDetails = registration.bikeDetails;
 
     if (token == null) {
       return MtagScaffold(

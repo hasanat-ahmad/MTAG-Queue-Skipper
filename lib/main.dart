@@ -6,8 +6,8 @@ import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/config/stripe_config.dart';
 import 'package:mtag_queue_skipper/data/services/face_verification_service.dart';
 import 'package:mtag_queue_skipper/firebase_options.dart';
-import 'package:mtag_queue_skipper/providers/auth_provider.dart';
-import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
+import 'package:mtag_queue_skipper/state/auth_controller.dart';
+import 'package:mtag_queue_skipper/state/registration_controller.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -30,8 +30,8 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => BikeDetailsProvider()),
+        ChangeNotifierProvider(create: (_) => AuthController()),
+        ChangeNotifierProvider(create: (_) => RegistrationController()),
       ],
       child: const MyApp(),
     ),

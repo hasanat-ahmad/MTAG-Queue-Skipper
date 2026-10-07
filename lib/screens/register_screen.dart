@@ -3,9 +3,9 @@ import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/features/auth/widgets/auth_layout.dart';
 import 'package:mtag_queue_skipper/features/auth/widgets/google_sign_in_button.dart';
 import 'package:mtag_queue_skipper/features/auth/widgets/or_divider.dart';
-import 'package:mtag_queue_skipper/providers/auth_provider.dart';
-import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
+import 'package:mtag_queue_skipper/state/auth_controller.dart';
+import 'package:mtag_queue_skipper/state/registration_controller.dart';
 import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -39,12 +39,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    final auth = context.read<AuthProvider>();
-    final bikeProvider = context.read<BikeDetailsProvider>();
+    final auth = context.read<AuthController>();
+    final registration = context.read<RegistrationController>();
     final uid = auth.user?.uid;
     if (uid != null) {
-      await auth.loadUserProfileFromFirestore();
-      await bikeProvider.loadForUser(uid);
+      await auth.refreshProfile();
+      await registration.loadForUser(uid);
     }
     if (!mounted) return;
     Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (_) => false);
@@ -54,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isSubmitting = true);
-    final result = await context.read<AuthProvider>().signUpWithEmail(
+    final result = await context.read<AuthController>().signUpWithEmail(
       email: _emailController.text,
       password: _passwordController.text,
     );
@@ -64,7 +64,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _signUpWithGoogle() async {
     setState(() => _isSubmitting = true);
-    final result = await context.read<AuthProvider>().signInWithGoogle();
+    final result = await context.read<AuthController>().signInWithGoogle();
     if (mounted) setState(() => _isSubmitting = false);
     await _handleAuthResult(result);
   }

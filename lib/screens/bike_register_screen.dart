@@ -5,9 +5,9 @@ import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/core/utils/pakistan_validators.dart';
 import 'package:mtag_queue_skipper/data/models/bike_details.dart';
 import 'package:mtag_queue_skipper/data/models/queue_token.dart';
-import 'package:mtag_queue_skipper/providers/auth_provider.dart';
-import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
+import 'package:mtag_queue_skipper/state/auth_controller.dart';
+import 'package:mtag_queue_skipper/state/registration_controller.dart';
 import 'package:provider/provider.dart';
 
 class BikeRegisterScreen extends StatefulWidget {
@@ -50,7 +50,7 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
     'Other',
   ];
 
-  void _prefillOwnerFromProfile(AuthProvider auth) {
+  void _prefillOwnerFromProfile(AuthController auth) {
     if (_ownerFieldsPrefilled) return;
     final user = auth.user;
     if (user == null) return;
@@ -70,7 +70,7 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _prefillOwnerFromProfile(context.read<AuthProvider>());
+    _prefillOwnerFromProfile(context.read<AuthController>());
   }
 
   @override
@@ -216,7 +216,7 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bikeDetailsProvider = context.watch<BikeDetailsProvider>();
+    final registration = context.watch<RegistrationController>();
     return MtagScaffold(
       title: 'Register Bike',
       actions: [
@@ -365,7 +365,7 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Registration submitted ✓')),
                   );
-                  final auth = context.read<AuthProvider>();
+                  final auth = context.read<AuthController>();
                   final ownerName = _ownerCtrl.text.trim();
                   final ownerCnic = PakistanValidators.normalizeCnic(
                     _cnicCtrl.text,
@@ -382,13 +382,13 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                     color: _color ?? '',
                     year: _yearCtrl.text.trim(),
                   );
-                  bikeDetailsProvider.setBikeDetails(bikeDetails);
+                  registration.setBikeDetails(bikeDetails);
 
                   final now = DateTime.now();
                   final tokenNumber =
                       'TKN-${(now.millisecondsSinceEpoch % 10000).toString().padLeft(4, '0')}';
 
-                  bikeDetailsProvider.setToken(
+                  registration.setToken(
                     QueueToken(
                       number: tokenNumber,
                       status: 'Pending Verification',
@@ -400,7 +400,7 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                   final user = auth.user;
                   final uid = user?.uid;
                   if (uid != null && user != null) {
-                    final saved = await bikeDetailsProvider.saveAllForUser(
+                    final saved = await registration.saveAllForUser(
                       uid: uid,
                       email: user.email,
                       name: ownerName,
@@ -412,7 +412,7 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            bikeDetailsProvider.lastSaveError ??
+                            registration.lastSaveError ??
                                 'Cloud sync failed. Check Firestore setup.',
                           ),
                           duration: const Duration(seconds: 6),

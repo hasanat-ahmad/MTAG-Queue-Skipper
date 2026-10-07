@@ -6,6 +6,7 @@ import 'package:mtag_queue_skipper/data/models/user_profile.dart';
 import 'package:mtag_queue_skipper/data/services/auth_service.dart';
 import 'package:mtag_queue_skipper/data/services/firestore_service.dart';
 
+/// Outcome of a sign-in or sign-up attempt.
 class AuthResult {
   final bool success;
   final String? errorMessage;
@@ -15,8 +16,12 @@ class AuthResult {
   const AuthResult.failure(this.errorMessage) : success = false;
 }
 
-class AuthProvider with ChangeNotifier {
-  AuthProvider({AuthService? authService, FirestoreService? firestoreService})
+/// App-wide authentication state: who is signed in and their profile.
+///
+/// Provided at the root of the widget tree; screens read it with
+/// `context.watch<AuthController>()`.
+class AuthController with ChangeNotifier {
+  AuthController({AuthService? authService, FirestoreService? firestoreService})
     : _authService = authService ?? AuthService(),
       _firestoreService = firestoreService ?? FirestoreService() {
     _user = _mapFirebaseUser(_authService.currentUser);
@@ -32,6 +37,8 @@ class AuthProvider with ChangeNotifier {
   UserProfile? _user;
 
   UserProfile? get user => _user;
+  String? get uid => _user?.uid;
+  bool get isSignedIn => _user != null;
 
   void _onAuthStateChanged(firebase_auth.User? firebaseUser) {
     if (firebaseUser == null) {
@@ -42,7 +49,7 @@ class AuthProvider with ChangeNotifier {
 
     _user = _mergeWithExistingProfile(_profileFromFirebaseUser(firebaseUser));
     notifyListeners();
-    loadUserProfileFromFirestore();
+    refreshProfile();
   }
 
   UserProfile _mergeWithExistingProfile(UserProfile mapped) {
@@ -76,8 +83,8 @@ class AuthProvider with ChangeNotifier {
     );
   }
 
-  /// Loads owner profile from Firestore for the signed-in user.
-  Future<void> loadUserProfileFromFirestore() async {
+  /// Reloads the owner details (name, CNIC, phone) from Firestore.
+  Future<void> refreshProfile() async {
     final uid = _authService.currentUser?.uid;
     if (uid == null || _user == null) return;
 
@@ -144,7 +151,7 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> logout() async {
+  Future<void> signOut() async {
     await _authService.signOut();
     _user = null;
     notifyListeners();

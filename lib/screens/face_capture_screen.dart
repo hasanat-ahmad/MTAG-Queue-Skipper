@@ -8,8 +8,8 @@ import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/data/services/cloudinary_service.dart';
 import 'package:mtag_queue_skipper/data/services/face_verification_service.dart';
 import 'package:mtag_queue_skipper/data/services/firestore_service.dart';
-import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
+import 'package:mtag_queue_skipper/state/auth_controller.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -133,7 +133,7 @@ class _FaceCaptureScreenState extends State<FaceCaptureScreen> {
     final file = _capturedFile;
     if (file == null) return;
 
-    final auth = context.read<AuthProvider>();
+    final auth = context.read<AuthController>();
     final uid = auth.user?.uid;
     if (uid == null) {
       setState(() {
