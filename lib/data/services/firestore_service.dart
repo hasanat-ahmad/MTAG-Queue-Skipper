@@ -119,30 +119,6 @@ class FirestoreService {
     }
   }
 
-  Future<void> saveUserProfile({
-    required String uid,
-    required String email,
-    required String name,
-    required String cnic,
-    required String phoneNumber,
-  }) async {
-    try {
-      final verifiedUid = await _requireMatchingUid(uid);
-      await _userDoc(verifiedUid).set(
-        _sanitizeMap({
-          'email': email,
-          'name': name,
-          'cnic': cnic,
-          'phoneNumber': phoneNumber,
-          'updatedAt': FieldValue.serverTimestamp(),
-        }),
-        SetOptions(merge: true),
-      );
-    } catch (e) {
-      _rethrowAsFirestoreException(e);
-    }
-  }
-
   Future<Map<String, dynamic>?> getUserProfile(String uid) async {
     try {
       await _requireMatchingUid(uid);
