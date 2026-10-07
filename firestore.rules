@@ -1,9 +1,91 @@
 rules_version = '2';
 
+// users/{uid} holds one rider's profile, bike registration, payment and
+// MTAG card status.
+//
+// A rider can read only their own document and write only the fields they
+// own: profile, bike details and their reference photo URL. Payment, queue
+// token and card fields are written exclusively by Cloud Functions
+// (functions/), which use the Admin SDK and are not subject to these
+// rules. Everything else, e.g. counters/queueTokens, is server-only.
+//
+// Tests: firestore-tests/ (`npm test` runs them against the emulator).
 service cloud.firestore {
   match /databases/{database}/documents {
+
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidRiderWrite(userId, {});
+      allow update: if isOwner(userId)
+        && isValidRiderWrite(userId, resource.data);
+      allow delete: if false;
+    }
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Only rider-owned fields may change, and each changed field must be
+    // valid. Fields that do not change are not re-validated, so older
+    // documents stay editable.
+    function isValidRiderWrite(userId, before) {
+      let after = request.resource.data;
+      let changed = after.diff(before).affectedKeys();
+      return changed.hasOnly([
+          'email', 'name', 'cnic', 'phoneNumber', 'bikeRegistration',
+          'facePhotoUrl', 'facePhotoCapturedAt', 'updatedAt'])
+        && (!('email' in changed) || after.email == request.auth.token.email)
+        && (!('name' in changed) || isText(after.name, 1, 100))
+        && (!('cnic' in changed) || isMatch(after.cnic, '^[1-7][0-9]{12}$'))
+        && (!('phoneNumber' in changed)
+            || isMatch(after.phoneNumber, '^03[0-9]{9}$'))
+        && (!('bikeRegistration' in changed)
+            || isValidBikeRegistrationChange(before))
+        && (!('facePhotoUrl' in changed)
+            || isOwnFacePhotoUrl(userId, after.facePhotoUrl))
+        && (!('facePhotoCapturedAt' in changed)
+            || after.facePhotoCapturedAt == request.time)
+        && (!('updatedAt' in changed) || after.updatedAt == request.time);
+    }
+
+    // Inside bikeRegistration the rider may only change bikeDetails; the
+    // token fields belong to Cloud Functions.
+    function isValidBikeRegistrationChange(before) {
+      let after = request.resource.data.bikeRegistration;
+      let previous = before.get('bikeRegistration', {});
+      return after is map
+        && after.diff(previous).affectedKeys().hasOnly(['bikeDetails'])
+        && isValidBikeDetails(after.bikeDetails);
+    }
+
+    function isValidBikeDetails(bike) {
+      return bike is map
+        && bike.keys().hasOnly([
+            'plateNumber', 'engineNo', 'chasisNumber', 'brand', 'color',
+            'year'])
+        && isText(bike.get('plateNumber', ''), 1, 20)
+        && isText(bike.get('engineNo', ''), 1, 30)
+        && isText(bike.get('chasisNumber', ''), 1, 30)
+        && isText(bike.get('brand', ''), 0, 30)
+        && isText(bike.get('color', ''), 0, 30)
+        && isMatch(bike.get('year', ''), '^(19|20)[0-9]{2}$');
+    }
+
+    // The reference selfie must be the rider's own Cloudinary upload.
+    function isOwnFacePhotoUrl(userId, url) {
+      return isMatch(url,
+        '^https://res[.]cloudinary[.]com/[A-Za-z0-9_-]+/image/upload/'
+          + '(v[0-9]+/)?mtag/users/' + userId + '/face[.](jpg|jpeg|png)$');
+    }
+
+    function isText(value, minLength, maxLength) {
+      return value is string
+        && value.size() >= minLength
+        && value.size() <= maxLength;
+    }
+
+    function isMatch(value, pattern) {
+      return value is string && value.matches(pattern);
     }
   }
 }

@@ -64,3 +64,14 @@ class BikeOptions {
   /// The current year, so the picker never goes stale.
   static int get maxModelYear => DateTime.now().year;
 }
+
+/// Length limits enforced by firestore.rules. The form stops typing at
+/// these so a long value never turns into a "permission denied" error.
+class FieldLimits {
+  FieldLimits._();
+
+  static const int ownerName = 100;
+  static const int plateNumber = 20;
+  static const int engineNumber = 30;
+  static const int chassisNumber = 30;
+}

@@ -27,6 +27,9 @@ class OwnerDetailsSection extends StatelessWidget {
           controller: nameController,
           decoration: bikeFormFieldDecoration('Full name'),
           textInputAction: TextInputAction.next,
+          inputFormatters: [
+            LengthLimitingTextInputFormatter(FieldLimits.ownerName),
+          ],
           validator: FormValidators.required,
         ),
         const SizedBox(height: 10),
@@ -124,6 +127,9 @@ class RegistrationInfoSection extends StatelessWidget {
           decoration: bikeFormFieldDecoration('Plate number'),
           textCapitalization: TextCapitalization.characters,
           textInputAction: TextInputAction.next,
+          inputFormatters: [
+            LengthLimitingTextInputFormatter(FieldLimits.plateNumber),
+          ],
           validator: FormValidators.required,
         ),
         const SizedBox(height: 10),
@@ -132,12 +138,18 @@ class RegistrationInfoSection extends StatelessWidget {
             controller: engineController,
             decoration: bikeFormFieldDecoration('Engine no.'),
             textCapitalization: TextCapitalization.characters,
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(FieldLimits.engineNumber),
+            ],
             validator: FormValidators.required,
           ),
           second: TextFormField(
             controller: chassisController,
             decoration: bikeFormFieldDecoration('Chassis no.'),
             textCapitalization: TextCapitalization.characters,
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(FieldLimits.chassisNumber),
+            ],
             validator: FormValidators.required,
           ),
         ),
