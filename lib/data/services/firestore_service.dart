@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:mtag_queue_skipper/data/models/registration_record.dart';
 
 class MtagTokenValidation {
@@ -43,19 +42,15 @@ class FirestoreService {
   DocumentReference<Map<String, dynamic>> _userDoc(String uid) =>
       _users.doc(uid);
 
-  Future<String> _requireMatchingUid(String uid) async {
+  /// Guards against reading or writing another rider's document. Security
+  /// rules enforce the same thing server-side; this gives a clearer error.
+  String _requireMatchingUid(String uid) {
     final user = _auth.currentUser;
     if (user == null) {
       throw FirestoreException(
         'You must be signed in to save data.',
         code: 'unauthenticated',
       );
-    }
-
-    try {
-      await user.getIdToken(true);
-    } catch (e) {
-      debugPrint('Failed to refresh auth token: $e');
     }
 
     if (user.uid != uid) {
@@ -121,7 +116,7 @@ class FirestoreService {
 
   Future<Map<String, dynamic>?> getUserProfile(String uid) async {
     try {
-      await _requireMatchingUid(uid);
+      _requireMatchingUid(uid);
       final snapshot = await _userDoc(uid).get();
       if (!snapshot.exists) return null;
       return snapshot.data();
@@ -141,7 +136,7 @@ class FirestoreService {
     required Map<String, dynamic> bikeRegistration,
   }) async {
     try {
-      final verifiedUid = await _requireMatchingUid(uid);
+      final verifiedUid = _requireMatchingUid(uid);
       await _userDoc(verifiedUid).set(
         _sanitizeMap({
           'email': email,
@@ -164,7 +159,7 @@ class FirestoreService {
     required String facePhotoUrl,
   }) async {
     try {
-      final verifiedUid = await _requireMatchingUid(uid);
+      final verifiedUid = _requireMatchingUid(uid);
       await _userDoc(verifiedUid).set({
         'facePhotoUrl': facePhotoUrl,
         'facePhotoCapturedAt': FieldValue.serverTimestamp(),
@@ -182,7 +177,7 @@ class FirestoreService {
     required String currency,
   }) async {
     try {
-      final verifiedUid = await _requireMatchingUid(uid);
+      final verifiedUid = _requireMatchingUid(uid);
       await _userDoc(verifiedUid).set({
         'payment': {
           'status': 'paid',
@@ -205,7 +200,7 @@ class FirestoreService {
     required String tokenNumber,
   }) async {
     try {
-      final verifiedUid = await _requireMatchingUid(uid);
+      final verifiedUid = _requireMatchingUid(uid);
       final normalizedToken = tokenNumber.trim();
       if (normalizedToken.isEmpty) {
         throw FirestoreException('Please enter your token number.');
@@ -290,7 +285,7 @@ class FirestoreService {
     required String tokenNumber,
   }) async {
     try {
-      final verifiedUid = await _requireMatchingUid(uid);
+      final verifiedUid = _requireMatchingUid(uid);
       await _userDoc(verifiedUid).set({
         'mtagCard': {
           'issued': true,
@@ -309,7 +304,7 @@ class FirestoreService {
   /// Loads the rider's bike, queue token and card status.
   Future<RegistrationRecord?> fetchRegistration(String uid) async {
     try {
-      await _requireMatchingUid(uid);
+      _requireMatchingUid(uid);
       final snapshot = await _userDoc(uid).get();
       final data = snapshot.data();
       if (!snapshot.exists || data == null) return null;
