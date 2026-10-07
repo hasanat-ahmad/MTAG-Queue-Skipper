@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mtag_queue_skipper/data/models/registration_record.dart';
 
 class MtagTokenValidation {
   const MtagTokenValidation({
@@ -150,25 +151,6 @@ class FirestoreService {
       return snapshot.data();
     } on FirestoreException {
       rethrow;
-    } catch (e) {
-      _rethrowAsFirestoreException(e);
-    }
-  }
-
-  Future<void> saveBikeRegistration({
-    required String uid,
-    required Map<String, dynamic> data,
-  }) async {
-    try {
-      final verifiedUid = await _requireMatchingUid(uid);
-      await _userDoc(verifiedUid).set(
-        _sanitizeMap({
-          'bikeRegistration': _sanitizeMap(data),
-          'updatedAt': FieldValue.serverTimestamp(),
-        }),
-        SetOptions(merge: true),
-      );
-      await _removeLegacyOwnerFieldsFromBikeDetails(verifiedUid);
     } catch (e) {
       _rethrowAsFirestoreException(e);
     }
@@ -348,35 +330,14 @@ class FirestoreService {
     }
   }
 
-  Future<Map<String, dynamic>?> getBikeRegistration(String uid) async {
+  /// Loads the rider's bike, queue token and card status.
+  Future<RegistrationRecord?> fetchRegistration(String uid) async {
     try {
       await _requireMatchingUid(uid);
       final snapshot = await _userDoc(uid).get();
-      if (!snapshot.exists) return null;
       final data = snapshot.data();
-      final bike = data?['bikeRegistration'];
-      Map<String, dynamic>? bikeMap;
-      if (bike is Map<String, dynamic>) {
-        bikeMap = Map<String, dynamic>.from(bike);
-      } else if (bike is Map) {
-        bikeMap = Map<String, dynamic>.from(bike);
-      }
-      if (bikeMap == null) return null;
-
-      final mtagCard = data?['mtagCard'];
-      final mtagMap = mtagCard is Map<String, dynamic>
-          ? mtagCard
-          : mtagCard is Map
-          ? Map<String, dynamic>.from(mtagCard)
-          : <String, dynamic>{};
-      final mtagCardIssued = mtagMap['issued'] == true;
-
-      bikeMap['mtagCardIssued'] = mtagCardIssued;
-      if (mtagCardIssued) {
-        bikeMap['tokenStatus'] = 'Card Issued';
-        bikeMap['tokenEstimatedTime'] = '—';
-      }
-      return bikeMap;
+      if (!snapshot.exists || data == null) return null;
+      return RegistrationRecord.fromUserDocument(data);
     } on FirestoreException {
       rethrow;
     } catch (e) {

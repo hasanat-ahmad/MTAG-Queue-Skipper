@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
-import 'package:mtag_queue_skipper/models/bike_details.dart';
+import 'package:mtag_queue_skipper/data/models/bike_details.dart';
+import 'package:mtag_queue_skipper/data/models/queue_token.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/utils/pakistan_validators.dart';
@@ -375,8 +376,8 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
 
                   final bikeDetails = BikeDetails(
                     plateNumber: _plateCtrl.text.trim(),
-                    engineNo: _engineCtrl.text.trim(),
-                    chasisNumber: _chassisCtrl.text.trim(),
+                    engineNumber: _engineCtrl.text.trim(),
+                    chassisNumber: _chassisCtrl.text.trim(),
                     brand: _brand ?? '',
                     color: _color ?? '',
                     year: _yearCtrl.text.trim(),
@@ -387,11 +388,13 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                   final tokenNumber =
                       'TKN-${(now.millisecondsSinceEpoch % 10000).toString().padLeft(4, '0')}';
 
-                  bikeDetailsProvider.setTokenData(
-                    tokenNumber: tokenNumber,
-                    tokenStatus: 'Pending Verification',
-                    tokenEstimatedTime: '15-20 minutes',
-                    tokenGeneratedAt: now.toIso8601String(),
+                  bikeDetailsProvider.setToken(
+                    QueueToken(
+                      number: tokenNumber,
+                      status: 'Pending Verification',
+                      estimatedWait: '15-20 minutes',
+                      generatedAt: now.toIso8601String(),
+                    ),
                   );
 
                   final user = auth.user;

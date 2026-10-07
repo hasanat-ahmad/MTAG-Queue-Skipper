@@ -9,42 +9,16 @@ import 'package:provider/provider.dart';
 class TokenStatusScreen extends StatelessWidget {
   const TokenStatusScreen({super.key});
 
-  String _formatGeneratedAt(String raw) {
-    if (raw.trim().isEmpty || raw == 'N/A') {
-      return 'N/A';
-    }
-
-    final parsed = DateTime.tryParse(raw);
-    if (parsed == null) {
-      return raw;
-    }
-
-    final day = parsed.day.toString().padLeft(2, '0');
-    final month = parsed.month.toString().padLeft(2, '0');
-    final year = parsed.year.toString();
-    final hour = parsed.hour.toString().padLeft(2, '0');
-    final minute = parsed.minute.toString().padLeft(2, '0');
-    final second = parsed.second.toString().padLeft(2, '0');
-
-    return '$day-$month-$year $hour:$minute:$second';
-  }
-
   @override
   Widget build(BuildContext context) {
     final bikeDetailsProvider = context.watch<BikeDetailsProvider>();
     final user = context.watch<AuthProvider>().user;
 
-    final hasToken = bikeDetailsProvider.hasToken;
-    final tokenNumber = bikeDetailsProvider.tokenNumber ?? '';
-    final status = bikeDetailsProvider.displayTokenStatus;
-    final estimatedTime = bikeDetailsProvider.displayEstimatedTime;
+    final token = bikeDetailsProvider.token;
     final isCollected = bikeDetailsProvider.isCardCollected;
-    final generatedAt = _formatGeneratedAt(
-      bikeDetailsProvider.tokenGeneratedAt ?? 'N/A',
-    );
     final bikeDetails = bikeDetailsProvider.bikeDetails;
 
-    if (!hasToken) {
+    if (token == null) {
       return MtagScaffold(
         title: 'My Token',
         body: Center(
@@ -97,7 +71,7 @@ class TokenStatusScreen extends StatelessWidget {
         children: [
           MtagHighlightBanner(
             label: 'Your queue token',
-            value: tokenNumber,
+            value: token.number,
             icon: Icons.confirmation_number_outlined,
           ),
           const SizedBox(height: 14),
@@ -105,9 +79,15 @@ class TokenStatusScreen extends StatelessWidget {
             title: 'Status details',
             child: Column(
               children: [
-                MtagInfoTile(label: 'Status', value: status),
-                MtagInfoTile(label: 'Estimated wait', value: estimatedTime),
-                MtagInfoTile(label: 'Generated at', value: generatedAt),
+                MtagInfoTile(label: 'Status', value: token.statusLabel),
+                MtagInfoTile(
+                  label: 'Estimated wait',
+                  value: token.estimatedWaitLabel,
+                ),
+                MtagInfoTile(
+                  label: 'Generated at',
+                  value: token.generatedAtLabel,
+                ),
                 MtagInfoTile(
                   label: 'Plate',
                   value: bikeDetails?.plateNumber ?? 'N/A',

@@ -9,7 +9,6 @@ import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/services/face_verification_service.dart';
 import 'package:mtag_queue_skipper/services/firestore_service.dart';
-import 'package:mtag_queue_skipper/utils/token_display.dart';
 import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -51,8 +50,8 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
     _tokenPrefilled = true;
 
     final provider = context.read<BikeDetailsProvider>();
-    final storedToken = provider.tokenNumber;
-    if (storedToken != null && storedToken.isNotEmpty) {
+    final storedToken = provider.token?.number;
+    if (storedToken != null) {
       _tokenController.text = storedToken;
     }
   }
@@ -201,7 +200,6 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
     if (validation == null || captured == null) return;
 
     final bikeProvider = context.read<BikeDetailsProvider>();
-    final generatedAt = bikeProvider.tokenGeneratedAt ?? '';
 
     setState(() {
       _verifying = true;
@@ -231,12 +229,7 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
       );
 
       if (!mounted) return;
-      bikeProvider.setTokenData(
-        tokenNumber: validation.tokenNumber,
-        tokenStatus: TokenDisplay.collectedStatus,
-        tokenEstimatedTime: TokenDisplay.collectedEstimatedTime,
-        tokenGeneratedAt: generatedAt,
-      );
+      bikeProvider.markCardCollected(tokenNumber: validation.tokenNumber);
 
       if (!mounted) return;
       setState(() {

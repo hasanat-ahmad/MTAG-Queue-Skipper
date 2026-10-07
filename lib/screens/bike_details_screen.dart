@@ -162,12 +162,12 @@ class BikeDetailsScreen extends StatelessWidget {
                 MtagInfoTile(
                   icon: Icons.settings_outlined,
                   label: 'Engine no.',
-                  value: bike.engineNo,
+                  value: bike.engineNumber,
                 ),
                 MtagInfoTile(
                   icon: Icons.numbers_outlined,
                   label: 'Chassis no.',
-                  value: bike.chasisNumber,
+                  value: bike.chassisNumber,
                 ),
               ],
             ),

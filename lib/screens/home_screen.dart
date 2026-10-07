@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/core/theme/app_text_styles.dart';
+import 'package:mtag_queue_skipper/data/models/queue_token.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:provider/provider.dart';
@@ -85,9 +86,9 @@ class HomeScreen extends StatelessWidget {
             if (bike.hasToken) ...[
               const SizedBox(height: 14),
               _TokenStatusCard(
-                tokenNumber: bike.tokenNumber!,
-                status: bike.displayTokenStatus,
-                estimatedTime: bike.displayEstimatedTime,
+                tokenNumber: bike.token!.number,
+                status: bike.token!.statusLabel,
+                estimatedTime: bike.token!.estimatedWaitLabel,
                 onTap: () =>
                     Navigator.pushNamed(context, AppRoutes.tokenStatus),
               ),
@@ -205,7 +206,7 @@ class _TokenStatusCard extends StatelessWidget {
   final String estimatedTime;
   final VoidCallback onTap;
 
-  bool get _isCollected => status == 'Card Issued';
+  bool get _isCollected => status == QueueToken.collectedStatus;
 
   Color get _statusColor {
     if (_isCollected) return AppColors.success;
