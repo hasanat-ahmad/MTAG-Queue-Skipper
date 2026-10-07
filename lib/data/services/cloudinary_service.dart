@@ -1,64 +1,46 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
-import 'package:mtag_queue_skipper/config/cloudinary_config.dart';
 import 'package:mtag_queue_skipper/core/errors/app_exception.dart';
+import 'package:mtag_queue_skipper/data/services/backend_service.dart';
 
 class CloudinaryException extends AppException {
   const CloudinaryException(super.message, {super.code});
 }
 
+/// Uploads the rider's reference selfie to Cloudinary.
+///
+/// Every upload is signed by the server (createFaceUploadSignature) and
+/// restricted to the rider's own `mtag/users/{uid}/face` image, so the app
+/// holds no Cloudinary secret and no unsigned upload preset is needed.
 class CloudinaryService {
-  CloudinaryService({FirebaseAuth? auth})
-    : _auth = auth ?? FirebaseAuth.instance;
+  CloudinaryService({BackendService? backend})
+    : _backend = backend ?? BackendService();
 
-  final FirebaseAuth _auth;
+  final BackendService _backend;
 
-  void _ensureConfigured() {
-    if (!CloudinaryConfig.isConfigured) {
-      throw CloudinaryException(
-        'Cloudinary is not configured. Copy lib/config/cloudinary_config.local.dart.example '
-        'to cloudinary_config.local.dart and set cloudName and uploadPreset.',
-        code: 'not-configured',
-      );
-    }
-  }
-
-  Future<String> uploadFacePhoto({
-    required String uid,
-    required Uint8List imageBytes,
-  }) async {
-    final user = _auth.currentUser;
-    if (user == null) {
-      throw CloudinaryException(
-        'You must be signed in to upload a photo.',
-        code: 'unauthenticated',
-      );
-    }
-    if (user.uid != uid) {
-      throw CloudinaryException(
-        'Session expired. Please sign in again.',
-        code: 'uid-mismatch',
-      );
-    }
-
-    _ensureConfigured();
-
-    final cloudName = CloudinaryConfig.cloudName.trim();
-    final uploadPreset = CloudinaryConfig.uploadPreset.trim();
-    final uri = Uri.parse(
-      'https://api.cloudinary.com/v1_1/$cloudName/image/upload',
-    );
-
-    final request = http.MultipartRequest('POST', uri)
-      ..fields['upload_preset'] = uploadPreset
-      ..fields['folder'] = 'mtag/users/$uid'
-      ..fields['public_id'] = 'face'
-      ..files.add(
-        http.MultipartFile.fromBytes('file', imageBytes, filename: 'face.jpg'),
-      );
+  /// Uploads [imageBytes] and returns its HTTPS delivery URL.
+  Future<String> uploadFacePhoto(Uint8List imageBytes) async {
+    final upload = await _backend.createFaceUploadSignature();
+    final request =
+        http.MultipartRequest(
+            'POST',
+            Uri.https(
+              'api.cloudinary.com',
+              '/v1_1/${upload.cloudName}/image/upload',
+            ),
+          )
+          ..fields.addAll(upload.params)
+          ..fields['api_key'] = upload.apiKey
+          ..fields['signature'] = upload.signature
+          ..files.add(
+            http.MultipartFile.fromBytes(
+              'file',
+              imageBytes,
+              filename: 'face.jpg',
+            ),
+          );
 
     try {
       final streamed = await request.send();
@@ -73,9 +55,9 @@ class CloudinaryService {
       }
 
       final json = jsonDecode(body) as Map<String, dynamic>;
-      final url = json['secure_url'] as String? ?? json['url'] as String?;
+      final url = json['secure_url'] as String?;
       if (url == null || url.isEmpty) {
-        throw CloudinaryException(
+        throw const CloudinaryException(
           'Cloudinary did not return an image URL.',
           code: 'missing-url',
         );

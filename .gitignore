@@ -44,4 +44,5 @@ app.*.map.json
 
 # Local API keys (never commit)
 /lib/config/stripe_config.local.dart
+# No longer used (uploads are signed server-side); kept so old copies stay out of git.
 /lib/config/cloudinary_config.local.dart

@@ -78,10 +78,7 @@ class FaceEnrollmentController extends SafeChangeNotifier {
 
     try {
       final bytes = await photo.readAsBytes();
-      final imageUrl = await _cloudinary.uploadFacePhoto(
-        uid: uid,
-        imageBytes: bytes,
-      );
+      final imageUrl = await _cloudinary.uploadFacePhoto(bytes);
       await _firestore.saveFacePhotoUrl(uid: uid, facePhotoUrl: imageUrl);
       await _faceVerification.registerReferenceFace(
         uid: uid,
