@@ -22,6 +22,9 @@ class RegistrationController with ChangeNotifier {
   bool get hasToken => _record.hasToken;
   bool get isCardCollected => _record.isCardCollected;
 
+  /// The rider has a token but has not collected the MTAG card yet.
+  bool get isReadyToCollectCard => hasToken && !isCardCollected;
+
   void setBikeDetails(BikeDetails bikeDetails) {
     _record = _record.copyWith(bike: bikeDetails);
     notifyListeners();
