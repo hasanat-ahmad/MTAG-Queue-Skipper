@@ -1,23 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mtag_queue_skipper/core/errors/app_exception.dart';
+import 'package:mtag_queue_skipper/data/models/card_collection_ticket.dart';
 import 'package:mtag_queue_skipper/data/models/registration_record.dart';
-
-class MtagTokenValidation {
-  const MtagTokenValidation({
-    required this.uid,
-    required this.tokenNumber,
-    required this.ownerName,
-    required this.plateNumber,
-    required this.facePhotoUrl,
-  });
-
-  final String uid;
-  final String tokenNumber;
-  final String ownerName;
-  final String plateNumber;
-  final String facePhotoUrl;
-}
 
 class FirestoreException extends AppException {
   const FirestoreException(super.message, {super.code});
@@ -178,7 +163,7 @@ class FirestoreService {
 
   /// Validates [tokenNumber] for the signed-in user and returns profile data
   /// needed for MTAG card collection.
-  Future<MtagTokenValidation> validateTokenForCollection({
+  Future<CardCollectionTicket> validateTokenForCollection({
     required String uid,
     required String tokenNumber,
   }) async {
@@ -251,7 +236,7 @@ class FirestoreService {
           ? Map<String, dynamic>.from(bikeDetailsRaw)
           : <String, dynamic>{};
 
-      return MtagTokenValidation(
+      return CardCollectionTicket(
         uid: verifiedUid,
         tokenNumber: storedToken,
         ownerName: data['name'] as String? ?? '',

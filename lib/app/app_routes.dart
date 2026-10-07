@@ -3,13 +3,13 @@ import 'package:mtag_queue_skipper/features/auth/login_screen.dart';
 import 'package:mtag_queue_skipper/features/auth/register_screen.dart';
 import 'package:mtag_queue_skipper/features/bike_details/bike_details_screen.dart';
 import 'package:mtag_queue_skipper/features/bike_registration/bike_registration_screen.dart';
+import 'package:mtag_queue_skipper/features/card_issuance/card_issuance_screen.dart';
 import 'package:mtag_queue_skipper/features/face_capture/face_capture_screen.dart';
 import 'package:mtag_queue_skipper/features/home/home_screen.dart';
 import 'package:mtag_queue_skipper/features/payment/payment_screen.dart';
 import 'package:mtag_queue_skipper/features/profile/profile_screen.dart';
 import 'package:mtag_queue_skipper/features/splash/splash_screen.dart';
 import 'package:mtag_queue_skipper/features/token_status/token_status_screen.dart';
-import 'package:mtag_queue_skipper/screens/mtag_card_issuance_screen.dart';
 
 /// Named routes for every screen.
 ///
@@ -43,6 +43,6 @@ class AppRoutes {
     payment: (_) => const PaymentScreen(),
     tokenStatus: (_) => const TokenStatusScreen(),
     bikeDetails: (_) => const BikeDetailsScreen(),
-    cardIssuance: (_) => const MtagCardIssuanceScreen(),
+    cardIssuance: (_) => const CardIssuanceScreen(),
   };
 }
