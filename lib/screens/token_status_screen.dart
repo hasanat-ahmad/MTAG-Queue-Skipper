@@ -140,9 +140,7 @@ class TokenStatusScreen extends StatelessWidget {
                 ),
                 MtagInfoTile(
                   label: 'Owner',
-                  value: user?.name.trim().isNotEmpty == true
-                      ? user!.name
-                      : 'N/A',
+                  value: user?.hasName == true ? user!.name : 'N/A',
                 ),
               ],
             ),

@@ -84,7 +84,7 @@ class BikeDetailsScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        user?.name.trim().isNotEmpty == true ? user!.name : '—',
+                        user?.hasName == true ? user!.name : '—',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 17,
@@ -112,9 +112,7 @@ class BikeDetailsScreen extends StatelessWidget {
                 MtagInfoTile(
                   icon: Icons.person_outline,
                   label: 'Name',
-                  value: user?.name.trim().isNotEmpty == true
-                      ? user!.name
-                      : '—',
+                  value: user?.hasName == true ? user!.name : '—',
                 ),
                 MtagInfoTile(
                   icon: Icons.phone_outlined,

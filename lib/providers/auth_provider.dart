@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mtag_queue_skipper/firebase_options.dart';
-import 'package:mtag_queue_skipper/models/user.dart';
+import 'package:mtag_queue_skipper/data/models/user_profile.dart';
 import 'package:mtag_queue_skipper/services/firestore_service.dart';
 
 class AuthResult {
@@ -43,9 +43,9 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  User? _user;
+  UserProfile? _user;
 
-  User? get user => _user;
+  UserProfile? get user => _user;
   firebase_auth.User? get firebaseUser => _firebaseAuth.currentUser;
 
   void _onAuthStateChanged(firebase_auth.User? firebaseUser) {
@@ -55,12 +55,12 @@ class AuthProvider with ChangeNotifier {
       return;
     }
 
-    _user = _mergeWithExistingProfile(User.fromFirebase(firebaseUser));
+    _user = _mergeWithExistingProfile(_profileFromFirebaseUser(firebaseUser));
     notifyListeners();
     loadUserProfileFromFirestore();
   }
 
-  User _mergeWithExistingProfile(User mapped) {
+  UserProfile _mergeWithExistingProfile(UserProfile mapped) {
     final existing = _user;
     if (existing == null || existing.uid != mapped.uid) return mapped;
 
@@ -71,9 +71,24 @@ class AuthProvider with ChangeNotifier {
     );
   }
 
-  User? _mapFirebaseUser(firebase_auth.User? firebaseUser) {
+  UserProfile? _mapFirebaseUser(firebase_auth.User? firebaseUser) {
     if (firebaseUser == null) return null;
-    return _mergeWithExistingProfile(User.fromFirebase(firebaseUser));
+    return _mergeWithExistingProfile(_profileFromFirebaseUser(firebaseUser));
+  }
+
+  /// Uses the Firebase display name, falling back to the e-mail prefix.
+  UserProfile _profileFromFirebaseUser(firebase_auth.User firebaseUser) {
+    final email = firebaseUser.email ?? '';
+    final displayName = firebaseUser.displayName?.trim();
+    final fallbackName = email.isNotEmpty ? email.split('@').first : 'User';
+
+    return UserProfile(
+      uid: firebaseUser.uid,
+      name: (displayName != null && displayName.isNotEmpty)
+          ? displayName
+          : fallbackName,
+      email: email,
+    );
   }
 
   /// Loads owner profile from Firestore for the signed-in user.
@@ -85,14 +100,7 @@ class AuthProvider with ChangeNotifier {
       final data = await _firestoreService.getUserProfile(uid);
       if (data == null || _user?.uid != uid) return;
 
-      _user = _user!.copyWith(
-        name: (data['name'] as String?)?.trim().isNotEmpty == true
-            ? data['name'] as String
-            : _user!.name,
-        cnic: data['cnic'] as String? ?? _user!.cnic,
-        phoneNumber: data['phoneNumber'] as String? ?? _user!.phoneNumber,
-        email: data['email'] as String? ?? _user!.email,
-      );
+      _user = _user!.mergeStoredProfile(data);
       notifyListeners();
     } on FirestoreException catch (e) {
       debugPrint('Failed to load user profile from Firestore: $e');

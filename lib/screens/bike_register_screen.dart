@@ -54,7 +54,7 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
     final user = auth.user;
     if (user == null) return;
 
-    if (_ownerCtrl.text.trim().isEmpty && user.name.trim().isNotEmpty) {
+    if (_ownerCtrl.text.trim().isEmpty && user.hasName) {
       _ownerCtrl.text = user.name;
     }
     if (_phoneCtrl.text.trim().isEmpty && user.phoneNumber.trim().isNotEmpty) {

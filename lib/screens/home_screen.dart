@@ -13,10 +13,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final bike = context.watch<BikeDetailsProvider>();
-    final userName = auth.user?.name.trim().isNotEmpty == true
-        ? auth.user!.name.trim()
-        : 'User';
-    final firstName = userName.split(' ').first;
+    final firstName = auth.user?.firstName ?? 'User';
 
     final items = [
       _NavItem(

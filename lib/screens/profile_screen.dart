@@ -21,14 +21,6 @@ class Profile extends StatelessWidget {
       );
     }
 
-    final initials = user.name
-        .trim()
-        .split(' ')
-        .where((w) => w.isNotEmpty)
-        .take(2)
-        .map((w) => w[0].toUpperCase())
-        .join();
-
     return MtagScaffold(
       title: 'Profile',
       body: ListView(
@@ -46,7 +38,7 @@ class Profile extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      initials.isEmpty ? '?' : initials,
+                      user.initials,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 28,
@@ -57,7 +49,7 @@ class Profile extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  user.name.trim().isEmpty ? 'Rider' : user.name,
+                  user.hasName ? user.name : 'Rider',
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
