@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mtag_queue_skipper/core/errors/app_exception.dart';
+import 'package:mtag_queue_skipper/core/errors/build_aware_message.dart';
 import 'package:mtag_queue_skipper/firebase_options.dart';
 
 /// Thrown when signing in or up fails. [message] is safe to show the rider.
@@ -88,8 +89,12 @@ class AuthService {
 
       final googleAuth = await googleUser.authentication;
       if (googleAuth.idToken == null) {
-        throw const AuthException(
-          'Google did not return an ID token. Check Firebase Google Sign-In setup.',
+        throw AuthException(
+          buildAwareMessage(
+            rider: 'Google sign-in failed. Please try again.',
+            developer:
+                'Google did not return an ID token. Check Firebase Google Sign-In setup.',
+          ),
         );
       }
 
@@ -117,7 +122,12 @@ class AuthService {
       if (_isAndroidDeveloperError(e.toString())) {
         throw AuthException(_androidDeveloperErrorMessage);
       }
-      throw AuthException('Google sign-in failed: $e');
+      throw AuthException(
+        buildAwareMessage(
+          rider: 'Google sign-in failed. Please try again.',
+          developer: 'Google sign-in failed: $e',
+        ),
+      );
     }
   }
 
@@ -158,11 +168,17 @@ class AuthService {
         message.contains('error 10');
   }
 
-  String get _androidDeveloperErrorMessage =>
-      'Google Sign-In is not configured for this Android build (error 10). '
-      'In Firebase Console → Project settings → Your Android app '
-      '(com.example.mtag_queue_skipper), add SHA-1:\n'
-      '${DefaultFirebaseOptions.androidDebugSha1}\n'
-      'Then download a new google-services.json, replace '
-      'android/app/google-services.json, and run flutter clean && flutter run.';
+  /// Setup instructions (with this machine's debug SHA-1) are only shown in
+  /// debug builds; riders get a plain message.
+  String get _androidDeveloperErrorMessage => buildAwareMessage(
+    rider:
+        'Google sign-in is not available right now. Please sign in with email.',
+    developer:
+        'Google Sign-In is not configured for this Android build (error 10). '
+        'In Firebase Console → Project settings → Your Android app '
+        '(com.example.mtag_queue_skipper), add SHA-1:\n'
+        '${DefaultFirebaseOptions.androidDebugSha1}\n'
+        'Then download a new google-services.json, replace '
+        'android/app/google-services.json, and run flutter clean && flutter run.',
+  );
 }

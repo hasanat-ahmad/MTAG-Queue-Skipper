@@ -4,6 +4,7 @@ import 'package:face_verification/face_verification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:mtag_queue_skipper/core/errors/app_exception.dart';
+import 'package:mtag_queue_skipper/core/errors/build_aware_message.dart';
 
 class FaceVerificationException extends AppException {
   const FaceVerificationException(super.message);
@@ -64,14 +65,9 @@ class FaceVerificationService {
     try {
       await _enrollReferenceFace(uid: uid, imagePath: imagePath);
     } catch (e) {
-      final message = e.toString();
-      if (message.toLowerCase().contains('multiple faces')) {
-        throw FaceVerificationException(
-          'Multiple faces detected. Use a photo with only your face visible.',
-        );
-      }
-      throw FaceVerificationException(
-        'Could not save your face photo for verification. $message',
+      throw _explain(
+        e,
+        fallback: 'Could not save your face photo for verification.',
       );
     }
   }
@@ -111,9 +107,11 @@ class FaceVerificationService {
             staffId: uid,
           );
 
-      debugPrint(
-        'Face verify uid=$uid matchedId=$matchedId threshold=$_matchThreshold',
-      );
+      if (kDebugMode) {
+        debugPrint(
+          'Face verify uid=$uid matchedId=$matchedId threshold=$_matchThreshold',
+        );
+      }
 
       return FaceVerificationResult(
         isMatch: matchedId == uid,
@@ -121,19 +119,30 @@ class FaceVerificationService {
       );
     } catch (e) {
       if (e is FaceVerificationException) rethrow;
-      final message = e.toString();
-      if (message.toLowerCase().contains('multiple faces')) {
-        throw FaceVerificationException(
-          'Multiple faces detected. Only one person should be in the frame.',
-        );
-      }
-      if (message.toLowerCase().contains('no face')) {
-        throw FaceVerificationException(
-          'No face detected. Center your face and try again.',
-        );
-      }
-      throw FaceVerificationException('Face verification failed. $message');
+      throw _explain(
+        e,
+        fallback: 'Face verification failed. Please try again.',
+      );
     }
+  }
+
+  /// Turns a face plugin error into a message for the rider. Raw plugin
+  /// details are only included in debug builds.
+  FaceVerificationException _explain(Object error, {required String fallback}) {
+    final message = error.toString().toLowerCase();
+    if (message.contains('multiple faces')) {
+      return const FaceVerificationException(
+        'Multiple faces detected. Only your face should be in the photo.',
+      );
+    }
+    if (message.contains('no face')) {
+      return const FaceVerificationException(
+        'No face detected. Center your face in the oval and try again.',
+      );
+    }
+    return FaceVerificationException(
+      buildAwareMessage(rider: fallback, developer: '$fallback $error'),
+    );
   }
 
   /// Plugin throws if (id, imageId) exists even when replace=true — delete first.

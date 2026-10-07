@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mtag_queue_skipper/core/errors/app_exception.dart';
+import 'package:mtag_queue_skipper/core/errors/build_aware_message.dart';
 import 'package:mtag_queue_skipper/data/models/bike_details.dart';
 import 'package:mtag_queue_skipper/data/models/card_collection_ticket.dart';
 import 'package:mtag_queue_skipper/data/models/registration_record.dart';
@@ -58,14 +59,22 @@ class FirestoreService {
   String _friendlyMessage(FirebaseException error) {
     switch (error.code) {
       case 'permission-denied':
-        return 'Firestore permission denied. Enable Firestore in Firebase Console '
-            'and publish security rules that allow signed-in users to write their '
-            'own document at users/{uid}.';
+        return buildAwareMessage(
+          rider: "You don't have permission to do that. Please sign in again.",
+          developer:
+              'Firestore permission denied. Deploy firestore.rules '
+              '(firebase deploy --only firestore:rules) and check that the write '
+              'only touches rider-owned fields.',
+        );
       case 'unavailable':
         return 'Firestore is unavailable. Check your internet connection.';
       case 'not-found':
-        return 'Firestore database not found. Create a Firestore database in '
-            'Firebase Console.';
+        return buildAwareMessage(
+          rider: 'Something went wrong. Please try again.',
+          developer:
+              'Firestore database not found. Create a Firestore database in '
+              'Firebase Console.',
+        );
       default:
         return error.message ?? 'Firestore error: ${error.code}';
     }
