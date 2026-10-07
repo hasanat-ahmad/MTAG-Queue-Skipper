@@ -3,7 +3,7 @@ import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
-import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
+import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
 import 'package:provider/provider.dart';
 
 class Profile extends StatelessWidget {
@@ -15,7 +15,7 @@ class Profile extends StatelessWidget {
     final user = auth.user;
 
     if (user == null) {
-      return const MtagScreen(
+      return const MtagScaffold(
         title: 'Profile',
         body: Center(child: Text('Not signed in')),
       );
@@ -29,7 +29,7 @@ class Profile extends StatelessWidget {
         .map((w) => w[0].toUpperCase())
         .join();
 
-    return MtagScreen(
+    return MtagScaffold(
       title: 'Profile',
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -72,7 +72,7 @@ class Profile extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          MtagCard(
+          MtagSectionCard(
             title: 'Your details',
             child: Column(
               children: [

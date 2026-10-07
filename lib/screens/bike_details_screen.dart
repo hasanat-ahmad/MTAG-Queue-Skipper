@@ -3,7 +3,7 @@ import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
-import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
+import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
 import 'package:provider/provider.dart';
 
 class BikeDetailsScreen extends StatelessWidget {
@@ -15,7 +15,7 @@ class BikeDetailsScreen extends StatelessWidget {
     final user = context.watch<AuthProvider>().user;
 
     if (bike == null) {
-      return MtagScreen(
+      return MtagScaffold(
         title: 'Bike Details',
         body: Center(
           child: Padding(
@@ -60,7 +60,7 @@ class BikeDetailsScreen extends StatelessWidget {
       );
     }
 
-    return MtagScreen(
+    return MtagScaffold(
       title: 'Bike Details',
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -105,7 +105,7 @@ class BikeDetailsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          MtagCard(
+          MtagSectionCard(
             title: 'Owner',
             child: Column(
               children: [
@@ -134,7 +134,7 @@ class BikeDetailsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          MtagCard(
+          MtagSectionCard(
             title: 'Motorcycle',
             child: Column(
               children: [

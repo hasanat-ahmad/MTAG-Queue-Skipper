@@ -6,7 +6,7 @@ import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/services/firestore_service.dart';
 import 'package:mtag_queue_skipper/services/stripe_service.dart';
-import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
+import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
 import 'package:provider/provider.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -101,7 +101,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Widget build(BuildContext context) {
     final configured = StripeConfig.isConfigured;
 
-    return MtagScreen(
+    return MtagScaffold(
       title: 'Payment',
       body: SafeArea(
         child: Padding(
@@ -151,7 +151,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
               ),
               const SizedBox(height: 14),
-              const MtagCard(
+              const MtagSectionCard(
                 title: 'Test card',
                 child: Text(
                   '4242 4242 4242 4242\n'

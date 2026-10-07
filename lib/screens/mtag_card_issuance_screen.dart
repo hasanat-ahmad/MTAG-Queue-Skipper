@@ -10,7 +10,7 @@ import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/services/face_verification_service.dart';
 import 'package:mtag_queue_skipper/services/firestore_service.dart';
 import 'package:mtag_queue_skipper/utils/token_display.dart';
-import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
+import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -274,7 +274,7 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MtagScreen(
+    return MtagScaffold(
       title: _step == _IssuanceStep.success ? 'Card issued' : 'Collect card',
       body: SafeArea(
         child: Padding(
@@ -304,7 +304,7 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
           child: TextFormField(
             controller: _tokenController,
             textCapitalization: TextCapitalization.characters,
-            decoration: MtagUi.inputDecoration(
+            decoration: mtagInputDecoration(
               label: 'Token number',
               hint: 'e.g. TKN-1234',
               prefixIcon: Icons.confirmation_number_outlined,

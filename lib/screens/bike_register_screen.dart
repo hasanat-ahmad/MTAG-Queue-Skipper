@@ -6,7 +6,7 @@ import 'package:mtag_queue_skipper/models/bike_details.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/utils/pakistan_validators.dart';
-import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
+import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
 import 'package:provider/provider.dart';
 
 class BikeRegisterScreen extends StatefulWidget {
@@ -216,7 +216,7 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final bikeDetailsProvider = context.watch<BikeDetailsProvider>();
-    return MtagScreen(
+    return MtagScaffold(
       title: 'Register Bike',
       actions: [
         TextButton(

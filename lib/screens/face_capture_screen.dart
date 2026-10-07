@@ -9,7 +9,7 @@ import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/services/firestore_service.dart';
 import 'package:mtag_queue_skipper/services/cloudinary_service.dart';
 import 'package:mtag_queue_skipper/services/face_verification_service.dart';
-import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
+import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -203,7 +203,7 @@ class _FaceCaptureScreenState extends State<FaceCaptureScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MtagScreen(
+    return MtagScaffold(
       title: 'Face photo',
       body: SafeArea(
         child: Padding(

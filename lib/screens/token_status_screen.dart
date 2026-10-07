@@ -4,7 +4,7 @@ import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
 import 'package:mtag_queue_skipper/utils/token_display.dart';
-import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
+import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
 import 'package:provider/provider.dart';
 
 class TokenStatusScreen extends StatelessWidget {
@@ -71,7 +71,7 @@ class TokenStatusScreen extends StatelessWidget {
     final bikeDetails = bikeDetailsProvider.bikeDetails;
 
     if (!hasToken) {
-      return MtagScreen(
+      return MtagScaffold(
         title: 'My Token',
         body: Center(
           child: Padding(
@@ -116,7 +116,7 @@ class TokenStatusScreen extends StatelessWidget {
       );
     }
 
-    return MtagScreen(
+    return MtagScaffold(
       title: 'My Token',
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -127,7 +127,7 @@ class TokenStatusScreen extends StatelessWidget {
             icon: Icons.confirmation_number_outlined,
           ),
           const SizedBox(height: 14),
-          MtagCard(
+          MtagSectionCard(
             title: 'Status details',
             child: Column(
               children: [

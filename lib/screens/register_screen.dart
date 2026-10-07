@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/app/app_routes.dart';
+import 'package:mtag_queue_skipper/features/auth/widgets/auth_layout.dart';
+import 'package:mtag_queue_skipper/features/auth/widgets/google_sign_in_button.dart';
+import 'package:mtag_queue_skipper/features/auth/widgets/or_divider.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
-import 'package:mtag_queue_skipper/widgets/mtag_ui.dart';
+import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
 import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -68,7 +71,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MtagAuthLayout(
+    return AuthLayout(
       title: 'Create your account',
       subtitle: 'Sign up with email or jump in with Google — takes a minute.',
       child: Form(
@@ -80,7 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               autofillHints: const [AutofillHints.email],
-              decoration: MtagUi.inputDecoration(
+              decoration: mtagInputDecoration(
                 label: 'Email',
                 hint: 'you@example.com',
                 prefixIcon: Icons.email_outlined,
@@ -92,7 +95,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _passwordController,
               obscureText: _isPasswordHidden,
               autofillHints: const [AutofillHints.newPassword],
-              decoration: MtagUi.inputDecoration(
+              decoration: mtagInputDecoration(
                 label: 'Password',
                 hint: 'At least 6 characters',
                 prefixIcon: Icons.lock_outline,
@@ -119,8 +122,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
               loading: _isSubmitting,
               onPressed: _signUpWithEmail,
             ),
-            const MtagOrDivider(),
-            MtagGoogleButton(
+            const OrDivider(),
+            GoogleSignInButton(
               label: 'Sign up with Google',
               enabled: !_isSubmitting,
               onPressed: _signUpWithGoogle,
