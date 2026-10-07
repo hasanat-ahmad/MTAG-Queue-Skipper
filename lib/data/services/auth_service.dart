@@ -2,16 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:mtag_queue_skipper/core/errors/app_exception.dart';
 import 'package:mtag_queue_skipper/firebase_options.dart';
 
 /// Thrown when signing in or up fails. [message] is safe to show the rider.
-class AuthException implements Exception {
-  const AuthException(this.message);
-
-  final String message;
-
-  @override
-  String toString() => message;
+class AuthException extends AppException {
+  const AuthException(super.message);
 }
 
 /// Firebase Authentication with email/password and Google Sign-In.

@@ -3,15 +3,10 @@ import 'dart:convert';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
 import 'package:mtag_queue_skipper/config/stripe_config.dart';
+import 'package:mtag_queue_skipper/core/errors/app_exception.dart';
 
-class StripePaymentException implements Exception {
-  StripePaymentException(this.message, {this.code});
-
-  final String message;
-  final String? code;
-
-  @override
-  String toString() => message;
+class StripePaymentException extends AppException {
+  const StripePaymentException(super.message, {super.code});
 }
 
 class StripePaymentResult {

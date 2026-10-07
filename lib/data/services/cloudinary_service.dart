@@ -4,15 +4,10 @@ import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:mtag_queue_skipper/config/cloudinary_config.dart';
+import 'package:mtag_queue_skipper/core/errors/app_exception.dart';
 
-class CloudinaryException implements Exception {
-  CloudinaryException(this.message, {this.code});
-
-  final String message;
-  final String? code;
-
-  @override
-  String toString() => message;
+class CloudinaryException extends AppException {
+  const CloudinaryException(super.message, {super.code});
 }
 
 class CloudinaryService {

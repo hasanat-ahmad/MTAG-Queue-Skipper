@@ -3,14 +3,10 @@ import 'dart:io';
 import 'package:face_verification/face_verification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:mtag_queue_skipper/core/errors/app_exception.dart';
 
-class FaceVerificationException implements Exception {
-  FaceVerificationException(this.message);
-
-  final String message;
-
-  @override
-  String toString() => message;
+class FaceVerificationException extends AppException {
+  const FaceVerificationException(super.message);
 }
 
 class FaceVerificationResult {

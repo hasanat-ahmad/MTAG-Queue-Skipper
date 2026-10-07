@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mtag_queue_skipper/core/errors/app_exception.dart';
 import 'package:mtag_queue_skipper/data/models/registration_record.dart';
 
 class MtagTokenValidation {
@@ -18,14 +19,8 @@ class MtagTokenValidation {
   final String facePhotoUrl;
 }
 
-class FirestoreException implements Exception {
-  FirestoreException(this.message, {this.code});
-
-  final String message;
-  final String? code;
-
-  @override
-  String toString() => message;
+class FirestoreException extends AppException {
+  const FirestoreException(super.message, {super.code});
 }
 
 class FirestoreService {
