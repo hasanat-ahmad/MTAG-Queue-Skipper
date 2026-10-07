@@ -6,8 +6,8 @@
 // your publishable key.
 // Test card: 4242 4242 4242 4242 · any future expiry · any CVC · any ZIP
 
-import 'stripe_config_stub.dart'
-    if (dart.library.io) 'stripe_config.local.dart'
+import 'package:mtag_queue_skipper/config/stripe_config_stub.dart'
+    if (dart.library.io) 'package:mtag_queue_skipper/config/stripe_config.local.dart'
     as stripe_keys;
 
 class StripeConfig {

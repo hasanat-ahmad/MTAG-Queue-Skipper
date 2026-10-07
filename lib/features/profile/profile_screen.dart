@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
@@ -18,7 +20,7 @@ class ProfileScreen extends StatelessWidget {
     final registration = context.read<RegistrationController>();
     await context.read<AuthController>().signOut();
     registration.clear();
-    navigator.pushNamedAndRemoveUntil(AppRoutes.login, (_) => false);
+    unawaited(navigator.pushNamedAndRemoveUntil(AppRoutes.login, (_) => false));
   }
 
   @override

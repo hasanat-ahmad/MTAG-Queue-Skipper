@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/core/theme/app_text_styles.dart';
 import 'package:mtag_queue_skipper/features/splash/splash_controller.dart';
@@ -27,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
     );
     final route = await controller.resolveStartRoute();
     if (!mounted) return;
-    Navigator.pushReplacementNamed(context, route);
+    unawaited(Navigator.pushReplacementNamed(context, route));
   }
 
   @override

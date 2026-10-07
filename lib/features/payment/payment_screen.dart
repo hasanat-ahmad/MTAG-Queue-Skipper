@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/features/payment/payment_controller.dart';
@@ -29,7 +31,7 @@ class _PaymentView extends StatelessWidget {
     final outcome = await context.read<PaymentController>().pay();
     switch (outcome) {
       case PaymentOutcome.paid:
-        navigator.pushReplacementNamed(AppRoutes.tokenStatus);
+        unawaited(navigator.pushReplacementNamed(AppRoutes.tokenStatus));
       case PaymentOutcome.cancelled:
         messenger.showSnackBar(
           const SnackBar(content: Text('Payment cancelled')),

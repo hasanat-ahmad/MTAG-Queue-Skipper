@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/features/bike_registration/bike_registration_controller.dart';
@@ -124,7 +126,7 @@ class _BikeRegistrationViewState extends State<_BikeRegistrationView> {
     messenger.showSnackBar(
       const SnackBar(content: Text('Registration submitted ✓')),
     );
-    Navigator.pushNamed(context, AppRoutes.faceCapture);
+    unawaited(Navigator.pushNamed(context, AppRoutes.faceCapture));
   }
 
   @override

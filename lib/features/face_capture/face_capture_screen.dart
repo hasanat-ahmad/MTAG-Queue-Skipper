@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/features/face_capture/face_enrollment_controller.dart';
@@ -44,7 +46,7 @@ class _FaceCaptureView extends StatelessWidget {
     final saved = await context
         .read<FaceEnrollmentController>()
         .saveReferencePhoto();
-    if (saved) navigator.pushReplacementNamed(AppRoutes.payment);
+    if (saved) unawaited(navigator.pushReplacementNamed(AppRoutes.payment));
   }
 
   @override
