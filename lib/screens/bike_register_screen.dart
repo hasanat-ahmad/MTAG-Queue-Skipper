@@ -426,16 +426,7 @@ class _BikeRegisterScreenState extends State<BikeRegisterScreen> {
                   }
                   if (!context.mounted) return;
 
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.faceCapture,
-                    arguments: {
-                      'tokenNumber': tokenNumber,
-                      'status': 'Pending Verification',
-                      'estimatedTime': '15-20 minutes',
-                      'generatedAt': now.toIso8601String(),
-                    },
-                  );
+                  Navigator.pushNamed(context, AppRoutes.faceCapture);
                 },
                 style: FilledButton.styleFrom(
                   backgroundColor: Colors.black,

@@ -50,14 +50,6 @@ class _MtagCardIssuanceScreenState extends State<MtagCardIssuanceScreen> {
     if (_tokenPrefilled) return;
     _tokenPrefilled = true;
 
-    final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final routeToken = args?['tokenNumber'] as String?;
-    if (routeToken != null && routeToken.trim().isNotEmpty) {
-      _tokenController.text = routeToken.trim();
-      return;
-    }
-
     final provider = context.read<BikeDetailsProvider>();
     final storedToken = provider.tokenNumber;
     if (storedToken != null && storedToken.isNotEmpty) {

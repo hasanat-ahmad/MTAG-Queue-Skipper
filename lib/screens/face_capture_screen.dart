@@ -33,12 +33,6 @@ class _FaceCaptureScreenState extends State<FaceCaptureScreen> {
   final _firestoreService = FirestoreService();
   final _faceVerificationService = FaceVerificationService.instance;
 
-  Map<String, dynamic> get _tokenArgs {
-    final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    return args ?? <String, dynamic>{};
-  }
-
   @override
   void initState() {
     super.initState();
@@ -169,11 +163,7 @@ class _FaceCaptureScreenState extends State<FaceCaptureScreen> {
       );
 
       if (!mounted) return;
-      Navigator.pushReplacementNamed(
-        context,
-        AppRoutes.payment,
-        arguments: _tokenArgs,
-      );
+      Navigator.pushReplacementNamed(context, AppRoutes.payment);
     } on CloudinaryException catch (e) {
       if (!mounted) return;
       setState(() {

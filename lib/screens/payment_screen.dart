@@ -23,12 +23,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
   bool _paying = false;
   String? _error;
 
-  Map<String, dynamic> get _tokenArgs {
-    final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    return args ?? <String, dynamic>{};
-  }
-
   Future<void> _pay() async {
     if (kIsWeb) {
       setState(() {
@@ -62,11 +56,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       );
 
       if (!mounted) return;
-      Navigator.pushReplacementNamed(
-        context,
-        AppRoutes.tokenStatus,
-        arguments: _tokenArgs,
-      );
+      Navigator.pushReplacementNamed(context, AppRoutes.tokenStatus);
     } on StripePaymentException catch (e) {
       if (!mounted) return;
       setState(() {

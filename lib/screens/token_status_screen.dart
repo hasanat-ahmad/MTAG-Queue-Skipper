@@ -3,7 +3,6 @@ import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
 import 'package:mtag_queue_skipper/providers/bike_details_provider.dart';
-import 'package:mtag_queue_skipper/utils/token_display.dart';
 import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
 import 'package:provider/provider.dart';
 
@@ -35,39 +34,14 @@ class TokenStatusScreen extends StatelessWidget {
     final bikeDetailsProvider = context.watch<BikeDetailsProvider>();
     final user = context.watch<AuthProvider>().user;
 
-    final args =
-        (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?) ??
-        <String, dynamic>{};
-
-    final routeToken = args['tokenNumber'] as String?;
-    final hasTokenFromRoute =
-        routeToken != null && routeToken.trim().isNotEmpty;
-    final hasToken = hasTokenFromRoute || bikeDetailsProvider.hasToken;
-
-    final tokenNumber =
-        routeToken ?? bikeDetailsProvider.tokenNumber ?? 'TKN-0000';
-    final rawStatus =
-        args['status'] as String? ?? bikeDetailsProvider.tokenStatus;
-    final rawEstimatedTime =
-        args['estimatedTime'] as String? ??
-        bikeDetailsProvider.tokenEstimatedTime;
-    final status = TokenDisplay.statusLabel(
-      status: rawStatus,
-      mtagCardIssued: bikeDetailsProvider.mtagCardIssued,
+    final hasToken = bikeDetailsProvider.hasToken;
+    final tokenNumber = bikeDetailsProvider.tokenNumber ?? '';
+    final status = bikeDetailsProvider.displayTokenStatus;
+    final estimatedTime = bikeDetailsProvider.displayEstimatedTime;
+    final isCollected = bikeDetailsProvider.isCardCollected;
+    final generatedAt = _formatGeneratedAt(
+      bikeDetailsProvider.tokenGeneratedAt ?? 'N/A',
     );
-    final estimatedTime = TokenDisplay.estimatedTimeLabel(
-      estimatedTime: rawEstimatedTime,
-      status: rawStatus,
-      mtagCardIssued: bikeDetailsProvider.mtagCardIssued,
-    );
-    final isCollected =
-        bikeDetailsProvider.isCardCollected ||
-        TokenDisplay.isCollected(status: rawStatus);
-    final generatedAtRaw =
-        args['generatedAt'] as String? ??
-        bikeDetailsProvider.tokenGeneratedAt ??
-        'N/A';
-    final generatedAt = _formatGeneratedAt(generatedAtRaw);
     final bikeDetails = bikeDetailsProvider.bikeDetails;
 
     if (!hasToken) {
@@ -150,11 +124,7 @@ class TokenStatusScreen extends StatelessWidget {
             MtagPrimaryButton(
               label: 'Collect MTAG card',
               onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  AppRoutes.cardIssuance,
-                  arguments: {'tokenNumber': tokenNumber},
-                );
+                Navigator.pushNamed(context, AppRoutes.cardIssuance);
               },
             ),
           if (!isCollected) const SizedBox(height: 10),
