@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:mtag_queue_skipper/features/auth/login_screen.dart';
 import 'package:mtag_queue_skipper/features/auth/register_screen.dart';
+import 'package:mtag_queue_skipper/features/splash/splash_screen.dart';
 import 'package:mtag_queue_skipper/screens/bike_details_screen.dart';
 import 'package:mtag_queue_skipper/screens/bike_register_screen.dart';
 import 'package:mtag_queue_skipper/screens/face_capture_screen.dart';
@@ -8,7 +9,6 @@ import 'package:mtag_queue_skipper/screens/home_screen.dart';
 import 'package:mtag_queue_skipper/screens/mtag_card_issuance_screen.dart';
 import 'package:mtag_queue_skipper/screens/payment_screen.dart';
 import 'package:mtag_queue_skipper/screens/profile_screen.dart';
-import 'package:mtag_queue_skipper/screens/splash_screen.dart';
 import 'package:mtag_queue_skipper/screens/token_status_screen.dart';
 
 /// Named routes for every screen.
