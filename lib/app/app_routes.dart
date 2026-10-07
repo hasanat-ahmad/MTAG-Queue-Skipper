@@ -4,10 +4,10 @@ import 'package:mtag_queue_skipper/features/auth/register_screen.dart';
 import 'package:mtag_queue_skipper/features/bike_registration/bike_registration_screen.dart';
 import 'package:mtag_queue_skipper/features/face_capture/face_capture_screen.dart';
 import 'package:mtag_queue_skipper/features/home/home_screen.dart';
+import 'package:mtag_queue_skipper/features/payment/payment_screen.dart';
 import 'package:mtag_queue_skipper/features/splash/splash_screen.dart';
 import 'package:mtag_queue_skipper/screens/bike_details_screen.dart';
 import 'package:mtag_queue_skipper/screens/mtag_card_issuance_screen.dart';
-import 'package:mtag_queue_skipper/screens/payment_screen.dart';
 import 'package:mtag_queue_skipper/screens/profile_screen.dart';
 import 'package:mtag_queue_skipper/screens/token_status_screen.dart';
 
