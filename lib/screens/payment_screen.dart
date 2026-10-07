@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:mtag_queue_skipper/app/app_routes.dart';
 import 'package:mtag_queue_skipper/config/stripe_config.dart';
 import 'package:mtag_queue_skipper/core/theme/app_colors.dart';
+import 'package:mtag_queue_skipper/data/services/firestore_service.dart';
+import 'package:mtag_queue_skipper/data/services/stripe_service.dart';
 import 'package:mtag_queue_skipper/providers/auth_provider.dart';
-import 'package:mtag_queue_skipper/services/firestore_service.dart';
-import 'package:mtag_queue_skipper/services/stripe_service.dart';
 import 'package:mtag_queue_skipper/shared/widgets/mtag_widgets.dart';
 import 'package:provider/provider.dart';
 

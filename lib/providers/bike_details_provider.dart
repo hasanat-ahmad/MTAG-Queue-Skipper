@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mtag_queue_skipper/data/models/bike_details.dart';
 import 'package:mtag_queue_skipper/data/models/queue_token.dart';
 import 'package:mtag_queue_skipper/data/models/registration_record.dart';
-import 'package:mtag_queue_skipper/services/firestore_service.dart';
+import 'package:mtag_queue_skipper/data/services/firestore_service.dart';
 
 class BikeDetailsProvider with ChangeNotifier {
   BikeDetailsProvider({FirestoreService? firestoreService})

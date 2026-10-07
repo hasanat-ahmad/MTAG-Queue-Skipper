@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:mtag_queue_skipper/firebase_options.dart';
 import 'package:mtag_queue_skipper/data/models/user_profile.dart';
-import 'package:mtag_queue_skipper/services/firestore_service.dart';
+import 'package:mtag_queue_skipper/data/services/firestore_service.dart';
+import 'package:mtag_queue_skipper/firebase_options.dart';
 
 class AuthResult {
   final bool success;
