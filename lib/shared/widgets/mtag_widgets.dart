@@ -3,6 +3,7 @@ library;
 
 export 'inline_error_text.dart';
 export 'mtag_buttons.dart';
+export 'mtag_empty_state.dart';
 export 'mtag_highlight_banner.dart';
 export 'mtag_info_tile.dart';
 export 'mtag_input_decoration.dart';

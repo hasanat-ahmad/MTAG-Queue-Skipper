@@ -6,10 +6,10 @@ import 'package:mtag_queue_skipper/features/face_capture/face_capture_screen.dar
 import 'package:mtag_queue_skipper/features/home/home_screen.dart';
 import 'package:mtag_queue_skipper/features/payment/payment_screen.dart';
 import 'package:mtag_queue_skipper/features/splash/splash_screen.dart';
+import 'package:mtag_queue_skipper/features/token_status/token_status_screen.dart';
 import 'package:mtag_queue_skipper/screens/bike_details_screen.dart';
 import 'package:mtag_queue_skipper/screens/mtag_card_issuance_screen.dart';
 import 'package:mtag_queue_skipper/screens/profile_screen.dart';
-import 'package:mtag_queue_skipper/screens/token_status_screen.dart';
 
 /// Named routes for every screen.
 ///
