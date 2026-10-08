@@ -7,8 +7,6 @@ import 'package:mtag_queue_skipper/config/stripe_config.dart';
 import 'package:mtag_queue_skipper/data/services/face_verification_service.dart';
 import 'package:mtag_queue_skipper/firebase_options.dart';
 
-/// Initialises Firebase, Stripe and the on-device face model, then starts
-/// the app.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -23,7 +21,6 @@ Future<void> _initStripe() async {
   await Stripe.instance.applySettings();
 }
 
-/// Loads the face-matching model up front so the first check is quick.
 Future<void> _initFaceVerification() async {
   if (kIsWeb) return;
   try {
