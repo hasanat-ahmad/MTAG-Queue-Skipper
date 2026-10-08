@@ -7,14 +7,16 @@ class SplashController {
   SplashController({
     required AuthController auth,
     required RegistrationController registration,
-    this.minimumDisplayTime = const Duration(seconds: 5),
+    this.minimumDisplayTime = const Duration(milliseconds: 1500),
   }) : _auth = auth,
        _registration = registration;
 
   final AuthController _auth;
   final RegistrationController _registration;
 
-  /// How long the splash stays up even when nothing needs loading.
+  /// How long the splash stays up even when nothing needs loading: about
+  /// one sweep of the logo animation. Loading the rider's profile runs in
+  /// parallel and can keep it up longer.
   final Duration minimumDisplayTime;
 
   /// Returns [AppRoutes.home] for a rider Firebase remembers (with their
