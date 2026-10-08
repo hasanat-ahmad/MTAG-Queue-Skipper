@@ -59,6 +59,14 @@ Firebase is configured by `lib/firebase_options.dart`,
 For Google Sign-In on Android, add your debug SHA-1 to the Android app in
 the Firebase console.
 
+#### Running on an emulator
+
+The app bundles ML Kit and a 94 MB face model, so a small emulator is slow.
+For the "Medium Phone" AVD, open Device Manager → Edit → Advanced Settings,
+give it at least 4 CPU cores and 4 GB RAM, and cold boot it. `flutter run`
+builds in debug mode; use `flutter run --profile` to judge real speed, and
+a real phone to test the camera and face check.
+
 ### 2. Deploy the backend
 
 The app relies on the Cloud Functions for payment, queue tokens, card

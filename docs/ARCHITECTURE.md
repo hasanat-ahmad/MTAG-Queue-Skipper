@@ -41,7 +41,7 @@ write the data a rider owns. See [SECURITY.md](../SECURITY.md).
 
 ```
 lib/
-├── main.dart              Startup: Firebase, Stripe, face model, runApp
+├── main.dart              Startup: Firebase, Stripe, runApp
 ├── app/                   MtagApp (providers + MaterialApp) and AppRoutes
 ├── config/                Build configuration (Stripe publishable key, functions region)
 ├── core/                  Framework-level code with no feature knowledge
@@ -139,6 +139,11 @@ Conventions that go with it:
   `BikeRegistrationInput`).
 - Screens without logic (Home, Token Status, Bike Details, Profile) have no
   controller; they read the app-wide controllers directly.
+- Keep `main()` to what the first screen needs. Heavy resources load on
+  first use: the 94 MB FaceNet model is loaded by
+  `FaceVerificationService.ensureInitialized()`, and the selfie controllers
+  call `warmUp()` as their camera opens so it is ready by the time the
+  rider has taken the photo.
 
 ### App-wide state
 
