@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:face_verification/face_verification.dart';
@@ -31,17 +32,43 @@ class FaceVerificationService {
   /// Stricter than the plugin default (0.70).
   static const double _matchThreshold = 0.80;
 
-  bool _initialized = false;
+  /// The model load in progress or done; null until first needed, and
+  /// again after a load fails so the next call retries.
+  Future<void>? _loading;
 
+  /// Loads the FaceNet model (about 94 MB) the first time it is needed.
+  /// Callers that arrive while it is loading wait for the same load
+  /// instead of starting another one.
   Future<void> ensureInitialized() async {
-    if (_initialized) return;
+    final loading = _loading ??= _loadModel();
+    try {
+      await loading;
+    } catch (_) {
+      if (identical(_loading, loading)) _loading = null;
+      rethrow;
+    }
+  }
+
+  /// Starts loading the model in the background, e.g. while the camera
+  /// opens, so it is ready by the time the rider has taken a selfie.
+  /// Failures are only logged here; the next [ensureInitialized] retries
+  /// and reports them.
+  void warmUp() {
+    if (kIsWeb) return;
+    unawaited(
+      ensureInitialized().catchError((Object error) {
+        debugPrint('Face model warm-up failed: $error');
+      }),
+    );
+  }
+
+  Future<void> _loadModel() async {
     if (kIsWeb) {
-      throw FaceVerificationException(
+      throw const FaceVerificationException(
         'Face verification is not supported on web. Use a mobile device.',
       );
     }
     await FaceVerification.instance.init();
-    _initialized = true;
   }
 
   Future<bool> _isReferenceEnrolled(String uid) async {
