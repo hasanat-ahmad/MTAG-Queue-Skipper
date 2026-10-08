@@ -55,13 +55,14 @@ void main() {
   });
 
   test(
-    'a valid token moves on to the face check and opens the camera',
+    'a valid token moves on to the face check, opens the camera and warms up the face model',
     () async {
       await controller.submitToken(' TKN-0001 ');
 
       expect(controller.step, CardIssuanceStep.verifyFace);
       expect(controller.ticket, ticket);
       expect(camera.initializeCalls, 1);
+      expect(faces.warmUpCalls, 1);
     },
   );
 
@@ -75,6 +76,7 @@ void main() {
     expect(controller.step, CardIssuanceStep.enterToken);
     expect(controller.error, 'Token number does not match your registration.');
     expect(camera.initializeCalls, 0);
+    expect(faces.warmUpCalls, 0);
   });
 
   test('a matching face has the server issue the card', () async {

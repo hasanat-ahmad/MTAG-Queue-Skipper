@@ -40,7 +40,12 @@ class FaceEnrollmentController extends SafeChangeNotifier {
   /// Why the last save failed, shown under the camera.
   String? get error => _error;
 
-  Future<void> startCamera() => camera.initialize();
+  /// Opens the camera and, meanwhile, starts loading the face model so it
+  /// is ready by the time the rider taps Continue.
+  Future<void> startCamera() {
+    _faceVerification.warmUp();
+    return camera.initialize();
+  }
 
   /// Takes the selfie. Returns a camera failure message, or null.
   Future<String?> capturePhoto() async {

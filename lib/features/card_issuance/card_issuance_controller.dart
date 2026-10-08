@@ -91,6 +91,8 @@ class CardIssuanceController extends SafeChangeNotifier {
       _step = CardIssuanceStep.verifyFace;
       _isBusy = false;
       notifyListeners();
+      // Load the face model while the rider lines up their selfie.
+      _faceVerification.warmUp();
       await camera.initialize();
     } on AppException catch (e) {
       _fail(e.message);

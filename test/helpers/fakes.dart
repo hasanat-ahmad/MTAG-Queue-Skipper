@@ -224,6 +224,10 @@ class FakeFaceVerificationService implements FaceVerificationService {
   bool isMatch = true;
   FaceVerificationException? error;
   final List<String> verifiedPaths = [];
+  int warmUpCalls = 0;
+
+  @override
+  void warmUp() => warmUpCalls++;
 
   @override
   Future<FaceVerificationResult> verifyFaces({
